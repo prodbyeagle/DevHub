@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram for Coder</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold text-center mb-8">Instagram for Coder</h1>
+    <!-- Tabs -->
+    <div class="flex justify-center mb-8">
+        <a href="/settings" class="mx-4">Settings</a>
+        <a href="/profile" class="mx-4">Profile</a>
+        <a href="/signin" class="mx-4">Sign-In</a>
+    </div>
+
+    <!-- Form to create new post -->
+    <form id="postForm" class="mb-8">
+        <div class="mb-4">
+            <label for="postContent" class="block text-sm font-medium text-gray-700">Neuen Beitrag erstellen</label>
+            <textarea id="postContent" name="postContent" rows="4" cols="50" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Beitrag erstellen</button>
+    </form>
+    <!-- Latest posts section -->
+    <div id="latestPosts" class="grid grid-cols-1 gap-4"></div>
+</div>
+
+<!-- JavaScript to interact with backend -->
+<script>
+    async function createPost(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const postContent = document.getElementById('postContent').value;
+
+        // Überprüfen, ob der Postinhalt leer ist
+        if (!postContent.trim()) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: postContent })
+            });
+            const data = await response.json();
+            console.log('New post created:', data);
+            // Clear the post content after successful creation
+            document.getElementById('postContent').value = '';
+            // Refresh latest posts
+            await getPosts();
+        } catch (error) {
+            console.error('Error creating post:', error);
+        }
+    }
+
+    // Function to fetch and display latest posts
+    async function getPosts() {
+        try {
+            const response = await fetch('/api/posts'); // Fetch latest posts from home route
+            const posts = await response.json();
+            console.log('Latest posts:', posts);
+            // Clear previous posts
+            document.getElementById('latestPosts').innerHTML = '';
+            // Display latest posts
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('bg-white', 'p-4', 'rounded', 'shadow');
+
+                // Create elements for username, profile picture, content, and date
+                const usernameElement = document.createElement('h3');
+                usernameElement.textContent = post.username; // Assuming username is included in post data
+                const contentElement = document.createElement('p');
+                contentElement.textContent = post.content;
+                const dateElement = document.createElement('p');
+                dateElement.textContent = post.date; // Assuming date is included in post data
+
+                // Append elements to post element
+                postElement.appendChild(usernameElement);
+                postElement.appendChild(contentElement);
+                postElement.appendChild(dateElement);
+
+                document.getElementById('latestPosts').appendChild(postElement);
+            });
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        }
+    }
+
+    // Add event listener to post form submission
+    document.getElementById('postForm').addEventListener('submit', createPost);
+    getPosts();
+</script>
+</body>
+</html>
