@@ -23,4 +23,4 @@ DevHub ist eine Plattform für Entwickler, um sich zu vernetzen, Wissen auszutau
 
 ## Lizenz ©️
 
-Dieses Projekt ist privat und unterliegt den vereinbarten Nutzungsbedingungen. Alle Rechte vorbehalten.
+Dieses Projekt ist unter der MIT-Lizenz lizenziert. Siehe [LICENSE](LICENSE) für weitere Informationen.
