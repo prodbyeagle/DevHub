@@ -20,7 +20,3 @@ DevHub ist eine Plattform für Entwickler, um sich zu vernetzen, Wissen auszutau
 
 - prodbyeagle (@prodbyeagle) 👨‍💻
 - DWHIncAndi (@dwhincandi) 👩‍💻
-
-## Lizenz ©️
-
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Siehe [LICENSE](LICENSE) für weitere Informationen.
