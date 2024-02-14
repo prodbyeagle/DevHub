@@ -7,6 +7,11 @@
     <title>Instagram for Coder</title>
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'SF Pro Medium', Arial, sans-serif;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 <div class="container mx-auto py-8">
@@ -30,10 +35,9 @@
     <div id="latestPosts" class="grid grid-cols-1 gap-4"></div>
 </div>
 
-<!-- JavaScript to interact with backend -->
 <script>
     async function createPost(event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault(); // Standardformularübermittlung verhindern
 
         const postContent = document.getElementById('postContent').value;
 
@@ -51,50 +55,53 @@
                 body: JSON.stringify({ content: postContent })
             });
             const data = await response.json();
-            console.log('New post created:', data);
-            // Clear the post content after successful creation
             document.getElementById('postContent').value = '';
-            // Refresh latest posts
             await getPosts();
         } catch (error) {
-            console.error('Error creating post:', error);
+            console.error('Fehler beim Erstellen des Beitrags:', error);
         }
     }
 
-    // Function to fetch and display latest posts
+    // Funktion zum Abrufen und Anzeigen der neuesten Beiträge
     async function getPosts() {
         try {
-            const response = await fetch('/api/posts'); // Fetch latest posts from home route
+            const response = await fetch('/api/posts'); // Neueste Beiträge von der Home-Route abrufen
             const posts = await response.json();
-            console.log('Latest posts:', posts);
-            // Clear previous posts
+            console.log('Neueste Beiträge:', posts);
             document.getElementById('latestPosts').innerHTML = '';
-            // Display latest posts
             posts.forEach(post => {
                 const postElement = document.createElement('div');
                 postElement.classList.add('bg-white', 'p-4', 'rounded', 'shadow');
 
-                // Create elements for username, profile picture, content, and date
+                // Benutzername hinzufügen
                 const usernameElement = document.createElement('h3');
-                usernameElement.textContent = post.username; // Assuming username is included in post data
+                usernameElement.textContent = post.username; // Annahme: Benutzername ist im Beitrag enthalten
+
+                // Profilbild, Benutzername, Inhalt und Datum erstellen
+                const profilePicElement = document.createElement('img');
+                profilePicElement.setAttribute('src', 'profilbild.jpg'); // Annahme: Profilbild-Pfad
+                profilePicElement.classList.add('h-8', 'w-8', 'rounded-full', 'inline-block', 'mr-2');
+
                 const contentElement = document.createElement('p');
                 contentElement.textContent = post.content;
-                const dateElement = document.createElement('p');
-                dateElement.textContent = post.date; // Assuming date is included in post data
 
-                // Append elements to post element
+                const dateElement = document.createElement('p');
+                dateElement.textContent = post.date; // Annahme: Datum ist im Beitrag enthalten
+
+                // Elemente zum Beitragselement hinzufügen
+                postElement.appendChild(profilePicElement);
                 postElement.appendChild(usernameElement);
-                postElement.appendChild(contentElement);
                 postElement.appendChild(dateElement);
+                postElement.appendChild(contentElement);
 
                 document.getElementById('latestPosts').appendChild(postElement);
             });
         } catch (error) {
-            console.error('Error fetching posts:', error);
+            console.error('Fehler beim Abrufen von Beiträgen:', error);
         }
     }
 
-    // Add event listener to post form submission
+    // Eventlistener zum Einreichen des Post-Formulars hinzufügen
     document.getElementById('postForm').addEventListener('submit', createPost);
     getPosts();
 </script>

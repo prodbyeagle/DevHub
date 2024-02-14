@@ -7,6 +7,11 @@
     <title>Profile</title>
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'SF Pro Medium', Arial, sans-serif;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
 <div class="container mx-auto py-8">
@@ -15,10 +20,11 @@
     <div class="max-w-md mx-auto bg-white p-8 rounded shadow">
         <h2 class="text-xl font-bold mb-4">Change Password</h2>
         <form id="changePasswordForm" class="space-y-4">
-            <!-- Hidden username field for accessibility -->
-            <label for="username" class="sr-only">Username:</label>
-            <input type="text" id="username" name="username" class="hidden">
-
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username:</label>
+                <input type="text" id="username" name="username" required autocomplete
+                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+            </div>
             <div>
                 <label for="currentPassword" class="block text-sm font-medium text-gray-700">Current Password:</label>
                 <input type="password" id="currentPassword" name="currentPassword" required autocomplete="current-password"
@@ -37,6 +43,85 @@
             <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Change Password</button>
         </form>
     </div>
+
+    <!-- Upload Profile Picture Form -->
+    <div class="max-w-md mx-auto bg-white p-8 mt-8 rounded shadow">
+        <h2 class="text-xl font-bold mb-4">Upload Profile Picture</h2>
+        <form id="uploadProfileForm" enctype="multipart/form-data">
+            <div>
+                <label for="profileImage" class="block text-sm font-medium text-gray-700">Choose Profile Picture:</label>
+                <input type="file" id="profileImage" name="profileImage" required accept="image/*"
+                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+            </div>
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-4">Upload</button>
+        </form>
+    </div>
 </div>
+<script>
+    // AJAX-Anfrage, um das Passwort zu ändern
+    document.getElementById('changePasswordForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Standardformularübermittlung verhindern
+    
+        const username = document.getElementById('username').value;
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+    
+        // Überprüfen, ob das neue Passwort und die Bestätigung übereinstimmen
+        if (newPassword !== confirmPassword) {
+            console.error('New password and confirmation do not match');
+            return;
+        }
+    
+        try {
+            const response = await fetch('/api/profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    currentPassword: currentPassword,
+                    newPassword: newPassword,
+                    confirmPassword: confirmPassword
+                })
+            });
+            const data = await response.json();
+            console.log('Password change response:', data);
+            
+            // Überprüfen, ob das Passwort erfolgreich geändert wurde und dann zur Startseite weiterleiten
+            if (response.status === 200) {
+                window.location.href = '/home'; // Weiterleitung zur Startseite
+            } else {
+                // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Erfolg oder Misserfolg anzuzeigen
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
+            // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Fehler anzuzeigen
+        }
+    });
+
+    // AJAX-Anfrage zum Hochladen des Profilbilds
+    document.getElementById('uploadProfileForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // Standardformularübermittlung verhindern
+
+        const formData = new FormData();
+        formData.append('profileImage', document.getElementById('profileImage').files[0]);
+        // Fügen Sie hier ggf. den Benutzernamen hinzu
+
+        try {
+            const response = await fetch('/api/profile/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            console.log('Profile picture upload response:', data);
+            // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Erfolg oder Misserfolg anzuzeigen
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Fehler anzuzeigen
+        }
+    });
+</script>
 </body>
 </html>
