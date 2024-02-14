@@ -1,4 +1,3 @@
-<!-- Profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,70 +57,9 @@
     </div>
 </div>
 <script>
-    // AJAX-Anfrage, um das Passwort zu ändern
-    document.getElementById('changePasswordForm').addEventListener('submit', async (event) => {
-        event.preventDefault(); // Standardformularübermittlung verhindern
-    
-        const username = document.getElementById('username').value;
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-    
-        // Überprüfen, ob das neue Passwort und die Bestätigung übereinstimmen
-        if (newPassword !== confirmPassword) {
-            console.error('New password and confirmation do not match');
-            return;
-        }
-    
-        try {
-            const response = await fetch('/api/profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: username,
-                    currentPassword: currentPassword,
-                    newPassword: newPassword,
-                    confirmPassword: confirmPassword
-                })
-            });
-            const data = await response.json();
-            console.log('Password change response:', data);
-            
-            // Überprüfen, ob das Passwort erfolgreich geändert wurde und dann zur Startseite weiterleiten
-            if (response.status === 200) {
-                window.location.href = '/home'; // Weiterleitung zur Startseite
-            } else {
-                // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Erfolg oder Misserfolg anzuzeigen
-            }
-        } catch (error) {
-            console.error('Error changing password:', error);
-            // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Fehler anzuzeigen
-        }
-    });
 
-    // AJAX-Anfrage zum Hochladen des Profilbilds
-    document.getElementById('uploadProfileForm').addEventListener('submit', async (event) => {
-        event.preventDefault(); // Standardformularübermittlung verhindern
+//TODO: Change Password and Add Profile Picture (DB SAVE)
 
-        const formData = new FormData();
-        formData.append('profileImage', document.getElementById('profileImage').files[0]);
-        // Fügen Sie hier ggf. den Benutzernamen hinzu
-
-        try {
-            const response = await fetch('/api/profile/upload', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            console.log('Profile picture upload response:', data);
-            // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Erfolg oder Misserfolg anzuzeigen
-        } catch (error) {
-            console.error('Error uploading profile picture:', error);
-            // Hier können Sie eine Benachrichtigung anzeigen oder die Seite aktualisieren, um den Fehler anzuzeigen
-        }
-    });
 </script>
 </body>
 </html>

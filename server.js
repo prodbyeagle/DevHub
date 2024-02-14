@@ -4,16 +4,22 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require('bcrypt');
-const multer = require('multer');
+const session = require('express-session');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+const sessionSecret = require('crypto').randomBytes(64).toString('hex');
+console.log('Session secret:', sessionSecret);
+
 app.use(bodyParser.json());
 app.use(cors());
+app.use(session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: true
+}));
 
-// MongoDB Verbindung
 const uri = 'mongodb+srv://prodbyeagle:mZPLLs37Oi6x3NbR@snippetdb.wqznr37.mongodb.net/?retryWrites=true&w=majority';
 const dbName = 'snippetDB';
 let db;
@@ -32,12 +38,16 @@ async function run() {
     try {
         await client.connect();
         db = client.db(dbName);
-        usersCollection = db.collection('users');
+        usersCollection = db.collection('users'); // Benutzer unter der Sammlung "Users" speichern
         console.log("Connected to MongoDB successfully!");
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
     }
 }
+
+// Middleware
+app.use(bodyParser.json());
+app.use(cors());
 
 // Funktion zum Formatieren des Datums in Ihrem gewünschten Format
 function formatDateForDisplay(date) {
@@ -51,12 +61,6 @@ function formatDateForDisplay(date) {
     };
     return new Date(date).toLocaleString('de-DE', options);
 }
-
-// Konfiguration für Multer
-const upload = multer({ dest: 'uploads/' }); // Speicherort für hochgeladene Dateien
-
-// Speichern der Zeitpunkte der letzten Aktionen
-const actionCooldowns = {};
 
 // Funktion zum Prüfen des Cooldowns für eine bestimmte Aktion
 function checkCooldown(action, cooldownTime) {
@@ -81,26 +85,7 @@ function cooldownMiddleware(action, cooldownTime) {
     };
 }
 
-// Beispiel: Route für das Hochladen eines Profilbilds mit Cooldown
-app.post('/api/profile/upload', cooldownMiddleware('profileUpload', 60000), upload.single('profileImage'), async (req, res) => {
-    // Verarbeiten Sie das hochgeladene Bild und speichern Sie es an einem sicheren Speicherort
-    const filename = req.file.filename; // Dateiname des hochgeladenen Bildes
-    console.log('Profile picture uploaded successfully:', filename);
-    
-    // Aktualisieren Sie das Profilbild für den aktuellen Benutzer in der Datenbank (wenn Benutzername gesendet wurde)
-    const { username } = req.body;
-    if (username) {
-        try {
-            await usersCollection.updateOne({ username }, { $set: { profileImage: filename } });
-        } catch (error) {
-            console.error("Fehler beim Aktualisieren des Profilbilds:", error);
-            return res.status(500).json({ success: false, error: 'Interner Serverfehler' });
-        }
-    }
-    
-    // Hier können Sie weitere Verarbeitungsschritte durchführen, z.B. Speichern des Dateinamens in der Datenbank
-    res.status(200).json({ success: true, message: 'Profile image uploaded successfully', filename: filename });
-});
+//TODO: Route für das Hochladen eines Profilbilds mit Cooldown
 
 // Route zum Abrufen aller Posts
 app.get('/api/posts', async (req, res) => {
@@ -121,18 +106,25 @@ app.get('/api/posts', async (req, res) => {
     }
 });
 
-// Route zum Erstellen eines neuen Posts
+
 app.post('/api/posts', async (req, res) => {
-    const { content, username } = req.body; // Benutzername aus Anfrage extrahieren
+    const { content, username, codesnippet } = req.body; // Inhalte, Benutzername und Codeschnipsel aus der Anfrage extrahieren
     const date = new Date(); // Aktuelles Datum erstellen
 
     try {
-        const result = await db.collection('posts').insertOne({ content, username, date }); // Benutzername und Datum hinzufügen
-        const newPost = { 
-            _id: result.insertedId, 
-            content, 
-            username, 
-            date: formatDateForDisplay(date) // Datum im gewünschten Format zurückgeben
+        const result = await db.collection('posts').insertOne({
+            content,
+            username,
+            date,
+            codesnippet
+        });
+
+        const newPost = {
+            _id: result.insertedId,
+            content,
+            username,
+            date: formatDateForDisplay(date), // Datum im gewünschten Format zurückgeben
+            codesnippet,
         };
         res.status(201).json(newPost);
     } catch (error) {
@@ -141,64 +133,58 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-// Route zum Speichern der Benutzerdaten
-app.post('/api/users', async (req, res) => {
-    const { username, password, profileImage } = req.body;
+app.post('/login', async (req, res) => {
+    const { identifier, password } = req.body; // "identifier" kann E-Mail oder Benutzername sein
+
+    try {
+        // Suche nach Benutzer mit der angegebenen E-Mail oder dem angegebenen Benutzernamen
+        const user = await usersCollection.findOne({
+            $or: [{ email: identifier }, { username: identifier }]
+        });
+
+        if (user && user.password === password) {
+            // Erfolgreicher Login
+            console.log(`Successful login for user: ${identifier} at ${new Date().toISOString()}`);
+            req.session.userId = user._id;
+            return res.redirect('/home');
+        } else {
+            // Fehlgeschlagener Login
+            console.log(`Failed login attempt for user: ${identifier} at ${new Date().toISOString()}`);
+            return res.status(401).send('Invalid email or password');
+        }
+    } catch (error) {
+        // Fehler beim Login
+        console.error('Error during Login:', error);
+        return res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/signup', async (req, res) => {
+    const { email, password, username } = req.body;
 
     try {
         // Überprüfen, ob der Benutzer bereits existiert
-        const existingUser = await usersCollection.findOne({ username });
+        const existingUser = await usersCollection.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ success: false, message: 'Benutzername bereits vergeben' });
+            return res.status(400).send('User already exists');
         }
 
-        // Passwort hashen
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 Saltrunden
+        // Überprüfen, ob der Benutzer bereits existiert
+        const existingUsername = await usersCollection.findOne({ username });
+        if (existingUser) {
+            return res.status(400).send('username already taken');
+        }        
 
-        // Benutzerdaten in die Datenbank einfügen
-        await usersCollection.insertOne({ username, password: hashedPassword, profileImage });
+        // Neuen Benutzer erstellen
+        await usersCollection.insertOne({ email, password, username });
 
-        return res.status(201).json({ success: true, message: 'Benutzer erfolgreich erstellt' });
+        res.status(201).send('User created successfully');
     } catch (error) {
-        console.error("Fehler beim Erstellen eines Benutzers:", error);
-        res.status(500).json({ success: false, error: 'Interner Serverfehler' });
+        console.error('Error during sign up:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
-// Route für den Login
-app.post('/login', async (req, res) => {
-    const { identifier, password } = req.body; // "identifier" kann der Benutzername oder die E-Mail sein
-    try {
-        console.log('Login-Versuch:', identifier); // Ausgabe des Benutzernamens oder der E-Mail
-        // Suchen Sie nach dem Benutzer in der Datenbank
-        const user = await db.collection('users').findOne({
-            $or: [{ username: identifier }, { email: identifier }]
-        });
-
-        console.log('Gefundener Benutzer:', user); // Ausgabe des gefundenen Benutzers
-
-        if (!user) {
-            console.log('Benutzer nicht gefunden:', identifier); // Ausgabe, wenn der Benutzer nicht gefunden wurde
-            return res.status(401).json({ success: false, message: 'Benutzer nicht gefunden' });
-        }
-
-        // Vergleichen Sie die Passwörter
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            console.log('Falsches Passwort für Benutzer:', identifier); // Ausgabe, wenn das Passwort falsch ist
-            return res.status(401).json({ success: false, message: 'Falsches Passwort' });
-        }
-
-        // Wenn Benutzer gefunden und Passwort korrekt ist, senden Sie Erfolgsmeldung zurück
-        console.log('Anmeldung erfolgreich für Benutzer:', identifier); // Ausgabe, wenn die Anmeldung erfolgreich ist
-        return res.status(200).json({ success: true, message: 'Anmeldung erfolgreich' });
-    } catch (error) {
-        console.error("Fehler bei der Anmeldung:", error);
-        res.status(500).json({ success: false, error: 'Interner Serverfehler' });
-    }
-});
-
-// Route für die Startseite
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); // Laden Sie die index.html-Datei
 });
@@ -211,8 +197,12 @@ app.get('/profile', (req, res) => {
     res.sendFile(__dirname + '/profile.html');
 });
 
-app.get('/signin', (req, res) => {
-    res.sendFile(__dirname + '/signin.html');
+app.get('/login', (req, res) => {
+    res.sendFile(__dirname + '/login.html');
+});
+
+app.get('/signup', (req, res) => {
+    res.sendFile(__dirname + '/signup.html');
 });
 
 app.listen(PORT, () => {
