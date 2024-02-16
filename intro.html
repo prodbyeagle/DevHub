@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Devicon Icons -->
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" /> 
+    <style>
+        body {
+            background-color: #111827; /* Dunkelgrauer Hintergrund */
+            font-family: SF Pro Medium, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: #ffffff; /* Weiße Textfarbe */
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: auto; /* Horizontales Scrollen aktivieren */
+        }
+        
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem; /* Abstand zwischen den Buttons */
+        }
+        
+        .max-w-lg {
+            width: 100%;
+            max-width: 32rem;
+            padding: 0 1rem;
+        }
+
+        .intro-form {
+            background-color: #1e2a44; /* Dunkelblauer Hintergrund */
+            border: 1px solid #718096; /* Grauer Rand */
+            padding: 2rem;
+            left: 100px;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
+            overflow-x: auto; /* Horizontales Scrollen aktivieren */
+        }
+        
+        .max-w-lg {
+            width: 100%;
+            max-width: 32rem;
+            padding: 0 1rem;
+        }
+
+        .label {
+            color: #718096; /* Graue Textfarbe */
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e0; /* Heller Rand */
+            background-color: #f3f4f6; /* Hellgrauer Hintergrund */
+            color: #1f2937; /* Dunkelblauer Text */
+            margin-bottom: 1rem;
+        }
+
+        .language-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .language-button {
+            border: 2px solid #4b5563;
+            transition: border-color 0.3s, transform 0.3s;
+            flex: 1 0 calc(20% - 1rem);
+            max-width: calc(20% - 1rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: #374151; /* Dunkelgrauer Hintergrund */
+            color: #ffffff; /* Weiße Textfarbe */
+        }
+
+        .language-button:hover,
+        .language-button.selected:hover {
+            border-color: #48bb78;
+            transform: scale(1.05);
+        }
+
+        .language-button.selected {
+            border-color: #48bb78;
+        }
+
+        .language-button i {
+            font-size: 2rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            background-color: #4b5563;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-button:hover {
+            background-color: #374151;
+        }
+
+        .success-animation { 
+            margin: 150px auto;
+        }
+
+        .checkmark {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #4bb71b;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #4bb71b;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+            position: relative;
+            top: 5px;
+            right: 5px;
+            margin: 0 auto;
+        }
+
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #4bb71b;
+            fill: #fff;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 30px #4bb71b;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="max-w-lg">
+            <h1 class="text-3xl font-bold mb-4 text-center">Willkommen zur Einführung!</h1>
+            <div class="intro-form">
+                <form id="introForm" class="space-y-4">
+                    <div>
+                        <label for="codingLanguages" class="label">Welche Coding-Sprachen interessieren Sie?</label>
+                        <div class="language-buttons">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="javascript">
+                                <i class="devicon-javascript-plain"></i>
+                                <span>JavaScript</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="python">
+                                <i class="devicon-python-plain"></i>
+                                <span>Python</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="java">
+                                <i class="devicon-java-plain"></i>
+                                <span>Java</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="c">
+                                <i class="devicon-c-plain"></i>
+                                <span>C</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="cplusplus">
+                                <i class="devicon-cplusplus-plain"></i>
+                                <span>C++</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="ruby">
+                                <i class="devicon-ruby-plain"></i>
+                                <span>Ruby</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="go">
+                                <i class="devicon-go-plain"></i>
+                                <span>Go</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="swift">
+                                <i class="devicon-swift-plain"></i>
+                                <span>Swift</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="typescript">
+                                <i class="devicon-typescript-plain"></i>
+                                <span>TypeScript</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="kotlin">
+                                <i class="devicon-kotlin-plain"></i>
+                                <span>Kotlin</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="r">
+                                <i class="devicon-r-plain"></i>
+                                <span>R</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="php">
+                                <i class="devicon-php-plain"></i>
+                                <span>PHP</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="html">
+                                <i class="devicon-html5-plain"></i>
+                                <span>HTML</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="css">
+                                <i class="devicon-css3-plain"></i>
+                                <span>CSS</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="sql">
+                                <i class="devicon-mysql-plain"></i>
+                                <span>SQL</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="assembly">
+                                <i class="devicon-assembly-plain"></i>
+                                <span>Assembly</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="perl">
+                                <i class="devicon-perl-plain"></i>
+                                <span>Perl</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="shell">
+                                <i class="devicon-bash-plain"></i>
+                                <span>Shell</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="scala">
+                                <i class="devicon-scala-plain"></i>
+                                <span>Scala</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="dart">
+                                <i class="devicon-dart-plain"></i>
+                                <span>Dart</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="lua">
+                                <i class="devicon-lua-plain"></i>
+                                <span>Lua</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="codingLanguages" name="codingLanguages">
+                    </div>
+                    <button type="submit" class="submit-button">Speichern</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Funktion zum Erfassen der ausgewählten Sprachen und Senden an den Server
+        const introForm = document.getElementById('introForm');
+        introForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(introForm);
+            const selectedLanguages = Array.from(document.querySelectorAll('.language-button.selected')).map(btn => btn.getAttribute('data-language'));
+            
+            // POST-Anfrage an den Server senden
+            fetch('/api/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: JSON.parse(localStorage.getItem('user')).identifier, // Benutzername aus dem localStorage
+                    preferences: selectedLanguages.join(',') // Ausgewählte Sprachen als String
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Überprüfen, ob die Antwort JSON ist
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    // Wenn die Antwort keine JSON ist, geben Sie den Text zurück
+                    return response.text().then(text => ({ message: text }));
+                }
+            })
+            .then(data => {
+                console.log(data.message);
+                // Bestätigungsanimation hinzufügen und Weiterleitung
+                const confirmationMessage = document.createElement('div');
+
+                confirmationMessage.textContent = '✅ Danke! Viel Spaß auf dem Dev Hub.';
+                confirmationMessage.classList.add('confirmation-message');
+                document.body.appendChild(confirmationMessage);
+                setTimeout(() => {
+                    window.location.href = '/home';
+                }, 3000); // Weiterleitung nach 3 Sekunden
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+        });
+        
+        // Eventlistener für das Klicken auf Sprachenbuttons
+        const languageButtons = document.querySelectorAll('.language-button');
+        const codingLanguagesInput = document.getElementById('codingLanguages');
+    //TODO: coding sprachen auswahl weg
+        languageButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('selected');
+                const selectedLanguages = Array.from(document.querySelectorAll('.language-button.selected')).map(btn => btn.getAttribute('data-language'));
+                codingLanguagesInput.value = selectedLanguages.join(',');
+                console.log('Ausgewählte Sprachen:', selectedLanguages);
+            });
+        });
+    </script>
+</body>
+
+</html>
