@@ -273,6 +273,7 @@
         /* Bei Hover die Scrollleistenbreite ändern */
         ::-webkit-scrollbar:hover {
             width: 14px; /* Breite der Scrollleiste bei Hover */
+            cursor: pointer;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -354,12 +355,15 @@
 
 <!-- Content -->
 <div class="content-container">
-    <!-- Form to create new post -->
     <form id="postForm" class="mb-8">
         <div class="mb-4">
-            <label for="postContent" class="block text-sm font-medium text-gray-400">Create New Post</label>
-            <textarea id="postContent" name="postContent" rows="4" cols="50" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white"></textarea>
+            <label for="postDescription" class="block text-sm font-medium text-gray-400">Description</label>
+            <textarea id="postDescription" name="postDescription" rows="1" cols="50" maxlength="500" placeholder="Describe your code!" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white" style="resize: none;"></textarea>
         </div>
+        <div class="mb-4">
+            <label for="postContent" class="block text-sm font-medium text-gray-400">Code Snippet</label>
+            <textarea id="postContent" name="postContent" rows="3" cols="50" maxlength="3000" placeholder="Paste your code in!" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white" style="resize: none; max-width: 100%;"></textarea>
+        </div>                                                 
         <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Send</button>
     </form>
 
@@ -383,10 +387,11 @@
         }
     }
 
-async function createPost(event) {
+    async function createPost(event) {
     event.preventDefault(); // Verhindert das Standardformularverhalten
 
     const postContent = document.getElementById('postContent').value;
+    const postDescription = document.getElementById('postDescription').value;
 
     // Überprüfen, ob der Beitragsinhalt leer ist
     if (!postContent.trim()) {
@@ -395,8 +400,8 @@ async function createPost(event) {
 
     try {
         const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
-        if (savedUser) {
-            const { username } = JSON.parse(savedUser);
+            if (savedUser) {
+                const { identifier: identifier } = JSON.parse(savedUser); // Benutzername extrahieren
 
             // Überprüfen, ob der Benutzer den Cooldown erreicht hat
             const lastPostTime = localStorage.getItem('lastPostTime');
@@ -411,15 +416,19 @@ async function createPost(event) {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ content: postContent, username: username }) // Benutzername zum Beitrag hinzufügen
+                    body: JSON.stringify({ codesnippet: postContent, identifier: identifier, content: postDescription }) // Benutzername zum Beitrag hinzufügen
                 });
                 const data = await response.json();
                 document.getElementById('postContent').value = '';
+                document.getElementById('postDescription').value = '';
                 await getPosts();
 
                 // Cooldown zurücksetzen und aktualisieren
                 localStorage.setItem('lastPostTime', currentTime);
                 localStorage.setItem('postCount', postCount >= 10 ? 10 : postCount + 1);
+
+                // Code-Snippet im localStorage speichern
+                localStorage.setItem('lastPostedCode', postContent);
             } else {
                 // Benutzer hat den Cooldown nicht erreicht, Anzeige einer Toast-Nachricht
                 Toastify({
@@ -440,46 +449,53 @@ async function createPost(event) {
     }
 }
 
-// Funktion zum Abrufen und Anzeigen der neuesten Beiträge
-    async function getPosts() {
-        try {
-            const savedUser = localStorage.getItem('user');
-            if (savedUser) {
-                const { identifier } = JSON.parse(savedUser);
+async function getPosts() {
+    try {
+        // Rufen Sie die API-Route auf, um den Benutzernamen abzurufen
+        const usernameResponse = await fetch('/api/username');
+        const usernameData = await usernameResponse.json();
+        const username = usernameData.username;
 
-                const response = await fetch('/api/posts'); // Neueste Beiträge von der Home-Route abrufen
-                const posts = await response.json();
-                console.log('Latest posts:', posts);
-                const postsContainer = document.getElementById('latestPosts');
-                postsContainer.innerHTML = ''; // Leeren des Container-Inhalts
+        // Rufen Sie die Posts ab
+        const response = await fetch('/api/posts');
+        const posts = await response.json();
 
-                posts.forEach(post => {
-                    const postElement = document.createElement('div');
-                    postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
+        // Verarbeiten und Anzeigen der Posts
+        const postsContainer = document.getElementById('latestPosts');
+        postsContainer.innerHTML = ''; // Leeren des Container-Inhalts
 
-                    // Benutzername hinzufügen
-                    const usernameElement = document.createElement('h3');
-                    usernameElement.textContent = `@${identifier}`;
+        posts.forEach(post => {
+            const postElement = document.createElement('div');
+            postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
 
-                    const contentElement = document.createElement('p');
-                    contentElement.textContent = post.content;
+            // Benutzername hinzufügen
+            const usernameElement = document.createElement('h3');
+            usernameElement.textContent = `@${username}`;
 
-                    const dateElement = document.createElement('p');
-                    dateElement.textContent = post.date;
+            const contentElement = document.createElement('p');
+            contentElement.textContent = post.content;
 
-                    postElement.appendChild(usernameElement);
-                    postElement.appendChild(dateElement);
-                    postElement.appendChild(contentElement);
+            // Code-Snippet hinzufügen
+            const codeSnippetElement = document.createElement('pre');
+            codeSnippetElement.textContent = post.codesnippet;
+            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded');
+            codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Text in Zeilen umbrechen
+            codeSnippetElement.style.maxWidth = '100%'; // Maximalbreite setzen
 
-                    postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu
-                });
-            } else {
-                console.error('No user found in localStorage');
-            }
-        } catch (error) {
-            console.error('Error fetching posts:', error);
-        }
+            const dateElement = document.createElement('p');
+            dateElement.textContent = post.date;
+
+            postElement.appendChild(usernameElement);
+            postElement.appendChild(dateElement);
+            postElement.appendChild(contentElement);
+            postElement.appendChild(codeSnippetElement);
+
+            postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu
+        });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
     }
+}
 
     // Funktion zum Abmelden des Benutzers
     document.getElementById('signoutBtn').addEventListener('click', () => {
@@ -489,7 +505,6 @@ async function createPost(event) {
     });
 
     document.getElementById('postForm').addEventListener('submit', createPost);
-
 
     getPosts();
     showWelcomeMessage();
@@ -505,6 +520,15 @@ async function createPost(event) {
             this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
         });
     }
+
+    function formatCode(text) {
+    return text.replace(/\n/g);
+}
+
+// Beispielaufruf
+var postContent = document.getElementById('postContent').value;
+var formattedPostContent = formatCode(postContent);
+
 
     // Funktion zum Anwenden des Hover-Effekts auf alle Posts
     function applyHoverEffectToPosts() {

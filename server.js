@@ -60,28 +60,6 @@ function formatDateForDisplay(date) {
     return new Date(date).toLocaleString('de-DE', options);
 }
 
-async function FetchUserByUsername(username) {
-    try {
-        // Suchen des Benutzernamens in der Datenbank
-        const existingUser = await usersCollection.findOne({ username });
-
-        if (existingUser) {
-            // Wenn der Benutzer gefunden wurde, geben Sie den Benutzer zurück
-            return existingUser;
-        } else {
-            // Wenn der Benutzer nicht gefunden wurde, geben Sie null zurück
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        throw new Error('An error occurred while fetching the user');
-    }
-}
-
-console.log('usersCollection:', usersCollection);
-
-//TODO: Route für das Hochladen eines Profilbilds mit Cooldown
-
 // Route zum Abrufen aller Posts
 app.get('/api/posts', async (req, res) => {
     try {
@@ -213,6 +191,8 @@ app.post('/api/update', async (req, res) => {
     }
 });
 
+//TODO: Admin Check fixen
+
 app.post('/admin', async (req, res) => {
     try {
         // Extrahiere den Benutzernamen aus dem Anfrage-Body
@@ -237,6 +217,58 @@ app.post('/admin', async (req, res) => {
     } catch (err) {
         console.error('Fehler beim Überprüfen des Benutzers:', err);
         res.status(500).send('Interner Serverfehler');
+    }
+});
+
+// API-Route zum Abrufen der Benutzernamen
+app.get('/api/username', async (req, res) => {
+    try {
+        const collection = db.collection('users');
+        const users = await collection.find().toArray();
+        
+        // Extrahieren Sie Benutzernamen, E-Mails und Passwörter aus den Benutzerdaten
+        const userData = users.map(user => ({
+            username: user.username,
+            email: user.email,
+            password: user.password
+        }));
+        
+        // JSON-Antwort mit Benutzerdaten senden
+        res.json({ users: userData });
+
+    } catch (error) {
+        console.error("Error fetching userdata:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.post('/api/username', async (req, res) => {
+    try {
+        const { username, currentPassword, newPassword } = req.body;
+        const collection = db.collection('users');
+        
+        // Überprüfen, ob der Benutzer vorhanden ist
+        const user = await collection.findOne({ username });
+
+        if (!user) {
+            console.log(`User "${username}" not found`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Überprüfen, ob das aktuelle Passwort korrekt ist
+        if (user.password !== currentPassword) {
+            console.log(`Incorrect current password provided for user "${username}"`);
+            return res.status(400).json({ error: 'Current password is incorrect' });
+        }
+
+        // Passwort aktualisieren
+        await collection.updateOne({ username }, { $set: { password: newPassword } });
+
+        console.log(`Password changed successfully for user "${username}"`);
+        return res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error("Error processing request:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
