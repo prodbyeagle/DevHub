@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/icon.ico">
     <div class="title-container">
         <h1 class="text-3xl font-bold mb-8">Dev Hub</h1>
     </div>
+    <title>Dev Hub</title>
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
@@ -16,6 +18,7 @@
             font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background-color: #f0f0f0;
             color: #333;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -186,6 +189,7 @@
             margin-bottom: 20px;
             text-align: center;
             user-select: none;
+            transition: all 0.3s ease;
         }
         
         .content-container {
@@ -195,23 +199,26 @@
             border-radius: 16px;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
 
         body.dark-mode .title-container {
             padding: 1rem;
             background-color: #222;
-            color: #aaa;
+            color: #eee;
             margin-bottom: 20px;
             text-align: center;
+            transition: all 0.3s ease;
         }
         
         body.dark-mode .content-container {
             padding: 1rem;
             background-color: #222;
-            color: #aaa;
+            color: #eee;
             border-radius: 16px;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
             margin-bottom: 20px;
+            
         }
 
         /* Neumorphism styles for the Send button */
