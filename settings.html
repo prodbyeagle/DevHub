@@ -7,6 +7,8 @@
     <title>Settings</title>
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
         body {
             font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -124,7 +126,13 @@
                 <label class="block text-sm font-bold mb-2" for="email">
                     Email
                 </label>
-                <p class="text-lg" id="email">Coming Soon...</p>
+                <p class="text-lg" id="email"></p>
+            </div>
+            <div class="p-4 border-t border-gray-200">
+                <label class="block text-sm font-bold mb-2" for="password">
+                    Password
+                </label>
+                <p class="text-lg" id="password"></p>
             </div>
             <div class="p-4 border-t border-gray-200">
                 <h2 class="block text-sm font-bold mb-2">Change Password</h2>
@@ -134,19 +142,19 @@
                         <label class="block text-sm font-bold mb-2" for="currentPassword">
                             Current Password
                         </label>
-                        <input type="password" id="currentPassword" name="currentPassword" class="neumorphism-input">
+                        <input type="password" id="currentPassword" name="currentPassword" class="neumorphism-input" autocomplete>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-bold mb-2" for="newPassword">
                             New Password
                         </label>
-                        <input type="password" id="newPassword" name="newPassword" class="neumorphism-input">
+                        <input type="password" id="newPassword" name="newPassword" class="neumorphism-input" autocomplete>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-bold mb-2" for="confirmPassword">
                             Confirm New Password
                         </label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" class="neumorphism-input">
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="neumorphism-input" autocomplete>
                     </div>
                     <button type="submit" class="neumorphism-button w-full">Change Password</button>
                 </form>
@@ -187,6 +195,7 @@
             if (matchedUser) {
                 document.getElementById('username').textContent = matchedUser.username;
                 document.getElementById('email').textContent = matchedUser.email;
+                document.getElementById('password').textContent = matchedUser.password;
             } else {
                 console.error('User data does not match stored user');
             }
@@ -212,7 +221,6 @@
     function saveModePreference(mode) {
         // Hier wird der Moduswert im Benutzerprofil gespeichert
         localStorage.setItem('mode', mode);
-        console.log('Mode preference saved:', mode);
     }
     
     function loadModePreference() {
@@ -235,44 +243,75 @@
     // Rufe die Funktion zum Laden des Modus beim Laden der Seite auf
     loadModePreference();
     
-    // Formular für Passwortänderung
-    const changePasswordForm = document.getElementById('changePasswordForm');
-    changePasswordForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
-    
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-    
-        // Hier kannst du weitere Validierungen für die Passwortänderung durchführen
-    
-        // Senden der Passwortänderungsanforderung an den Server
-        try {
-            const response = await fetch('/api/username', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    identifier: currentPassword, // Hier kannst du den aktuellen Benutzernamen oder die E-Mail-Adresse senden
-                    newPassword: newPassword
-                })
-            });
-    
-            if (response.ok) {
-                console.log('Password changed successfully');
-                // Hier kannst du weitere Aktionen ausführen, z. B. eine Bestätigungsmeldung anzeigen
-            } else {
-                console.error('Failed to change password:', response.statusText);
+        // Formular für Passwortänderung
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        changePasswordForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Hier kannst du weitere Validierungen für die Passwortänderung durchführen
+
+            try {
+                // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+                const savedUser = localStorage.getItem('user');
+                if (!savedUser) {
+                    console.error('User not found in local storage');
+                    return;
+                }
+
+                // Parse die Benutzerdaten aus dem Local Storage
+                const { identifier, password } = JSON.parse(savedUser);
+
+                // Senden der Passwortänderungsanforderung an den Server
+                const response = await fetch('/api/username', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: identifier, // Verwende den Benutzernamen aus dem Local Storage
+                        currentPassword: currentPassword, // Hier wird das aktuelle Passwort gesendet
+                        newPassword: newPassword
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('Password changed successfully');
+                    const savedUser = JSON.parse(localStorage.getItem('user'));
+                    savedUser.password = newPassword;
+                    localStorage.setItem('user', JSON.stringify(savedUser));
+                    Toastify({
+                        text: 'Password changed successfully',
+                        duration: 3000,
+                        close: true,
+                        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+                    }).showToast();
+                } else {
+                    console.error('Failed to change password:', response.statusText);
+                    // Hier kannst du eine Fehlermeldung anzeigen
+                    Toastify({
+                        text: 'Failed to change password: ' + response.statusText,
+                        duration: 3000,
+                        close: true,
+                        backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                    }).showToast();
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
                 // Hier kannst du eine Fehlermeldung anzeigen
+                Toastify({
+                    text: 'Error changing password: ' + error,
+                    duration: 3000,
+                    close: true,
+                    backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                }).showToast();
             }
-        } catch (error) {
-            console.error('Error changing password:', error);
-            // Hier kannst du eine Fehlermeldung anzeigen
-        }
-    });
-    </script>
-    
+        });
+
+</script>
 </body>
 </body>
 </html>

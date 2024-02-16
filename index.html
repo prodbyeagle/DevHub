@@ -451,10 +451,6 @@
 
 async function getPosts() {
     try {
-        // Rufen Sie die API-Route auf, um den Benutzernamen abzurufen
-        const usernameResponse = await fetch('/api/username');
-        const usernameData = await usernameResponse.json();
-        const username = usernameData.username;
 
         // Rufen Sie die Posts ab
         const response = await fetch('/api/posts');
@@ -467,6 +463,8 @@ async function getPosts() {
         posts.forEach(post => {
             const postElement = document.createElement('div');
             postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
+
+            const username = post.username;
 
             // Benutzername hinzufügen
             const usernameElement = document.createElement('h3');
