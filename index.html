@@ -45,7 +45,7 @@
         /* CSS für das Zentrieren der Überschrift und Hinzufügen von Platz unten */
         .sidebar h2 {
             text-align: center; /* Überschrift zentrieren */
-            margin: 10px; /* Platz unten hinzufügen */
+            margin-top: 15px; /* Platz unten hinzufügen */
         }
 
         /* CSS für das Zentrieren der Navigationsfelder in der Sidebar */
@@ -261,6 +261,77 @@
             background-color: #333;
         }
 
+        ::-webkit-scrollbar {
+            width: 8px; /* Breite der Scrollleiste */
+            transition: width 0.3s ease; /* Übergangseffekt für die Breite */
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Hintergrundfarbe der Scrollleiste */
+        }
+
+        /* Bei Hover die Scrollleistenbreite ändern */
+        ::-webkit-scrollbar:hover {
+            width: 14px; /* Breite der Scrollleiste bei Hover */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888; /* Farbe des Scrollleisten-Griffs */
+            border-radius: 10px; /* Radius der Scrollleisten-Griffkanten */
+        }
+
+        /* Neumorphismus-Stil für den Dark/White Mode Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Stil für den Text des Dark/White Mode Switch */
+        .switch-label {
+            margin-left: 0.5rem;
+            font-size: 0.875rem;
+            color: #333; /* Farbe des Textes */
+        }
+
+        /* Dark Mode-Stil für den Text des Dark/White Mode Switch */
+        body.dark-mode .switch-label {
+            color: #eee; /* Farbe des Textes im Dark Mode */
+        }
+
     </style>
 </head>
 <body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
@@ -269,7 +340,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <h2 class="text-lg font-semibold mb-4">Welcome, <span id="username"></span>!</h2>
-            <h2>Dev Hub: Developer</h2>
+            <h2></h2>
             <ul>
                 <li><a href="/settings">Settings</a></li>
                 <li><a href="/profile">Profile</a></li>
@@ -295,14 +366,6 @@
     <!-- Latest posts section -->
     <div id="latestPosts"></div>
 </div>
-
-    <div class="fixed bottom-5 right-5 z-50">
-        <label class="switch">
-            <input id="modeSwitch" type="checkbox">
-            <span class="slider round"></span>
-        </label>
-    </div>
-
 <script> 
     async function showWelcomeMessage() {
         try {
@@ -320,7 +383,7 @@
         }
     }
 
-    async function createPost(event) {
+async function createPost(event) {
     event.preventDefault(); // Verhindert das Standardformularverhalten
 
     const postContent = document.getElementById('postContent').value;
@@ -331,56 +394,51 @@
     }
 
     try {
-    const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
-    if (savedUser) {
-        const { username } = JSON.parse(savedUser);
+        const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
+        if (savedUser) {
+            const { username } = JSON.parse(savedUser);
 
-        // Überprüfen, ob die Nachricht nicht leer ist
-        const postContent = document.getElementById('postContent').value.trim();
-        if (postContent.length === 0) {
-            return; // Leere Nachrichten werden nicht gezählt oder gesendet
-        }
+            // Überprüfen, ob der Benutzer den Cooldown erreicht hat
+            const lastPostTime = localStorage.getItem('lastPostTime');
+            const postCount = parseInt(localStorage.getItem('postCount')) || 0;
+            const currentTime = Date.now();
+            const cooldownDuration = postCount >= 10 ? 5000 : 15000; // 1 Minute Cooldown, wenn mehr als 10 Posts, sonst 15 Sekunden
 
-        // Überprüfen, ob der Benutzer den Cooldown erreicht hat
-        const lastPostTime = localStorage.getItem('lastPostTime');
-        const postCount = parseInt(localStorage.getItem('postCount')) || 0;
-        const currentTime = Date.now();
-        const cooldownDuration = postCount >= 10 ? 5000 : 15000; // 1 Minute Cooldown, wenn mehr als 10 Posts, sonst 15 Sekunden
+            if (!lastPostTime || currentTime - parseInt(lastPostTime) >= cooldownDuration) {
+                // Benutzer hat den Cooldown erreicht oder ist neu, Beitrag kann gesendet werden
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: postContent, username: username }) // Benutzername zum Beitrag hinzufügen
+                });
+                const data = await response.json();
+                document.getElementById('postContent').value = '';
+                await getPosts();
 
-        if (!lastPostTime || currentTime - parseInt(lastPostTime) >= cooldownDuration) {
-            // Benutzer hat den Cooldown erreicht oder ist neu, Beitrag kann gesendet werden
-            const response = await fetch('/api/posts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content: postContent, username: username }) // Benutzername zum Beitrag hinzufügen
-            });
-            const data = await response.json();
-            document.getElementById('postContent').value = '';
-            await getPosts();
-
-            // Cooldown zurücksetzen und aktualisieren
-            localStorage.setItem('lastPostTime', currentTime);
-            localStorage.setItem('postCount', postCount >= 10 ? 10 : postCount + 1);
+                // Cooldown zurücksetzen und aktualisieren
+                localStorage.setItem('lastPostTime', currentTime);
+                localStorage.setItem('postCount', postCount >= 10 ? 10 : postCount + 1);
+            } else {
+                // Benutzer hat den Cooldown nicht erreicht, Anzeige einer Toast-Nachricht
+                Toastify({
+                    text: `You've posted too frequently. Please wait before posting again.`,
+                    style: {
+                        background: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                    },
+                    className: 'rounded', // Abgerundete Ecken hinzufügen
+                    duration: 3000
+                }).showToast();
+            }
         } else {
-            // Benutzer hat den Cooldown nicht erreicht, Anzeige einer Toast-Nachricht
-            Toastify({
-                text: `You've posted too frequently. Please wait before posting again.`,
-                style: {
-                    background: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-                },
-                className: 'rounded', // Abgerundete Ecken hinzufügen
-                duration: 3000
-            }).showToast();
+            // Benutzerdaten sind nicht im lokalen Speicher gespeichert
+            window.location.href = '/login';
         }
-    } else {
-        // Benutzerdaten sind nicht im lokalen Speicher gespeichert
-        window.location.href = '/login';
+    } catch (error) {
+        console.error('Error creating post:', error);
     }
-} catch (error) {
-    console.error('Error creating post:', error);
-}}
+}
 
 // Funktion zum Abrufen und Anzeigen der neuesten Beiträge
     async function getPosts() {
@@ -426,6 +484,7 @@
     // Funktion zum Abmelden des Benutzers
     document.getElementById('signoutBtn').addEventListener('click', () => {
         localStorage.removeItem('user'); // Benutzerdaten aus dem lokalen Speicher entfernen
+        localStorage.removeItem('mode'); // Dark / White Mode entfernen
         window.location.href = '/login'; // Auf die Login-Seite weiterleiten
     });
 
@@ -435,18 +494,6 @@
     getPosts();
     showWelcomeMessage();
     applyHoverEffectToPosts();
-
-    // Dark-Mode/White-Mode Switch Funktionalität
-    const modeSwitch = document.getElementById('modeSwitch');
-    modeSwitch.addEventListener('change', () => {
-        if (modeSwitch.checked) {
-            document.body.classList.remove('light-mode');
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-        }
-    });
 
     function addHoverEffect(post) {
         post.addEventListener("mouseenter", function() {
@@ -466,6 +513,26 @@
             addHoverEffect(post); // Füge den Hover-Effekt zu jedem Post hinzu
         });
     }
+
+    function loadModePreference() {
+    // Lade den gespeicherten Moduswert aus dem Local Storage
+    const mode = localStorage.getItem('mode');
+    if (mode === 'dark') {
+        // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+        // Stelle sicher, dass der Switch-Button auf den dunklen Modus eingestellt ist
+        modeSwitch.checked = true;
+    } else {
+        // Andernfalls füge die Klasse für den hellen Modus hinzu
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+    }
+    console.log('Mode Loaded:', mode);
+}
+
+
+    loadModePreference();
 
 </script>
 </body>

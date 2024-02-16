@@ -129,10 +129,11 @@
     </div>
 </div>
 
-<div class="fixed bottom-5 right-5 z-50">
+<div class="switch-container">
     <label class="switch">
         <input id="modeSwitch" type="checkbox">
         <span class="slider round"></span>
+        <span class="switch-label">Dark Mode</span>
     </label>
 </div>
 
@@ -150,17 +151,46 @@
         }
     });
 
-    // Dark-Mode/White-Mode Switch Funktionalität
-    const modeSwitch = document.getElementById('modeSwitch');
-    modeSwitch.addEventListener('change', () => {
-        if (modeSwitch.checked) {
-            document.body.classList.remove('light-mode');
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-        }
-    });
+// JavaScript für Dark/White Mode Switch und das Speichern des Moduswerts im Benutzerprofil
+const modeSwitch = document.getElementById('modeSwitch');
+modeSwitch.addEventListener('change', () => {
+    if (modeSwitch.checked) {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+        saveModePreference('dark');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+        saveModePreference('light');
+    }
+});
+
+function saveModePreference(mode) {
+    // Hier wird der Moduswert im Benutzerprofil gespeichert
+    localStorage.setItem('mode', mode);
+    console.log('Mode preference saved:', mode);
+}
+
+function loadModePreference() {
+    // Lade den gespeicherten Moduswert aus dem Local Storage
+    const mode = localStorage.getItem('mode');
+    if (mode === 'dark') {
+        // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+        // Stelle sicher, dass der Switch-Button auf den dunklen Modus eingestellt ist
+        modeSwitch.checked = true;
+    } else {
+        // Andernfalls füge die Klasse für den hellen Modus hinzu
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+    }
+    console.log('Mode Loaded:', mode);
+}
+
+// Rufe die Funktion zum Laden des Modus beim Laden der Seite auf
+loadModePreference();
+
 </script>
 </body>
 </body>

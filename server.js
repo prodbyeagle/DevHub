@@ -102,13 +102,13 @@ app.get('/api/posts', async (req, res) => {
 });
 
 app.post('/api/posts', async (req, res) => {
-    const { content, username, codesnippet } = req.body; // Inhalte, Benutzername und Codeschnipsel aus der Anfrage extrahieren
+    const { content, identifier, codesnippet } = req.body; // Inhalte, Benutzername und Codeschnipsel aus der Anfrage extrahieren
     const date = new Date(); // Aktuelles Datum erstellen
 
     try {
         const result = await db.collection('posts').insertOne({
             content,
-            username,
+            username: identifier,
             date,
             codesnippet
         });
@@ -116,7 +116,7 @@ app.post('/api/posts', async (req, res) => {
         const newPost = {
             _id: result.insertedId,
             content,
-            username,
+            username: identifier,
             date: formatDateForDisplay(date), // Datum im gewünschten Format zurückgeben
             codesnippet,
         };
@@ -229,10 +229,10 @@ app.post('/admin', async (req, res) => {
         // Überprüfen, ob der Benutzer ein Administrator ist
         if (existingUser.admin === true) {
             // Wenn der Benutzer ein Administrator ist, sende "true"
-            return res.status(200).json({ isAdmin: true });
+            return res.status(200).json({ admin: true });
         } else {
             // Wenn der Benutzer kein Administrator ist, sende "false"
-            return res.status(200).json({ isAdmin: false });
+            return res.status(200).json({ admin: false });
         }
     } catch (err) {
         console.error('Fehler beim Überprüfen des Benutzers:', err);
