@@ -1,3 +1,5 @@
+//server.js
+
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -45,10 +47,6 @@ async function run() {
     }
 }
 
-// Middleware
-app.use(bodyParser.json());
-app.use(cors());
-
 // Funktion zum Formatieren des Datums in Ihrem gewünschten Format
 function formatDateForDisplay(date) {
     const options = { 
@@ -62,28 +60,25 @@ function formatDateForDisplay(date) {
     return new Date(date).toLocaleString('de-DE', options);
 }
 
-// Funktion zum Prüfen des Cooldowns für eine bestimmte Aktion
-function checkCooldown(action, cooldownTime) {
-    const lastActionTime = actionCooldowns[action];
-    if (!lastActionTime) {
-        return false; // Kein Cooldown vorhanden
-    }
+async function FetchUserByUsername(username) {
+    try {
+        // Suchen des Benutzernamens in der Datenbank
+        const existingUser = await usersCollection.findOne({ username });
 
-    const elapsedTime = Date.now() - lastActionTime;
-    return elapsedTime < cooldownTime; // True, wenn das Cooldown noch nicht abgelaufen ist
-}
-
-// Middleware zum Überprüfen des Cooldowns vor einer Aktion
-function cooldownMiddleware(action, cooldownTime) {
-    return (req, res, next) => {
-        if (checkCooldown(action, cooldownTime)) {
-            return res.status(429).json({ success: false, message: 'Chill... too fast' });
+        if (existingUser) {
+            // Wenn der Benutzer gefunden wurde, geben Sie den Benutzer zurück
+            return existingUser;
         } else {
-            actionCooldowns[action] = Date.now(); // Aktualisieren Sie den Zeitpunkt der letzten Aktion
-            next(); // Fahren Sie mit der Ausführung der Aktion fort
+            // Wenn der Benutzer nicht gefunden wurde, geben Sie null zurück
+            return null;
         }
-    };
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        throw new Error('An error occurred while fetching the user');
+    }
 }
+
+console.log('usersCollection:', usersCollection);
 
 //TODO: Route für das Hochladen eines Profilbilds mit Cooldown
 
@@ -105,7 +100,6 @@ app.get('/api/posts', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 
 app.post('/api/posts', async (req, res) => {
     const { content, username, codesnippet } = req.body; // Inhalte, Benutzername und Codeschnipsel aus der Anfrage extrahieren
@@ -148,8 +142,6 @@ app.post('/login', async (req, res) => {
             req.session.userId = user._id;
             return res.redirect('/home');
         } else {
-            // Fehlgeschlagener Login
-            console.log(`Failed login attempt for user: ${identifier} at ${new Date().toISOString()}`);
             return res.status(401).send('Invalid email or password');
         }
     } catch (error) {
@@ -163,25 +155,88 @@ app.post('/signup', async (req, res) => {
     const { email, password, username } = req.body;
 
     try {
+        console.log('Received signup request for:', email, username);
+
         // Überprüfen, ob der Benutzer bereits existiert
-        const existingUser = await usersCollection.findOne({ email });
-        if (existingUser) {
+        const existingUserByEmail = await usersCollection.findOne({ email });
+        console.log('Existing user by email:', existingUserByEmail);
+
+        if (existingUserByEmail) {
+            console.log('User already exists with email:', email);
             return res.status(400).send('User already exists');
         }
 
-        // Überprüfen, ob der Benutzer bereits existiert
-        const existingUsername = await usersCollection.findOne({ username });
-        if (existingUser) {
-            return res.status(400).send('username already taken');
+        // Überprüfen, ob der Benutzername bereits verwendet wird
+        const existingUserByUsername = await usersCollection.findOne({ username });
+        console.log('Existing user by username:', existingUserByUsername);
+
+        if (existingUserByUsername) {
+            console.log('Username already taken:', username);
+            return res.status(400).send('Username already taken');
         }        
 
         // Neuen Benutzer erstellen
-        await usersCollection.insertOne({ email, password, username });
-
+        console.log('Creating new user:', email, username);
+        await usersCollection.insertOne({ email, password, username, admin: false });
+        
+        console.log('User created successfully:', email, username);
         res.status(201).send('User created successfully');
     } catch (error) {
         console.error('Error during sign up:', error);
         res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/api/update', async (req, res) => {
+    const { username, preferences } = req.body;
+
+    try {
+        // Überprüfen, ob der Benutzername mit dem in der Datenbank übereinstimmt
+        const existingUser = await usersCollection.findOne({ username });
+        if (!existingUser) {
+            return res.status(400).send('Benutzer nicht gefunden');
+        }  
+
+        // Führen Sie die Aktualisierung in der Datenbank durch
+        const updatedUser = await usersCollection.findOneAndUpdate(
+            { username: username },
+            { $set: { preferences: preferences.split(',') } }, // Ausgewählte Sprachen in Array aufsplitten
+            { returnOriginal: false }
+        );
+
+        console.log('updatedUser:', updatedUser);
+
+        res.status(200).json({ message: 'Benutzervorlieben erfolgreich aktualisiert', user: updatedUser.value });
+    } catch (err) {
+        console.error('Fehler beim Aktualisieren der Benutzervorlieben:', err);
+        res.status(500).json({ message: 'Interner Serverfehler' });
+    }
+});
+
+app.post('/admin', async (req, res) => {
+    try {
+        // Extrahiere den Benutzernamen aus dem Anfrage-Body
+        const { username } = req.body;
+        
+        // Benutzer anhand des Benutzernamens aus der Datenbank abrufen
+        const existingUser = await FetchUserByUsername(username);
+        
+        if (!existingUser) {
+            // Benutzer nicht gefunden
+            return res.status(400).send('Benutzer nicht gefunden');
+        }  
+
+        // Überprüfen, ob der Benutzer ein Administrator ist
+        if (existingUser.admin === true) {
+            // Wenn der Benutzer ein Administrator ist, sende "true"
+            return res.status(200).json({ isAdmin: true });
+        } else {
+            // Wenn der Benutzer kein Administrator ist, sende "false"
+            return res.status(200).json({ isAdmin: false });
+        }
+    } catch (err) {
+        console.error('Fehler beim Überprüfen des Benutzers:', err);
+        res.status(500).send('Interner Serverfehler');
     }
 });
 
@@ -205,7 +260,16 @@ app.get('/signup', (req, res) => {
     res.sendFile(__dirname + '/signup.html');
 });
 
+app.get('/intro', (req, res) => {
+    res.sendFile(__dirname + '/intro.html');
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(__dirname + '/admin.html');
+});
+
 app.listen(PORT, () => {
-    run().catch(error => console.error('Error starting server:', error));
-    console.log('Server is running on port', PORT);
+    run().catch(error => console.error('Fehler beim Starten des Servers:', error));
+    console.log('Der Server läuft auf Port', PORT);
+    console.log('Link: http://localhost:' + PORT + '/home');
 });

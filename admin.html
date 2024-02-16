@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+</head>
+<body>
+    <form id="adminForm">
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const adminForm = document.getElementById('adminForm');
+            if (!localStorage.getItem('user')) {
+                console.error('No user found in localStorage');
+                return; // Abbruch, wenn kein Benutzer gefunden wurde
+            }
+
+            const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
+            console.log(savedUser);
+
+            const formData = {
+                username: JSON.parse(localStorage.getItem('user')).username
+            };
+
+            try {
+                const response = await fetch('/admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.text(); // Annahme: Die Antwort enthält entweder "Hallo" oder "Nein du nicht"
+                // Die Antwort verarbeiten und entsprechende Aktion durchführen
+                if (data === 'Hallo') {
+                    console.log('Willkommen, Administrator!');
+                    // Hier können Sie weitere Aktionen für den Administrator ausführen
+                } else if (data === 'Nein du nicht') {
+                    console.log('Entschuldigung, Sie sind kein Administrator.');
+                    // Hier können Sie weitere Aktionen für Nicht-Administratoren ausführen
+                } else {
+                    console.error('Ungültige Antwort von Server:', data);
+                }
+            } catch (error) {
+                console.error('There was a problem with your fetch operation:', error);
+                // Behandeln Sie den Fehler hier entsprechend
+            }
+        });
+    </script>
+</body>
+</html>

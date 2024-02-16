@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Hub</title>
+    <div class="title-container">
+        <h1 class="text-3xl font-bold mb-8">Dev Hub</h1>
+    </div>
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <style>
+        /* Common styles for Dark and Light Mode */
         body {
-            font-family: SF Pro Medium, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #0d1117; /* GitHub Dark background color */
-            color: #c9d1d9; /* GitHub Dark text color */
+            font-family: SF Pro Regular, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            user-select: none;
         }
 
         .container {
@@ -24,162 +30,435 @@
             width: 200px;
             margin-right: 2rem;
             flex-shrink: 0;
+            background-color: #f0f0f0;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
         }
 
         .content {
             flex-grow: 1;
         }
 
+        /* CSS für das Zentrieren der Überschrift und Hinzufügen von Platz unten */
+        .sidebar h2 {
+            text-align: center; /* Überschrift zentrieren */
+            margin: 10px; /* Platz unten hinzufügen */
+        }
+
+        /* CSS für das Zentrieren der Navigationsfelder in der Sidebar */
         .sidebar ul {
             list-style-type: none;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Horizontal zentrieren */
+            margin: 10px;
         }
 
+        /* CSS für die Animation des Rahmens um Navigationselemente */
         .sidebar a {
             display: block;
             padding: 0.5rem 0;
-            color: #8b949e; /* GitHub Dark text color */
+            color: #555;
             text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
         }
-
+        
         .sidebar a:hover {
-            color: #c9d1d9; /* GitHub Dark text color */
+            color: #007bff;
+        }
+        
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar a:hover::before {
+            width: 100%;
         }
 
         .create-post-form textarea {
             width: 100%;
             padding: 0.5rem;
-            border: 1px solid #30363d; /* GitHub Dark border color */
-            background-color: #161b22; /* GitHub Dark background color */
-            color: #c9d1d9; /* GitHub Dark text color */
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            color: #333;
             resize: vertical;
         }
 
-        .create-post-form button {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.25rem;
-            background-color: #007bff; /* GitHub Dark button color */
-            color: #c9d1d9; /* GitHub Dark text color */
-            cursor: pointer;
-        }
+    /* Neumorphism styles for the posts */
+    #latestPosts {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: #333;
+        border-radius: 16px;
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+    }
 
-        .create-post-form button:hover {
-            background-color: #0056b3; /* GitHub Dark button hover color */
-        }
+    #latestPosts:hover {
+        transform: scale(1.05); /* Vergrößern des Posts beim Hover */
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
+    }
 
-        .post {
-            background-color: #0d1117; /* GitHub Dark background color */
-            border: 1px solid #30363d; /* GitHub Dark border color */
-            padding: 1rem;
-            margin-bottom: 1rem;
-            color: #c9d1d9; /* GitHub Dark text color */
-        }
+    /* Neumorphism styles for dark mode */
+    body.dark-mode #latestPosts {
+        background-color: #222;
+        border: 1px solid #333;
+        color: #eee;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    }
+
+    body.dark-mode #latestPosts:hover {
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
+    }
 
         .post h3 {
             margin-bottom: 0.5rem;
-            color: #c9d1d9; /* GitHub Dark text color */
+            color: #333;
         }
 
         .post p {
-            margin-bottom: 0;
-            color: #8b949e; /* GitHub Dark text color */
+            margin-bottom: 0.5rem;
+            color: #555;
         }
+
+        /* CSS styles for the date */
+        .post .date {
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        /* Neumorphism styles for Dark Mode */
+        body.dark-mode {
+            background-color: #222;
+            color: #eee;
+        }
+
+        body.dark-mode .sidebar {
+            background-color: #222;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .sidebar a {
+            color: #aaa;
+        }
+
+        body.dark-mode .create-post-form textarea {
+            background-color: #222;
+            color: #eee;
+        }
+
+        body.dark-mode .post {
+            background-color: #222;
+            border: 1px solid #333;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .post h3 {
+            color: #eee;
+        }
+
+        body.dark-mode .post p {
+            color: #aaa;
+        }
+
+        body.dark-mode .post .date {
+            color: #aaa;
+        }
+
+        /* Neumorphism styles for title and content */
+        .title-container {
+            padding: 1rem;
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .content-container {
+            padding: 1rem;
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 16px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        body.dark-mode .title-container {
+            padding: 1rem;
+            background-color: #222;
+            color: #aaa;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        body.dark-mode .content-container {
+            padding: 1rem;
+            background-color: #222;
+            color: #aaa;
+            border-radius: 16px;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+        }
+
+        /* Neumorphism styles for the Send button */
+        #postForm button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Übergangseffekte */
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5); /* Neumorphism-Effekt */
+        }
+    
+        #postForm button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3); /* verstärkter Schatten beim Hover */
+        }
+    
+        /* Neumorphism styles for dark mode */
+        body.dark-mode #postForm button {
+            background-color: #007bff;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+    
+        body.dark-mode #postForm button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* verstärkter Schatten beim Hover */
+        }
+        
+        /* Dark Mode styles for the button */
+        body.dark-mode .create-post-form button {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+        
+        body.dark-mode .create-post-form button:hover {
+            background-color: #333;
+        }
+
     </style>
 </head>
-<body>
-<div class="container mx-auto">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2 class="text-lg font-semibold mb-4">Navigation</h2>
-        <ul>
-            <li><a href="/settings">Settings</a></li>
-            <li><a href="/profile">Profile</a></li>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/signup">Sign-Up</a></li>
-        </ul>
-    </div>
+<body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
 
-    <!-- Content -->
-    <div class="content">
-        <h1 class="text-3xl font-bold mb-8">Dev Hub</h1>
+    <div class="container mx-auto">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="text-lg font-semibold mb-4">Welcome, <span id="username"></span>!</h2>
+            <h2>Dev Hub: Developer</h2>
+            <ul>
+                <li><a href="/settings">Settings</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li id="loginLink"><a href="/login">Login</a></li>
+                <li id="signupLink"><a href="/signup">Sign-Up</a></li>
+                <li id="signoutLink"><a href="#" id="signoutBtn">Sign Out</a></li>
+                <li><a href="/intro">DEV: Intro</a></li>
+                <li><a href="/admin">DEV: Admin</a></li>
+            </ul>
+        </div>
 
-        <!-- Form to create new post -->
-        <form id="postForm" class="mb-8">
-            <div class="mb-4">
-                <label for="postContent" class="block text-sm font-medium text-gray-400">Create New Post</label>
-                <textarea id="postContent" name="postContent" rows="4" cols="50" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white"></textarea>
-            </div>
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Send</button>
-        </form>
+<!-- Content -->
+<div class="content-container">
+    <!-- Form to create new post -->
+    <form id="postForm" class="mb-8">
+        <div class="mb-4">
+            <label for="postContent" class="block text-sm font-medium text-gray-400">Create New Post</label>
+            <textarea id="postContent" name="postContent" rows="4" cols="50" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white"></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Send</button>
+    </form>
 
-        <!-- Latest posts section -->
-        <div id="latestPosts"></div>
-    </div>
+    <!-- Latest posts section -->
+    <div id="latestPosts"></div>
 </div>
 
-<script>
+    <div class="fixed bottom-5 right-5 z-50">
+        <label class="switch">
+            <input id="modeSwitch" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+<script> 
+    async function showWelcomeMessage() {
+        try {
+            const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
+            console.log(savedUser);
+            if (savedUser) {
+                const { identifier } = JSON.parse(savedUser);
+                document.getElementById('username').textContent = identifier;
+            } else {
+                // Benutzer ist nicht authentifiziert, leite ihn auf die Login-Seite weiter
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+
     async function createPost(event) {
-        event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); // Verhindert das Standardformularverhalten
 
-        const postContent = document.getElementById('postContent').value;
+    const postContent = document.getElementById('postContent').value;
 
-        // Check if post content is empty
-        if (!postContent.trim()) {
-            return;
+    // Überprüfen, ob der Beitragsinhalt leer ist
+    if (!postContent.trim()) {
+        return;
+    }
+
+    try {
+    const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
+    if (savedUser) {
+        const { username } = JSON.parse(savedUser);
+
+        // Überprüfen, ob die Nachricht nicht leer ist
+        const postContent = document.getElementById('postContent').value.trim();
+        if (postContent.length === 0) {
+            return; // Leere Nachrichten werden nicht gezählt oder gesendet
         }
 
-        try {
+        // Überprüfen, ob der Benutzer den Cooldown erreicht hat
+        const lastPostTime = localStorage.getItem('lastPostTime');
+        const postCount = parseInt(localStorage.getItem('postCount')) || 0;
+        const currentTime = Date.now();
+        const cooldownDuration = postCount >= 10 ? 5000 : 15000; // 1 Minute Cooldown, wenn mehr als 10 Posts, sonst 15 Sekunden
+
+        if (!lastPostTime || currentTime - parseInt(lastPostTime) >= cooldownDuration) {
+            // Benutzer hat den Cooldown erreicht oder ist neu, Beitrag kann gesendet werden
             const response = await fetch('/api/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ content: postContent })
+                body: JSON.stringify({ content: postContent, username: username }) // Benutzername zum Beitrag hinzufügen
             });
             const data = await response.json();
             document.getElementById('postContent').value = '';
             await getPosts();
-        } catch (error) {
-            console.error('Error creating post:', error);
-        }
-    }
 
-    // Function to fetch and display latest posts
+            // Cooldown zurücksetzen und aktualisieren
+            localStorage.setItem('lastPostTime', currentTime);
+            localStorage.setItem('postCount', postCount >= 10 ? 10 : postCount + 1);
+        } else {
+            // Benutzer hat den Cooldown nicht erreicht, Anzeige einer Toast-Nachricht
+            Toastify({
+                text: `You've posted too frequently. Please wait before posting again.`,
+                style: {
+                    background: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                },
+                className: 'rounded', // Abgerundete Ecken hinzufügen
+                duration: 3000
+            }).showToast();
+        }
+    } else {
+        // Benutzerdaten sind nicht im lokalen Speicher gespeichert
+        window.location.href = '/login';
+    }
+} catch (error) {
+    console.error('Error creating post:', error);
+}}
+
+// Funktion zum Abrufen und Anzeigen der neuesten Beiträge
     async function getPosts() {
         try {
-            const response = await fetch('/api/posts'); // Fetch latest posts from home route
-            const posts = await response.json();
-            console.log('Latest posts:', posts);
-            document.getElementById('latestPosts').innerHTML = '';
-            posts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.classList.add('bg-white', 'p-4', 'rounded', 'shadow', 'mb-4');
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                const { identifier } = JSON.parse(savedUser);
 
-                // Add username
-                const usernameElement = document.createElement('h3');
-                usernameElement.textContent = `@${post.username}`;
+                const response = await fetch('/api/posts'); // Neueste Beiträge von der Home-Route abrufen
+                const posts = await response.json();
+                console.log('Latest posts:', posts);
+                const postsContainer = document.getElementById('latestPosts');
+                postsContainer.innerHTML = ''; // Leeren des Container-Inhalts
 
-                const contentElement = document.createElement('p');
-                contentElement.textContent = post.content;
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
 
-                const dateElement = document.createElement('p');
-                dateElement.textContent = post.date; // Assuming date is included in the post
+                    // Benutzername hinzufügen
+                    const usernameElement = document.createElement('h3');
+                    usernameElement.textContent = `@${identifier}`;
 
-                postElement.appendChild(usernameElement);
-                postElement.appendChild(dateElement);
-                postElement.appendChild(contentElement);
+                    const contentElement = document.createElement('p');
+                    contentElement.textContent = post.content;
 
-                document.getElementById('latestPosts').appendChild(postElement);
-            });
+                    const dateElement = document.createElement('p');
+                    dateElement.textContent = post.date;
+
+                    postElement.appendChild(usernameElement);
+                    postElement.appendChild(dateElement);
+                    postElement.appendChild(contentElement);
+
+                    postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu
+                });
+            } else {
+                console.error('No user found in localStorage');
+            }
         } catch (error) {
             console.error('Error fetching posts:', error);
         }
     }
 
-    // Add event listener to submit post form
+    // Funktion zum Abmelden des Benutzers
+    document.getElementById('signoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('user'); // Benutzerdaten aus dem lokalen Speicher entfernen
+        window.location.href = '/login'; // Auf die Login-Seite weiterleiten
+    });
+
     document.getElementById('postForm').addEventListener('submit', createPost);
+
+
     getPosts();
+    showWelcomeMessage();
+    applyHoverEffectToPosts();
+
+    // Dark-Mode/White-Mode Switch Funktionalität
+    const modeSwitch = document.getElementById('modeSwitch');
+    modeSwitch.addEventListener('change', () => {
+        if (modeSwitch.checked) {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+        }
+    });
+
+    function addHoverEffect(post) {
+        post.addEventListener("mouseenter", function() {
+            this.style.transform = "scale(1.05)";
+            this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
+        });
+        post.addEventListener("mouseleave", function() {
+            this.style.transform = "scale(1)";
+            this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
+        });
+    }
+
+    // Funktion zum Anwenden des Hover-Effekts auf alle Posts
+    function applyHoverEffectToPosts() {
+        const posts = document.querySelectorAll(".post");
+        posts.forEach(post => {
+            addHoverEffect(post); // Füge den Hover-Effekt zu jedem Post hinzu
+        });
+    }
+
 </script>
 </body>
 </html>
