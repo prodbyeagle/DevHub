@@ -7,41 +7,126 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: 'SF Pro Medium', Arial, sans-serif;
+            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        /* Neumorphism styles for Dark Mode */
+        body.dark-mode {
+        background-color: #222;
+        color: #eee;
+        transition: all 0.3s ease;
+        }
+
+        /* Neumorphism styles for the form */
+        .neumorphism-form {
+            background-color: #f0f0f0;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-form {
+            background-color: #222;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Neumorphism styles for the input fields */
+        .neumorphism-input {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-input {
+            border-color: #555;
+            background-color: #333;
+            color: #eee;
+        }
+
+        /* Neumorphism styles for the submit button */
+        .neumorphism-button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .neumorphism-button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .neumorphism-button {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .neumorphism-button:hover {
+            background-color: #333;
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="dark-mode">
+<body class="bg-gray-100 dark-mode">
 <div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold text-center mb-8">Sign Up</h1>
-    <p class="text-center mb-4">You already have an Account: <a href="/login" class="text-blue-500 hover:underline">Login</a></p>
-    <div class="max-w-md mx-auto bg-white p-8 rounded shadow">
+    <h1 class="text-3xl font-bold text-center mb-8">Dev Hub: Sign Up</h1>
+    <p class="text-center mb-4">Already have an account? <a href="/login" class="text-blue-500 hover:underline">Login</a></p>
+    <div class="max-w-md mx-auto neumorphism-form">
         <form id="signupForm" class="space-y-4">
             <div>
                 <label for="username" class="block text-sm font-medium text-gray-700">Username:</label>
                 <input type="text" id="username" name="username" required autocomplete="username"
-                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+                       class="mt-1 block w-full neumorphism-input">
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
                 <input type="email" id="email" name="email" required autocomplete="email"
-                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+                       class="mt-1 block w-full neumorphism-input">
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password:</label>
                 <input type="password" id="password" name="password" required autocomplete="new-password"
-                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+                       class="mt-1 block w-full neumorphism-input">
             </div>
             <div>
                 <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password:</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password"
-                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+                       class="mt-1 block w-full neumorphism-input">
             </div>
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full">Sign Up</button>
+            <button type="submit" class="neumorphism-button w-full">Sign Up</button>
         </form>
     </div>
 </div>
+
+<div class="fixed bottom-5 right-5 z-50">
+    <label class="switch">
+        <input id="modeSwitch" type="checkbox">
+        <span class="slider round"></span>
+    </label>
+</div>
+
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('user');
+    
+            if (storedUser) {
+                //TODO: alert irgendwann ändern erstmal passts!
+                alert('You Are Already on an account, If you want to change you Account or Create one Log out! (change user function soon!)');
+                window.location.href = '/home'; // Weiterleitung zur Startseite, wenn ein Benutzer gespeichert ist
+            }
+        });
+    
     document.getElementById('signupForm').addEventListener('submit', async (event) => {
         event.preventDefault(); // Standardformularübermittlung verhindern
 
@@ -75,7 +160,7 @@
             if (response.status === 201) {
                 alert('Welcome:', username);
                 console.log('Signup response:', data);
-            //    window.location.href = '/home'; // Weiterleitung zur Anmeldeseite
+                window.location.href = '/home'; // Weiterleitung zur Anmeldeseite
             } else {
                 alert('Sign up failed! Please try again.');
             }
@@ -84,6 +169,20 @@
             alert('An error occurred while signing up. Please try again later.');
         }
     });
+
+    // Dark-Mode/White-Mode Switch Funktionalität
+    const modeSwitch = document.getElementById('modeSwitch');
+    modeSwitch.addEventListener('change', () => {
+        if (modeSwitch.checked) {
+            document.body.classList.remove('light-mode');
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('light-mode');
+        }
+    });
+
 </script>
+</body>
 </body>
 </html>
