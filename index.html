@@ -13,10 +13,9 @@
     <style>
         /* Common styles for Dark and Light Mode */
         body {
-            font-family: SF Pro Regular, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background-color: #f0f0f0;
             color: #333;
-            user-select: none;
         }
 
         .container {
@@ -33,6 +32,7 @@
             background-color: #f0f0f0;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             border-radius: 16px;
+            user-select: none;
         }
 
         .content {
@@ -94,7 +94,7 @@
         }
 
     /* Neumorphism styles for the posts */
-    #latestPosts {
+    .post {
         background-color: #f0f0f0;
         border: 1px solid #ccc;
         padding: 1rem;
@@ -105,20 +105,20 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
     }
 
-    #latestPosts:hover {
+    .post:hover {
         transform: scale(1.05); /* Vergrößern des Posts beim Hover */
         box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
     }
 
     /* Neumorphism styles for dark mode */
-    body.dark-mode #latestPosts {
+    body.dark-mode .post {
         background-color: #222;
         border: 1px solid #333;
         color: #eee;
         box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
     }
 
-    body.dark-mode #latestPosts:hover {
+    body.dark-mode .post:hover {
         box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
     }
 
@@ -185,6 +185,7 @@
             border-radius: 16px;
             margin-bottom: 20px;
             text-align: center;
+            user-select: none;
         }
         
         .content-container {
