@@ -163,24 +163,20 @@
     });
 
     function loadModePreference() {
-    // Lade den gespeicherten Moduswert aus dem Local Storage
-    const mode = localStorage.getItem('mode');
-    if (mode === 'dark') {
-        // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-        document.body.classList.remove('light-mode');
-        document.body.classList.add('dark-mode');
-        // Stelle sicher, dass der Switch-Button auf den dunklen Modus eingestellt ist
-        modeSwitch.checked = true;
-    } else {
-        // Andernfalls füge die Klasse für den hellen Modus hinzu
-        document.body.classList.remove('dark-mode');
-        document.body.classList.add('light-mode');
-    }
-    console.log('Mode Loaded:', mode);
-}
-
-
-    loadModePreference();
+            // Lade den gespeicherten Moduswert aus dem Local Storage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'dark') {
+                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            }
+            console.log('Mode Loaded:', mode);
+        }
+        loadModePreference();
 
 </script>
 </body>

@@ -40,7 +40,7 @@ async function run() {
     try {
         await client.connect();
         db = client.db(dbName);
-        usersCollection = db.collection('users'); // Benutzer unter der Sammlung "Users" speichern
+        usersCollection = db.collection('users');
         console.log("Connected to MongoDB successfully!");
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -191,34 +191,32 @@ app.post('/api/update', async (req, res) => {
     }
 });
 
-//TODO: Admin Check fixen
-
 app.post('/admin', async (req, res) => {
     try {
-        // Extrahiere den Benutzernamen aus dem Anfrage-Body
         const { username } = req.body;
-        
-        // Benutzer anhand des Benutzernamens aus der Datenbank abrufen
-        const existingUser = await FetchUserByUsername(username);
-        
-        if (!existingUser) {
-            // Benutzer nicht gefunden
-            return res.status(400).send('Benutzer nicht gefunden');
-        }  
 
-        // Überprüfen, ob der Benutzer ein Administrator ist
+        const collection = db.collection('users');
+
+        const existingUser = await collection.findOne({ username });
+
+        if (!existingUser) {
+            console.log('User not found.');
+            return res.status(400).send('Benutzer nicht gefunden');
+        }
+
         if (existingUser.admin === true) {
-            // Wenn der Benutzer ein Administrator ist, sende "true"
-            return res.status(200).json({ admin: true });
+            // Wenn der Benutzer ein Administrator ist, senden Sie die erforderlichen Benutzerdaten zurück
+            const userData = await collection.find().toArray(); // Alle Benutzerdaten abrufen
+            return res.status(200).json(userData);
         } else {
-            // Wenn der Benutzer kein Administrator ist, sende "false"
-            return res.status(200).json({ admin: false });
+            return res.status(200).send('False');
         }
     } catch (err) {
         console.error('Fehler beim Überprüfen des Benutzers:', err);
         res.status(500).send('Interner Serverfehler');
     }
 });
+
 
 // API-Route zum Abrufen der Benutzernamen
 app.get('/api/username', async (req, res) => {
@@ -302,6 +300,5 @@ app.get('/admin', (req, res) => {
 
 app.listen(PORT, () => {
     run().catch(error => console.error('Fehler beim Starten des Servers:', error));
-    console.log('Der Server läuft auf Port', PORT);
     console.log('Link: http://localhost:' + PORT + '/home');
 });

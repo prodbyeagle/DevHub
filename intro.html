@@ -12,58 +12,32 @@
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" /> 
     <style>
         body {
-            background-color: #111827; /* Dunkelgrauer Hintergrund */
-            font-family: SF Pro Medium, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            color: #ffffff; /* Weiße Textfarbe */
-        }
-
-        .container {
+            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: all 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            overflow-x: auto; /* Horizontales Scrollen aktivieren */
+            height: 100vh;
         }
-        
-        .flex-container {
-            display: flex;
-            justify-content: center;
-            gap: 2rem; /* Abstand zwischen den Buttons */
+    
+        /* Neumorphism styles for Dark Mode */
+        body.dark-mode {
+            background-color: #222;
+            color: #eee;
+            transition: all 0.3s ease;
         }
-        
-        .max-w-lg {
-            width: 100%;
-            max-width: 32rem;
-            padding: 0 1rem;
-        }
-
+    
+        /* Neumorphism styles for the intro form */
         .intro-form {
-            background-color: #1e2a44; /* Dunkelblauer Hintergrund */
-            border: 1px solid #718096; /* Grauer Rand */
+            background-color: #f0f0f0;
+            border-radius: 16px;
             padding: 2rem;
-            left: 100px;
-            border-radius: 0.5rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Leichter Schatten */
-            overflow-x: auto; /* Horizontales Scrollen aktivieren */
-        }
-        
-        .max-w-lg {
-            width: 100%;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
             max-width: 32rem;
-            padding: 0 1rem;
-        }
-
-        .label {
-            color: #718096; /* Graue Textfarbe */
-        }
-
-        .input {
             width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #cbd5e0; /* Heller Rand */
-            background-color: #f3f4f6; /* Hellgrauer Hintergrund */
-            color: #1f2937; /* Dunkelblauer Text */
-            margin-bottom: 1rem;
         }
 
         .language-buttons {
@@ -73,202 +47,215 @@
             gap: 1rem;
             margin-bottom: 1rem;
         }
-
+        
         .language-button {
-            border: 2px solid #4b5563;
-            transition: border-color 0.3s, transform 0.3s;
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: 1px solid; /* 1px-Rand hinzufügen */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             flex: 1 0 calc(20% - 1rem);
             max-width: calc(20% - 1rem);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
             border-radius: 0.5rem;
-            background-color: #374151; /* Dunkelgrauer Hintergrund */
-            color: #ffffff; /* Weiße Textfarbe */
         }
-
+        
+        .language-button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+        
         .language-button:hover,
         .language-button.selected:hover {
             border-color: #48bb78;
             transform: scale(1.05);
         }
-
+        
+        body.dark-mode .language-button.selected,
         .language-button.selected {
             border-color: #48bb78;
+            background-color: #48bb78;
         }
-
-        .language-button i {
-            font-size: 2rem;
+        
+        body.dark-mode .language-button {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
-
-        .submit-button {
+        
+        body.dark-mode .language-button:hover {
+            background-color: #333;
+        }
+    
+        body.dark-mode .intro-form {
+            background-color: #222;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+    
+        /* Neumorphism styles for the input fields inside the intro form */
+        .intro-form .input {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
             width: 100%;
+        }
+    
+        body.dark-mode .intro-form .input {
+            border-color: #555;
+            background-color: #333;
+            color: #eee;
+        }
+    
+        /* Neumorphism styles for the submit button inside the intro form */
+        .intro-form .submit-button {
+            background-color: #007bff;
+            color: #fff;
             padding: 0.5rem 1rem;
             border: none;
-            border-radius: 0.25rem;
-            background-color: #4b5563;
-            color: #ffffff;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+            width: 100%;
+            margin-top: 1rem;
+        }
+    
+        .intro-form .submit-button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+    
+        body.dark-mode .intro-form .submit-button {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+    
+        body.dark-mode .intro-form .submit-button:hover {
+            background-color: #333;
         }
 
-        .submit-button:hover {
-            background-color: #374151;
+        .confirmation-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 9999; /* Stellen Sie sicher, dass die Nachricht über anderen Inhalten liegt */
         }
-
-        .success-animation { 
-            margin: 150px auto;
-        }
-
-        .checkmark {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            display: block;
-            stroke-width: 2;
-            stroke: #4bb71b;
-            stroke-miterlimit: 10;
-            box-shadow: inset 0px 0px 0px #4bb71b;
-            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
-            position: relative;
-            top: 5px;
-            right: 5px;
-            margin: 0 auto;
-        }
-
-        .checkmark__circle {
-            stroke-dasharray: 166;
-            stroke-dashoffset: 166;
-            stroke-width: 2;
-            stroke-miterlimit: 10;
-            stroke: #4bb71b;
-            fill: #fff;
-            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-        }
-
-        .checkmark__check {
-            transform-origin: 50% 50%;
-            stroke-dasharray: 48;
-            stroke-dashoffset: 48;
-            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
-        }
-
-        @keyframes stroke {
-            100% {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        @keyframes scale {
-            0%, 100% {
-                transform: none;
-            }
-
-            50% {
-                transform: scale3d(1.1, 1.1, 1);
-            }
-        }
-
-        @keyframes fill {
-            100% {
-                box-shadow: inset 0px 0px 0px 30px #4bb71b;
-            }
+        
+        body.dark-mode .confirmation-message {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                background-color: #222;
+                padding: 1rem;
+                border-radius: 8px;
+                box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+                z-index: 9999; /* Stellen Sie sicher, dass die Nachricht über anderen Inhalten liegt */
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="max-w-lg">
-            <h1 class="text-3xl font-bold mb-4 text-center">Willkommen zur Einführung!</h1>
-            <div class="intro-form">
-                <form id="introForm" class="space-y-4">
-                    <div>
-                        <label for="codingLanguages" class="label">Welche Coding-Sprachen interessieren Sie?</label>
-                        <div class="language-buttons">
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="javascript">
-                                <i class="devicon-javascript-plain"></i>
-                                <span>JavaScript</span>
-                            </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="python">
+
+<div class="container flex justify-center items-center h-screen">
+    <div class="max-w-lg">
+        <h1 class="text-3xl font-bold mb-4 text-center">Welcome to Dev Hub!</h1>
+        <div class="intro-form">
+            <form id="introForm" class="space-y-4">
+                <div>
+                    <label for="codingLanguages" class="label">Which Coding Languages are you Interested in?</label>
+                    <div class="flex flex-wrap justify-center">
+                        <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2 mx-2 mb-2" data-language="javascript">
+                            <i class="devicon-javascript-plain"></i>
+                            <span>JS</span>
+                        </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2 mx-2 mb-2" data-language="python">
                                 <i class="devicon-python-plain"></i>
                                 <span>Python</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="java">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="java">
                                 <i class="devicon-java-plain"></i>
                                 <span>Java</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="c">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="c">
                                 <i class="devicon-c-plain"></i>
                                 <span>C</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="cplusplus">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="cplusplus">
                                 <i class="devicon-cplusplus-plain"></i>
                                 <span>C++</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="ruby">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="ruby">
                                 <i class="devicon-ruby-plain"></i>
                                 <span>Ruby</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="go">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="go">
                                 <i class="devicon-go-plain"></i>
                                 <span>Go</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="swift">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="swift">
                                 <i class="devicon-swift-plain"></i>
                                 <span>Swift</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="typescript">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="typescript">
                                 <i class="devicon-typescript-plain"></i>
-                                <span>TypeScript</span>
+                                <span>TS</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="kotlin">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="kotlin">
                                 <i class="devicon-kotlin-plain"></i>
                                 <span>Kotlin</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="r">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="r">
                                 <i class="devicon-r-plain"></i>
                                 <span>R</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="php">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="php">
                                 <i class="devicon-php-plain"></i>
                                 <span>PHP</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="html">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="html">
                                 <i class="devicon-html5-plain"></i>
                                 <span>HTML</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="css">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="css">
                                 <i class="devicon-css3-plain"></i>
                                 <span>CSS</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="sql">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="sql">
                                 <i class="devicon-mysql-plain"></i>
                                 <span>SQL</span>
-                            </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="assembly">
-                                <i class="devicon-assembly-plain"></i>
-                                <span>Assembly</span>
-                            </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="perl">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="perl">
                                 <i class="devicon-perl-plain"></i>
                                 <span>Perl</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="shell">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="shell">
                                 <i class="devicon-bash-plain"></i>
                                 <span>Shell</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="scala">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="scala">
                                 <i class="devicon-scala-plain"></i>
                                 <span>Scala</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="dart">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="dart">
                                 <i class="devicon-dart-plain"></i>
                                 <span>Dart</span>
                             </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center" data-language="lua">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="lua">
                                 <i class="devicon-lua-plain"></i>
                                 <span>Lua</span>
                             </button>
@@ -314,10 +301,22 @@
             })
             .then(data => {
                 console.log(data.message);
-                // Bestätigungsanimation hinzufügen und Weiterleitung
-                const confirmationMessage = document.createElement('div');
+                introForm.style.display = 'none'; // Intro-Formular ausblenden
+                document.querySelector('h1').style.display = 'none'; // Willkommensnachricht ausblenden
+            
+                // Alle .language-button ausblenden
+                const languageButtons = document.querySelectorAll('.language-button');
+                languageButtons.forEach(button => {
+                    button.style.display = 'none';
+                });
+            
+                // Submit-Button ausblenden
+                const submitButton = document.querySelector('.submit-button');
+                document.querySelector('.max-w-lg').style.display = 'none';
+                submitButton.style.display = 'none';
 
-                confirmationMessage.textContent = '✅ Danke! Viel Spaß auf dem Dev Hub.';
+                const confirmationMessage = document.createElement('div');
+                confirmationMessage.textContent = '✅ Thanks for submitting!';
                 confirmationMessage.classList.add('confirmation-message');
                 document.body.appendChild(confirmationMessage);
                 setTimeout(() => {
@@ -343,24 +342,21 @@
         });
 
         function loadModePreference() {
-    // Lade den gespeicherten Moduswert aus dem Local Storage
-    const mode = localStorage.getItem('mode');
-    if (mode === 'dark') {
-        // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-        document.body.classList.remove('light-mode');
-        document.body.classList.add('dark-mode');
-        // Stelle sicher, dass der Switch-Button auf den dunklen Modus eingestellt ist
-        modeSwitch.checked = true;
-    } else {
-        // Andernfalls füge die Klasse für den hellen Modus hinzu
-        document.body.classList.remove('dark-mode');
-        document.body.classList.add('light-mode');
-    }
-    console.log('Mode Loaded:', mode);
-}
+            // Lade den gespeicherten Moduswert aus dem Local Storage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'dark') {
+                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            }
+            console.log('Mode Loaded:', mode);
+        }
+        loadModePreference();
 
-
-        loadModePreference();    
     </script>
 </body>
 
