@@ -337,7 +337,6 @@
                 button.classList.toggle('selected');
                 const selectedLanguages = Array.from(document.querySelectorAll('.language-button.selected')).map(btn => btn.getAttribute('data-language'));
                 codingLanguagesInput.value = selectedLanguages.join(',');
-                console.log('Ausgewählte Sprachen:', selectedLanguages);
             });
         });
 

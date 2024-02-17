@@ -182,8 +182,6 @@ app.post('/api/update', async (req, res) => {
             { returnOriginal: false }
         );
 
-        console.log('updatedUser:', updatedUser);
-
         res.status(200).json({ message: 'Benutzervorlieben erfolgreich aktualisiert', user: updatedUser.value });
     } catch (err) {
         console.error('Fehler beim Aktualisieren der Benutzervorlieben:', err);
