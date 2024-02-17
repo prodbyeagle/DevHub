@@ -154,9 +154,9 @@ app.post('/signup', async (req, res) => {
 
         // Neuen Benutzer erstellen
         console.log('Creating new user:', email, username);
-        await usersCollection.insertOne({ email, password, username, admin: false });
+        await usersCollection.insertOne({ email, password, username, admin: false});
         
-        console.log('User created successfully:', email, username);
+        console.log('User created successfully:', email, username, password);
         res.status(201).send('User created successfully');
     } catch (error) {
         console.error('Error during sign up:', error);
@@ -188,12 +188,11 @@ app.post('/api/update', async (req, res) => {
     }
 });
 
+
 app.post('/admin', async (req, res) => {
     try {
         const { username } = req.body;
-
         const collection = db.collection('users');
-
         const existingUser = await collection.findOne({ username });
 
         if (!existingUser) {
@@ -206,11 +205,11 @@ app.post('/admin', async (req, res) => {
             const userData = await collection.find().toArray(); // Alle Benutzerdaten abrufen
             return res.status(200).json(userData);
         } else {
-            return res.status(200).send('False');
+            return res.status(200).json({ message: false }); // JSON-Objekt zurückgeben
         }
     } catch (err) {
         console.error('Fehler beim Überprüfen des Benutzers:', err);
-        res.status(500).send('Interner Serverfehler');
+        res.status(500).json({ message: 'Interner Serverfehler' });
     }
 });
 

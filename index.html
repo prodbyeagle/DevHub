@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/icon.ico">
+    <link rel="icon" type="image/x-icon" href="icon.ico">
     <div class="title-container">
         <h1 class="text-3xl font-bold mb-8">Dev Hub</h1>
     </div>
@@ -36,6 +36,8 @@
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             border-radius: 16px;
             user-select: none;
+            position: sticky;
+            top: 20px;
         }
 
         .content {
@@ -150,6 +152,8 @@
         body.dark-mode .sidebar {
             background-color: #222;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 20px;
         }
 
         body.dark-mode .sidebar a {
@@ -333,6 +337,37 @@
             color: #eee; /* Farbe des Textes im Dark Mode */
         }
 
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px; /* Adjust as needed */
+            right: 20px; /* Adjust as needed */
+            z-index: 9999;
+            display: none; /* Hide by default */
+            width: 60px;
+            height: 60px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .scroll-to-top:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .scroll-to-top {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .scroll-to-top:hover {
+            background-color: #333;
+        }
     </style>
 </head>
 <body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
@@ -370,6 +405,12 @@
     <!-- Latest posts section -->
     <div id="latestPosts"></div>
 </div>
+<button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+</button>
+
 <script> 
     async function showWelcomeMessage() {
         try {
@@ -586,6 +627,31 @@ var formattedPostContent = formatCode(postContent);
 }
 
     loadModePreference();
+
+        // Function to scroll to the top of the page with animation
+        function scrollToTop() {
+            const c = document.documentElement.scrollTop || document.body.scrollTop;
+            if (c > 0) {
+                window.requestAnimationFrame(scrollToTop);
+                window.scrollTo(0, c - c / 8);
+            }
+        }
+
+    window.onscroll = function() {
+        scrollFunction();
+    };
+    
+    function scrollFunction() {
+        const scrollToTopButton = document.querySelector('.scroll-to-top');
+        const scrollPosition = document.documentElement.scrollTop || document.body.scrollTop;
+        
+        // Adjust the threshold value (50) to your desired scroll position before showing the button
+        if (scrollPosition > 1200) {
+            scrollToTopButton.style.display = "block";
+        } else {
+            scrollToTopButton.style.display = "none";
+        }
+    }
 
 </script>
 </body>

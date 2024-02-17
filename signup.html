@@ -150,8 +150,8 @@
             console.log('Signup response:', response);
 
             if (response.status === 201) {
-                alert('Welcome:', username);
                 console.log('Signup response:', data);
+                localStorage.setItem('user', JSON.stringify({ email, username, password }));
                 window.location.href = '/intro'; // Weiterleitung zur Anmeldeseite
             } else {
                 alert('Sign up failed! Please try again.');

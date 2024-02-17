@@ -82,7 +82,7 @@
 </head>
 <body class="bg-gray-100 dark-mode">
 <div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold text-center mb-8">Admin Panel</h1>
+    <h1 class="text-3xl font-bold text-center mb-8">DEV: Admin Panel</h1>
     <div class="max-w-md mx-auto neumorphism-form">
         <div id="adminData"></div>
     </div>
@@ -96,11 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminDataDiv = document.getElementById('adminData');
     if (!localStorage.getItem('user')) {
         console.error('No user found in localStorage');
-        return; // Abbruch, wenn kein Benutzer gefunden wurde
+        return;
     }
 
-    const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
-
+    const savedUser = localStorage.getItem('user');
     const formData = {
         username: JSON.parse(localStorage.getItem('user')).identifier
     };
@@ -116,16 +115,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        const data = await response.json(); // Die Antwort als JSON parsen
-
-        // Die Antwort verarbeiten und entsprechende Aktion durchführen
+        const contentType = response.headers.get('content-type');
+            let data;
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                data = await response.text();
+    }
         if (Array.isArray(data)) {
-            // Wenn die Antwort ein Array von Benutzerdaten ist, formatieren und anzeigen
             data.forEach(user => {
                 const userDiv = document.createElement('div');
-                userDiv.classList.add('p-4', 'border-t', 'border-gray-200');
-
-                // Formatieren und hinzufügen der Benutzerdaten zum Benutzerdiv
+                userDiv.classList.add('p-4', 'border-t', 'border-gray-350');
                 userDiv.innerHTML = `
                     <p><strong>Username:</strong> ${user.username}</p>
                     <p><strong>Email:</strong> ${user.email}</p>
@@ -140,19 +140,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error('There was a problem with your fetch operation:', error);
-        // Behandeln Sie den Fehler hier entsprechend
     }
 });
 
     function loadModePreference() {
-        // Lade den gespeicherten Moduswert aus dem Local Storage
         const mode = localStorage.getItem('mode');
         if (mode === 'dark') {
-            // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
             document.body.classList.remove('light-mode');
             document.body.classList.add('dark-mode');
         } else {
-            // Andernfalls füge die Klasse für den hellen Modus hinzu
             document.body.classList.remove('dark-mode');
             document.body.classList.add('light-mode');
         }
