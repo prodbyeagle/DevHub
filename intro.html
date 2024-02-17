@@ -55,7 +55,7 @@
             border: 1px solid; /* 1px-Rand hinzufügen */
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             flex: 1 0 calc(20% - 1rem);
             max-width: calc(20% - 1rem);
@@ -65,22 +65,38 @@
             justify-content: center;
             border-radius: 0.5rem;
         }
+
         
         .language-button:hover {
-            background-color: #0056b3;
-            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
-        }
-        
-        .language-button:hover,
-        .language-button.selected:hover {
-            border-color: #48bb78;
-            transform: scale(1.05);
-        }
-        
-        body.dark-mode .language-button.selected,
-        .language-button.selected {
             border-color: #48bb78;
             background-color: #48bb78;
+            transform: scale(1.05);
+        }
+
+        .language-button.selected:hover {
+            border-color: #cb3030;
+            background-color: #cb3030;
+            transform: scale(0.95);
+        }
+
+        body.dark-mode .language-button.selected {
+            background-color: #48bb78;
+        }
+
+        .language-button.selected {
+            background-color: #48bb78;
+        }
+        
+        body.dark-mode .language-button:hover {
+            border-color: #48bb78;
+            background-color: #48bb78;
+            transform: scale(1.05);
+        }
+
+        body.dark-mode .language-button.selected:hover {
+            border-color: #cb3030;
+            background-color: #cb3030;
+            transform: scale(1.05);
         }
         
         body.dark-mode .language-button {
@@ -180,11 +196,11 @@
                 <div>
                     <label for="codingLanguages" class="label">Which Coding Languages are you Interested in?</label>
                     <div class="flex flex-wrap justify-center">
-                        <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2 mx-2 mb-2" data-language="javascript">
+                        <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="javascript">
                             <i class="devicon-javascript-plain"></i>
                             <span>JS</span>
                         </button>
-                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2 mx-2 mb-2" data-language="python">
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="python">
                                 <i class="devicon-python-plain"></i>
                                 <span>Python</span>
                             </button>
@@ -258,6 +274,114 @@
                             <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="lua">
                                 <i class="devicon-lua-plain"></i>
                                 <span>Lua</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="rust">
+                                <i class="devicon-rust-plain"></i>
+                                <span>Rust</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="elixir">
+                                <i class="devicon-elixir-plain"></i>
+                                <span>Elixir</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="haskell">
+                                <i class="devicon-haskell-plain"></i>
+                                <span>Haskell</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="coffeescript">
+                                <i class="devicon-coffeescript-plain"></i>
+                                <span>CS</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="objective-c">
+                                <i class="devicon-objectivec-plain"></i>
+                                <span>Obj. C</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="clojure">
+                                <i class="devicon-clojure-plain"></i>
+                                <span>Clojure</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="groovy">
+                                <i class="devicon-groovy-plain"></i>
+                                <span>Groovy</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="ocaml">
+                                <i class="devicon-ocaml-plain"></i>
+                                <span>OCaml</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="powershell">
+                                <i class="devicon-powershell-plain"></i>
+                                <span>PowerShell</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="fsharp">
+                                <i class="devicon-fsharp-plain"></i>
+                                <span>F#</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="julia">
+                                <i class="devicon-julia-plain"></i>
+                                <span>Julia</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="erlang">
+                                <i class="devicon-erlang-plain"></i>
+                                <span>Erlang</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="prolog">
+                                <i class="devicon-prolog-plain"></i>
+                                <span>Prolog</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="assembly">
+                                <i class="devicon-assembly-plain"></i>
+                                <span>Assembly</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="fortran">
+                                <i class="devicon-fortran-plain"></i>
+                                <span>Fortran</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="lisp">
+                                <i class="devicon-lisp-plain"></i>
+                                <span>Lisp</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="pascal">
+                                <i class="devicon-pascal-plain"></i>
+                                <span>Pascal</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="smalltalk">
+                                <i class="devicon-smalltalk-plain"></i>
+                                <span>Smalltalk</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="vhdl">
+                                <i class="devicon-vhdl-plain"></i>
+                                <span>VHDL</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="verilog">
+                                <i class="devicon-verilog-plain"></i>
+                                <span>Verilog</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="cobol">
+                                <i class="devicon-cobol-plain"></i>
+                                <span>COBOL</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="ada">
+                                <i class="devicon-ada-plain"></i>
+                                <span>Ada</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="abap">
+                                <i class="devicon-abap-plain"></i>
+                                <span>ABAP</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="racket">
+                                <i class="devicon-racket-plain"></i>
+                                <span>Racket</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="sas">
+                                <i class="devicon-sas-plain"></i>
+                                <span>SAS</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="scheme">
+                                <i class="devicon-scheme-plain"></i>
+                                <span>Scheme</span>
+                            </button>
+                            <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="vbnet">
+                                <i class="devicon-vbnet-plain"></i>
+                                <span>VB.NET</span>
                             </button>
                         </div>
                         <input type="hidden" id="codingLanguages" name="codingLanguages">

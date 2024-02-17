@@ -12,7 +12,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const sessionSecret = require('crypto').randomBytes(64).toString('hex');
-console.log('Session secret:', sessionSecret);
 
 app.use(bodyParser.json());
 app.use(cors());
