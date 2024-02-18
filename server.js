@@ -7,6 +7,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -265,6 +266,93 @@ app.post('/api/username', async (req, res) => {
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// Function to generate random password
+function generateRandomPassword() {
+    const length = 10; // Länge des generierten Passworts
+    return crypto.randomBytes(Math.ceil(length / 2))
+        .toString('hex') // Konvertieren Sie die zufälligen Bytes in hexadezimale Zeichen
+        .slice(0, length); // Begrenzen Sie die Länge auf die gewünschte Anzahl von Zeichen
+}
+
+const passport = require('passport');
+const { randomUUID, randomBytes } = require('crypto');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+    clientID: '1058877753013-d83q1elt7pf185pd8v9i1a51fp8dlg7n.apps.googleusercontent.com',
+    clientSecret: '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',
+    callbackURL: 'http://localhost:3000/auth/google/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+    const collection = db.collection('users');
+    
+    try {
+        const userEmail = (profile.emails && profile.emails.length > 0) ? profile.emails[0].value : null;
+        const userPhoto = (profile.photos && profile.photos.length > 0) ? profile.photos[0].value : null;
+
+        const existingUser = await collection.findOne({ email: userEmail });
+
+        if (existingUser) {
+            return done(null, existingUser);
+        } else {
+            const randomPassword = generateRandomPassword(); // Function to generate random password
+            const newUser = {
+                username: profile.displayName,
+                email: userEmail,
+                password: randomPassword,
+                pb: userPhoto,
+                admin: false,
+            };
+
+            await collection.insertOne(newUser);
+            console.log('New user created:', newUser.username);
+            return done(null, newUser);
+        }
+    } catch (error) {
+        console.error('Error processing Google authentication:', error);
+        return done(error, null);
+    }
+}));
+
+// POST-Route für die Google-Authentifizierung
+app.post('/auth/google/callback', 
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        // Erfolgreiche Authentifizierung, senden Sie die Benutzerdaten an den Client
+        res.status(200).json({ username: req.user.username, password: req.user.password });
+    }
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        console.log('req.user:', req.user); // Output the entire req.user object for debugging
+        // Überprüfen, ob req.user.email definiert ist
+        if (req.user && req.user.email) {
+            console.log('Authenticated User:', req.user.username, req.user.email);
+            res.redirect('/home?user=' + JSON.stringify(req.user));
+        } else {
+            console.error('Error: User email not found.');
+            res.redirect('/login'); // Weiterleitung zur Login-Seite oder Fehlerbehandlung entsprechend
+        }
+    }
+);
+
+// Sitzungsserialisierung und Deserialisierung
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+// GET-Route für den Start der Google-Authentifizierung
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Passport-Initialisierung und Sitzungsverwaltung
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); // Laden Sie die index.html-Datei

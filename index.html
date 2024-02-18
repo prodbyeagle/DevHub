@@ -412,20 +412,46 @@
 </button>
 
 <script> 
-    async function showWelcomeMessage() {
-        try {
-            const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
-            if (savedUser) {
-                const { identifier } = JSON.parse(savedUser);
-                document.getElementById('username').textContent = identifier;
+async function showWelcomeMessage() {
+    try {
+        const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
+        if (savedUser) {
+            const { identifier } = JSON.parse(savedUser);
+
+            // Überprüfen, ob der Identifier eine E-Mail-Adresse ist
+            if (isValidEmail(identifier)) {
+                // Wenn ja, die E-Mail-Adresse verwenden, um den Benutzernamen zu finden
+                const response = await fetch('/api/username');
+                const userData = await response.json();
+
+                // Finde den Benutzer, der die angegebene E-Mail-Adresse hat
+                const matchedUser = userData.users.find(user => user.email === identifier);
+                
+                if (matchedUser) {
+                    // Benutzer gefunden, verwende den Benutzernamen für die Begrüßung
+                    document.getElementById('username').textContent = matchedUser.username;
+                } else {
+                    console.error('User with specified email not found');
+                }
             } else {
-                // Benutzer ist nicht authentifiziert, leite ihn auf die Login-Seite weiter
-                window.location.href = '/login';
+                // Der Identifier ist kein eine E-Mail-Adresse, daher direkt verwenden
+                document.getElementById('username').textContent = identifier;
             }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
+        } else {
+            // Benutzer ist nicht authentifiziert, leite ihn auf die Login-Seite weiter
+            window.location.href = '/login';
         }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
     }
+}
+
+// Funktion zur Überprüfung, ob eine Zeichenkette eine gültige E-Mail-Adresse ist
+function isValidEmail(email) {
+    // Einfache Überprüfung durch eine Reguläre Ausdruck
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 
     async function createPost(event) {
     event.preventDefault(); // Verhindert das Standardformularverhalten

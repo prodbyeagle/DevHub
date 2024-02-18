@@ -108,76 +108,87 @@
         </form>
     </div>
 </div>
+<div class="max-w-md mx-auto neumorphism-button w-full">
+    <a href="/auth/google" class="neumorphism-button w-full">Sign in with Google</a>
+</div>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-            const storedUser = localStorage.getItem('user');
-    
-            if (storedUser) {
-                //TODO: alert irgendwann ändern erstmal passts!
-                alert('You Are Already on an account, If you want to change you Account or Create one Log out! (change user function soon!)');
-                window.location.href = '/home'; // Weiterleitung zur Startseite, wenn ein Benutzer gespeichert ist
-            }
+// DOMContentLoaded-Event-Listener
+document.addEventListener('DOMContentLoaded', () => {
+    const storedUser = localStorage.getItem('user');
+
+    if (storedUser) {
+        alert('You are already logged in. Please log out first to change your account.');
+        window.location.href = '/home';
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get('user');
+
+    if (user) {
+        localStorage.setItem('user', user);
+        alert(user);
+        console.log('User data saved in localStorage:', user); // Loggen der Benutzerdaten im localStorage
+       window.location.href = '/home';
+    }
+});
+
+// Event-Listener für das Absenden des Anmeldeformulars
+document.getElementById('signupForm').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Standardformularübermittlung verhindern
+
+    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
+    if (password !== confirmPassword) {
+        console.error('Password and confirmation do not match');
+        return;
+    }
+
+    try {
+        const response = await fetch('/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                username: username,
+                password: password,
+                admin: false,
+            })
         });
-    
-    document.getElementById('signupForm').addEventListener('submit', async (event) => {
-        event.preventDefault(); // Standardformularübermittlung verhindern
+        const data = await response.text();
+        console.log('Signup response:', response);
 
-        const email = document.getElementById('email').value;
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-
-        // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
-        if (password !== confirmPassword) {
-            console.error('Password and confirmation do not match');
-            return;
+        if (response.status === 201) {
+            console.log('Signup response:', data);
+            localStorage.setItem('user', JSON.stringify({ email, username, password }));
+            console.log('User data saved in localStorage:', { email, username, password });
+            window.location.href = '/intro';
+        } else {
+            alert('Sign up failed! Please try again.');
         }
+    } catch (error) {
+        console.error('Error signing up:', error);
+        alert('An error occurred while signing up. Please try again later.');
+    }
+});
 
-        try {
-            const response = await fetch('/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    username: username,
-                    password: password,
-                    admin: false,
-                })
-            });
-            const data = await response.text();
-            console.log('Signup response:', response);
-
-            if (response.status === 201) {
-                console.log('Signup response:', data);
-                localStorage.setItem('user', JSON.stringify({ email, username, password }));
-                window.location.href = '/intro'; // Weiterleitung zur Anmeldeseite
-            } else {
-                alert('Sign up failed! Please try again.');
-            }
-        } catch (error) {
-            console.error('Error signing up:', error);
-            alert('An error occurred while signing up. Please try again later.');
-        }
-    });
-
-    function loadModePreference() {
-            // Lade den gespeicherten Moduswert aus dem Local Storage
-            const mode = localStorage.getItem('mode');
-            if (mode === 'dark') {
-                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-                document.body.classList.remove('light-mode');
-                document.body.classList.add('dark-mode');
-            } else {
-                // Andernfalls füge die Klasse für den hellen Modus hinzu
-                document.body.classList.remove('dark-mode');
-                document.body.classList.add('light-mode');
-            }
-            console.log('Mode Loaded:', mode);
-        }
-        loadModePreference();
-
+function loadModePreference() {
+    const mode = localStorage.getItem('mode');
+    if (mode === 'dark') {
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+    }
+    console.log('Mode Loaded:', mode);
+}
+loadModePreference();
 </script>
 </body>
 </body>

@@ -142,11 +142,9 @@
                 <label class="block text-sm font-bold mb-2" for="password">
                     Password
                 </label>
-                <!-- Passwort anzeigen, aber unkenntlich machen -->
                 <div class="flex items-center">
                     <p class="text-lg" id="password">******</p>
                     <div class="ml-auto">
-                        <!-- SVG-Symbol für das Auge zum Anzeigen/Verbergen des Passworts -->
                         <svg id="togglePasswordVisibility" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-6 10-6 10 6 10 6-3 6-10 6-10-6-10-6z" />
@@ -208,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const userData = await response.json();
 
         // Find the user that matches the stored user data
-        const matchedUser = userData.users.find(user => user.username === identifier && user.password === password);
+        const matchedUser = userData.users.find(user => (user.username === identifier || user.email === identifier) && user.password === password);
 
         if (matchedUser) {
             document.getElementById('username').textContent = matchedUser.username;

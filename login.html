@@ -197,16 +197,41 @@
         }
     });
 
-    // Beim Laden der Seite überprüfen, ob bereits Benutzerdaten im lokalen Speicher vorhanden sind
+    async function autoLogin(identifier, password, provider) {
+        try {
+            let body = { identifier, password };
+            if (provider === 'google') {
+                body = { provider };
+            }
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                window.location.href = '/home'; // Weiterleitung zur Startseite nach erfolgreicher Anmeldung
+            } else {
+                // Fehlermeldung anzeigen, wenn Anmeldung fehlgeschlagen ist
+                console.error('Auto login failed:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error auto logging in:', error);
+        }
+    }
+
     window.onload = async () => {
         try {
             const savedUser = localStorage.getItem('user');
             if (savedUser) {
-                const { identifier, password } = JSON.parse(savedUser);
+                const { identifier, password, provider } = JSON.parse(savedUser);
                 document.getElementById('identifier').value = identifier;
 
-                // Hinzufügen des Hinweises, dass der Benutzer bereits eingeloggt ist
-                document.getElementById('loggedInStatus').innerHTML = `Currently Logged in with: <b>@${identifier}</b>`;
+                // Automatisches Einloggen aufrufen
+                await autoLogin(identifier, password, provider);
             }
         } catch (error) {
             console.error('Error loading saved user:', error);
