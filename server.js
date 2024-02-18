@@ -5,6 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const multer = require('multer');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
@@ -60,19 +61,70 @@ function formatDateForDisplay(date) {
     return new Date(date).toLocaleString('de-DE', options);
 }
 
-// Route zum Abrufen aller Posts
+// Speicherort für hochgeladene Dateien festlegen
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/profiles'); // Das Upload-Verzeichnis für Profilbilder
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname); // Verwenden Sie den Originalnamen der Datei
+    }
+});
+
+// Middleware für das Hochladen von Dateien initialisieren
+const upload = multer({ storage: storage });
+
+const fs = require('fs');
+
+// POST-Route zum Hochladen eines Profilbildes
+app.post('/upload', upload.single('profileImage'), async (req, res) => {
+    try {
+        // Überprüfen, ob eine Datei hochgeladen wurde
+        if (!req.file) {
+            console.error('No file uploaded');
+            return res.status(400).send('No file uploaded');
+        }
+
+        // Dateipfad der hochgeladenen Datei extrahieren
+        const filePath = req.file.path;
+
+        // URL für den Zugriff auf die hochgeladene Datei erstellen
+        const fileUrl = `/${filePath}`;
+
+        // Benutzer-ID aus dem Anfragekörper extrahieren
+        const userId = req.body._id; // Verwenden Sie die vorhandene Benutzer-ID (_id)
+
+        // Profilbild-URL in der Datenbank des Benutzers aktualisieren
+        await usersCollection.updateOne(
+            { _id: userId },
+            { $set: { pb: fileUrl } }
+        );
+
+        res.status(200).send(fileUrl); // Erfolgreiche Antwort mit der URL der hochgeladenen Datei
+    } catch (err) {
+        console.error('Error uploading file:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+// GET '/api/posts'
 app.get('/api/posts', async (req, res) => {
     try {
-        // Hier holen Sie alle Posts aus der Datenbank
         const posts = await db.collection('posts').find().toArray();
         
-        // Transformieren Sie das Datum jedes Posts vor dem Senden an den Client
-        const postsWithFormattedDate = posts.map(post => ({
-            ...post,
-            date: formatDateForDisplay(post.date)
+        // Transformieren Sie das Datum jedes Posts und fügen Sie das Bildfeld hinzu
+        const postsWithFormattedData = await Promise.all(posts.map(async post => {
+            const user = await db.collection('users').findOne({ username: post.username });
+            const imageUrl = user ? user.pb : null; // Profilbild-URL aus Benutzerdaten abrufen
+            return {
+                ...post,
+                date: formatDateForDisplay(post.date),
+                imageUrl // Profilbild-URL in den Post einfügen
+            };
         }));
         
-        res.status(200).json(postsWithFormattedDate); // Senden Sie die Posts mit formatiertem Datum als JSON zurück
+        res.status(200).json(postsWithFormattedData);
     } catch (error) {
         console.error("Fehler beim Abrufen der Beiträge:", error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -111,7 +163,7 @@ app.post('/login', async (req, res) => {
     try {
         // Suche nach Benutzer mit der angegebenen E-Mail oder dem angegebenen Benutzernamen
         const user = await usersCollection.findOne({
-            $or: [{ email: identifier }, { username: identifier }]
+            $or: [ { username: identifier }]
         });
 
         if (user && user.password === password) {
@@ -135,15 +187,6 @@ app.post('/signup', async (req, res) => {
     try {
         console.log('Received signup request for:', email, username);
 
-        // Überprüfen, ob der Benutzer bereits existiert
-        const existingUserByEmail = await usersCollection.findOne({ email });
-        console.log('Existing user by email:', existingUserByEmail);
-
-        if (existingUserByEmail) {
-            console.log('User already exists with email:', email);
-            return res.status(400).send('User already exists');
-        }
-
         // Überprüfen, ob der Benutzername bereits verwendet wird
         const existingUserByUsername = await usersCollection.findOne({ username });
         console.log('Existing user by username:', existingUserByUsername);
@@ -155,7 +198,7 @@ app.post('/signup', async (req, res) => {
 
         // Neuen Benutzer erstellen
         console.log('Creating new user:', email, username);
-        await usersCollection.insertOne({ email, password, username, admin: false});
+        await usersCollection.insertOne({ email, password, username, admin: false, googlelogin: false });
         
         console.log('User created successfully:', email, username, password);
         res.status(201).send('User created successfully');
@@ -214,7 +257,6 @@ app.post('/admin', async (req, res) => {
     }
 });
 
-
 // API-Route zum Abrufen der Benutzernamen
 app.get('/api/username', async (req, res) => {
     try {
@@ -225,7 +267,8 @@ app.get('/api/username', async (req, res) => {
         const userData = users.map(user => ({
             username: user.username,
             email: user.email,
-            password: user.password
+            password: user.password,
+            pb: user.pb,
         }));
         
         // JSON-Antwort mit Benutzerdaten senden
@@ -302,6 +345,7 @@ passport.use(new GoogleStrategy({
                 password: randomPassword,
                 pb: userPhoto,
                 admin: false,
+                googlelogin: true
             };
 
             await collection.insertOne(newUser);

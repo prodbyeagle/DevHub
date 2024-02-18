@@ -119,7 +119,7 @@
     <div class="max-w-md mx-auto neumorphism-form">
         <form id="loginForm" class="space-y-4">
             <div>
-                <label for="identifier" class="block text-sm font-medium">Email or Username:</label>
+                <label for="identifier" class="block text-sm font-medium">Username:</label>
                 <input type="text" id="identifier" name="identifier" required autocomplete="username"
                        class="mt-1 block w-full neumorphism-input">
             </div>
@@ -165,7 +165,7 @@
             } else if (response.status === 401) {
                 // Fehlermeldung anzeigen, wenn Anmeldeinformationen ungültig sind
                 Toastify({
-                    text: 'Invalid email, username, or password',
+                    text: 'Invalid username, or password (You need to use your username (Email not Valid)',
                     style: {
                         background: 'linear-gradient(to right, #ff416c, #ff4b2b)',
                     },

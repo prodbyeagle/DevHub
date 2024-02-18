@@ -368,6 +368,8 @@
         body.dark-mode .scroll-to-top:hover {
             background-color: #333;
         }
+
+        
     </style>
 </head>
 <body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
@@ -453,7 +455,7 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-    async function createPost(event) {
+async function createPost(event) {
     event.preventDefault(); // Verhindert das Standardformularverhalten
 
     const postContent = document.getElementById('postContent').value;
@@ -468,6 +470,12 @@ function isValidEmail(email) {
         const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
             if (savedUser) {
                 const { identifier: identifier } = JSON.parse(savedUser); // Benutzername extrahieren
+
+                const response = await fetch('/api/username');
+                const userData = await response.json();
+
+                // Finde den Benutzer, der die angegebene E-Mail-Adresse hat
+                const matchedUser = userData.users.find(user => user.email === identifier);
 
             // Überprüfen, ob der Benutzer den Cooldown erreicht hat
             const lastPostTime = localStorage.getItem('lastPostTime');
@@ -517,10 +525,14 @@ function isValidEmail(email) {
 
 async function getPosts() {
     try {
-
         // Rufen Sie die Posts ab
         const response = await fetch('/api/posts');
         const posts = await response.json();
+
+        // Rufen Sie die Benutzerdaten ab
+        const userResponse = await fetch('/api/username');
+        const userData = await userResponse.json();
+        const usersArray = userData.users; // Extrahieren Sie das Array der Benutzer
 
         // Verarbeiten und Anzeigen der Posts
         const postsContainer = document.getElementById('latestPosts');
@@ -532,9 +544,23 @@ async function getPosts() {
 
             const username = post.username;
 
-            // Benutzername hinzufügen
+            const dateElement = document.createElement('p');
+            dateElement.textContent = post.date;
+
+            // Benutzername und Datum hinzufügen
             const usernameElement = document.createElement('h3');
-            usernameElement.textContent = `@${username}`;
+            usernameElement.textContent = `@${username} (${dateElement.textContent})`;
+
+            // Benutzerdaten finden
+            const user = usersArray.find(user => user.username === username);
+            if (user && user.pb) {
+                console.log('user.pb:', user.pb); // Logging hinzugefügt
+                const profileImageElement = document.createElement('img');
+                profileImageElement.src = user.pb;
+                profileImageElement.alt = `user_pic`;
+                profileImageElement.classList.add('profile-image');
+                postElement.appendChild(profileImageElement);
+            }
 
             const contentElement = document.createElement('p');
             contentElement.textContent = post.content;
@@ -542,15 +568,11 @@ async function getPosts() {
             // Code-Snippet hinzufügen
             const codeSnippetElement = document.createElement('pre');
             codeSnippetElement.textContent = post.codesnippet;
-            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded');
+            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
             codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Text in Zeilen umbrechen
             codeSnippetElement.style.maxWidth = '100%'; // Maximalbreite setzen
 
-            const dateElement = document.createElement('p');
-            dateElement.textContent = post.date;
-
             postElement.appendChild(usernameElement);
-            postElement.appendChild(dateElement);
             postElement.appendChild(contentElement);
             postElement.appendChild(codeSnippetElement);
 
@@ -614,42 +636,42 @@ var formattedPostContent = formatCode(postContent);
         document.body.classList.remove('dark-mode');
         document.body.classList.add('light-mode');
     }
-    console.log('Y');
-    console.log('YO');
-    console.log('YOO');
-    console.log('YOOO');
-    console.log('YOOO.');
-    console.log('YOOO. ');
-    console.log('YOOO. I');
-    console.log('YOOO. I.');
-    console.log('YOOO. I. ');
-    console.log('YOOO. I. S');
-    console.log('YOOO. I. SE');
-    console.log('YOOO. I. SEE');
-    console.log('YOOO. I. SEE.');
-    console.log('YOOO. I. SEE. ');
-    console.log('YOOO. I. SEE. Y');
-    console.log('YOOO. I. SEE. YO');
-    console.log('YOOO. I. SEE. YOU');
-    console.log('YOOO. I. SEE. YOU.');
-    console.log('YOOO. I. SEE. YOU.');
-    console.log('YOOO. I. SEE. YOU');
-    console.log('YOOO. I. SEE. YO');
-    console.log('YOOO. I. SEE. Y')
-    console.log('YOOO. I. SEE. ');
-    console.log('YOOO. I. SEE.');
-    console.log('YOOO. I. SEE');
-    console.log('YOOO. I. SE');
-    console.log('YOOO. I. S');
-    console.log('YOOO. I. ');
-    console.log('YOOO. I.');
-    console.log('YOOO. I');
-    console.log('YOOO. ');
-    console.log('YOOO.');
-    console.log('YOOO');
-    console.log('YOO');
-    console.log('YO');
-    console.log('Y');
+    // console.log('Y');
+    // console.log('YO');
+    // console.log('YOO');
+    // console.log('YOOO');
+    // console.log('YOOO.');
+    // console.log('YOOO. ');
+    // console.log('YOOO. I');
+    // console.log('YOOO. I.');
+    // console.log('YOOO. I. ');
+    // console.log('YOOO. I. S');
+    // console.log('YOOO. I. SE');
+    // console.log('YOOO. I. SEE');
+    // console.log('YOOO. I. SEE.');
+    // console.log('YOOO. I. SEE. ');
+    // console.log('YOOO. I. SEE. Y');
+    // console.log('YOOO. I. SEE. YO');
+    // console.log('YOOO. I. SEE. YOU');
+    // console.log('YOOO. I. SEE. YOU.');
+    // console.log('YOOO. I. SEE. YOU.');
+    // console.log('YOOO. I. SEE. YOU');
+    // console.log('YOOO. I. SEE. YO');
+    // console.log('YOOO. I. SEE. Y')
+    // console.log('YOOO. I. SEE. ');
+    // console.log('YOOO. I. SEE.');
+    // console.log('YOOO. I. SEE');
+    // console.log('YOOO. I. SE');
+    // console.log('YOOO. I. S');
+    // console.log('YOOO. I. ');
+    // console.log('YOOO. I.');
+    // console.log('YOOO. I');
+    // console.log('YOOO. ');
+    // console.log('YOOO.');
+    // console.log('YOOO');
+    // console.log('YOO');
+    // console.log('YO');
+    // console.log('Y');
 }
 
     loadModePreference();
