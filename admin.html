@@ -92,71 +92,76 @@
 </div>
 </body>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-    const adminDataDiv = document.getElementById('adminData');
-    if (!localStorage.getItem('user')) {
-        console.error('No user found in localStorage');
-        return;
-    }
-
-    const savedUser = localStorage.getItem('user');
-    const formData = {
-        username: JSON.parse(localStorage.getItem('user')).identifier
-    };
-
-    try {
-        const response = await fetch('/admin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    document.addEventListener('DOMContentLoaded', async () => {
+        const adminDataDiv = document.getElementById('adminData');
+        if (!localStorage.getItem('user')) {
+            console.error('No user found in localStorage');
+            return;
         }
-        const contentType = response.headers.get('content-type');
+    
+        const savedUser = localStorage.getItem('user');
+        const formData = {
+            username: JSON.parse(localStorage.getItem('user')).identifier
+        };
+    
+        try {
+            const response = await fetch('/admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const contentType = response.headers.get('content-type');
             let data;
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
+                console.log(data);
             } else {
                 data = await response.text();
-    }
-        if (Array.isArray(data)) {
-            data.forEach(user => {
-                const userDiv = document.createElement('div');
-                userDiv.classList.add('p-4', 'border-t', 'border-gray-350');
-                userDiv.innerHTML = `
-                    <p><strong>Username:</strong> ${user.username}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Password:</strong> ${user.password}</p>
-                    <p><strong>Preferences:</strong> ${user.preferences ? user.preferences.join(', ') : 'None'}</p>
-                `;
-
-                adminDataDiv.appendChild(userDiv);
-            });
-        } else {
-            console.error('Ungültige Antwort von Server:', data);
-        }
-    } catch (error) {
-        console.error('There was a problem with your fetch operation:', error);
-    }
-});
-
-    function loadModePreference() {
-        const mode = localStorage.getItem('mode');
-        if (mode === 'dark') {
-            document.body.classList.remove('light-mode');
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-        }
-        console.log('Mode Loaded:', mode);
-    }
+                console.log(data);
+            }
+            if (Array.isArray(data)) {
+                data.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.classList.add('p-4', 'border-t', 'border-gray-350');
+                    userDiv.innerHTML = `
+                        <img src="${user.pb}" alt="none" class="profile-image" style="width: 40px;"> 
+                        <p><strong>Username:</strong> ${user.username}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Password:</strong> ${user.password}</p>
+                        <p><strong>Preferences:</strong> ${user.preferences ? user.preferences.join(', ') : 'None'}</p>
+                    `;
     
-    loadModePreference();
-
-</script>
+                    adminDataDiv.appendChild(userDiv);
+                });
+            } else {
+                console.error('Ungültige Antwort von Server:', data);
+            }
+        } catch (error) {
+            console.error('There was a problem with your fetch operation:', error);
+        }
+    });
+    
+    function loadModePreference() {
+            // Lade den gespeicherten Moduswert aus dem Local Storage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'light') {
+                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            }
+            console.log('Mode Loaded:', mode);
+        }
+        loadModePreference();
+    
+    </script>
 </body>
 </html>

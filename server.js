@@ -61,53 +61,6 @@ function formatDateForDisplay(date) {
     return new Date(date).toLocaleString('de-DE', options);
 }
 
-// Speicherort für hochgeladene Dateien festlegen
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/profiles'); // Das Upload-Verzeichnis für Profilbilder
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname); // Verwenden Sie den Originalnamen der Datei
-    }
-});
-
-// Middleware für das Hochladen von Dateien initialisieren
-const upload = multer({ storage: storage });
-
-const fs = require('fs');
-
-// POST-Route zum Hochladen eines Profilbildes
-app.post('/upload', upload.single('profileImage'), async (req, res) => {
-    try {
-        // Überprüfen, ob eine Datei hochgeladen wurde
-        if (!req.file) {
-            console.error('No file uploaded');
-            return res.status(400).send('No file uploaded');
-        }
-
-        // Dateipfad der hochgeladenen Datei extrahieren
-        const filePath = req.file.path;
-
-        // URL für den Zugriff auf die hochgeladene Datei erstellen
-        const fileUrl = `/${filePath}`;
-
-        // Benutzer-ID aus dem Anfragekörper extrahieren
-        const userId = req.body._id; // Verwenden Sie die vorhandene Benutzer-ID (_id)
-
-        // Profilbild-URL in der Datenbank des Benutzers aktualisieren
-        await usersCollection.updateOne(
-            { _id: userId },
-            { $set: { pb: fileUrl } }
-        );
-
-        res.status(200).send(fileUrl); // Erfolgreiche Antwort mit der URL der hochgeladenen Datei
-    } catch (err) {
-        console.error('Error uploading file:', err);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-
 // GET '/api/posts'
 app.get('/api/posts', async (req, res) => {
     try {
@@ -363,7 +316,10 @@ app.post('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
         // Erfolgreiche Authentifizierung, senden Sie die Benutzerdaten an den Client
-        res.status(200).json({ username: req.user.username, password: req.user.password });
+        res.status(200).json({ 
+            username: req.user.username, 
+            password: req.user.password,
+        });
     }
 );
 
@@ -371,12 +327,18 @@ app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
         console.log('req.user:', req.user); // Output the entire req.user object for debugging
-        // Überprüfen, ob req.user.email definiert ist
-        if (req.user && req.user.email) {
-            console.log('Authenticated User:', req.user.username, req.user.email);
-            res.redirect('/home?user=' + JSON.stringify(req.user));
+
+        if (req.user && req.user.username && req.user.password) {
+            console.log('Authenticated User:', req.user.username, req.user.password);
+
+            // Weiterleitung zur Home-Seite mit Benutzerdaten als URL-Parameter
+            const user = {
+                identifier: req.user.username,
+                password: req.user.password
+            };
+            res.redirect('/login?user=' + encodeURIComponent(JSON.stringify(user)));
         } else {
-            console.error('Error: User email not found.');
+            console.error('Error: User username or password not found.');
             res.redirect('/login'); // Weiterleitung zur Login-Seite oder Fehlerbehandlung entsprechend
         }
     }
@@ -397,6 +359,9 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 // Passport-Initialisierung und Sitzungsverwaltung
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+
 
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); // Laden Sie die index.html-Datei

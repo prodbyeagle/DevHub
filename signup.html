@@ -108,11 +108,10 @@
         </form>
     </div>
 </div>
-<div class="max-w-md mx-auto neumorphism-button w-full">
-    <a href="/auth/google" class="neumorphism-button w-full">Sign in with Google</a>
+<div class="flex justify-center items-center fixed inset-x-0 top-120">
+    <a href="/auth/google" class="neumorphism-button">Sign in with Google</a>
 </div>
 <script>
-// DOMContentLoaded-Event-Listener
 document.addEventListener('DOMContentLoaded', () => {
     const storedUser = localStorage.getItem('user');
 
@@ -125,10 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = urlParams.get('user');
 
     if (user) {
+        // Benutzerdaten aus der URL extrahieren und im localStorage speichern
         localStorage.setItem('user', user);
-        alert(user);
-        console.log('User data saved in localStorage:', user); // Loggen der Benutzerdaten im localStorage
-       window.location.href = '/home';
+        console.log('User data saved in localStorage:', user);
+        window.location.href = '/home'; // Optional: Weiterleitung zur Home-Seite
     }
 });
 
@@ -178,17 +177,20 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
 });
 
 function loadModePreference() {
-    const mode = localStorage.getItem('mode');
-    if (mode === 'dark') {
-        document.body.classList.remove('light-mode');
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-        document.body.classList.add('light-mode');
-    }
-    console.log('Mode Loaded:', mode);
-}
-loadModePreference();
+            // Lade den gespeicherten Moduswert aus dem Local Storage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'light') {
+                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            }
+            console.log('Mode Loaded:', mode);
+        }
+        loadModePreference();
 </script>
 </body>
 </body>

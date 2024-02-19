@@ -125,7 +125,7 @@
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium">Password:</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password"
+                <input type="password" id="password" name="password" required autocomplete="password"
                        class="mt-1 block w-full neumorphism-input">
             </div>
             <div class="flex items-center">
@@ -136,7 +136,24 @@
         </form>
     </div>
 </div>
+<div class="flex justify-center items-center fixed inset-x-0 top-120">
+    <a href="/auth/google" class="neumorphism-button">Sign in with Google</a>
+</div>
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const storedUser = localStorage.getItem('user');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get('user');
+
+    if (user) {
+        // Benutzerdaten aus der URL extrahieren und im localStorage speichern
+        localStorage.setItem('user', user);
+        console.log('User data saved in localStorage:', user);
+        window.location.href = '/home'; // Optional: Weiterleitung zur Home-Seite
+    }
+});
+
     document.getElementById('loginForm').addEventListener('submit', async (event) => {
         event.preventDefault(); // Standardformularübermittlung verhindern
 
@@ -197,32 +214,6 @@
         }
     });
 
-    async function autoLogin(identifier, password, provider) {
-        try {
-            let body = { identifier, password };
-            if (provider === 'google') {
-                body = { provider };
-            }
-
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (response.ok) {
-                window.location.href = '/home'; // Weiterleitung zur Startseite nach erfolgreicher Anmeldung
-            } else {
-                // Fehlermeldung anzeigen, wenn Anmeldung fehlgeschlagen ist
-                console.error('Auto login failed:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Error auto logging in:', error);
-        }
-    }
-
     window.onload = async () => {
         try {
             const savedUser = localStorage.getItem('user');
@@ -230,8 +221,6 @@
                 const { identifier, password, provider } = JSON.parse(savedUser);
                 document.getElementById('identifier').value = identifier;
 
-                // Automatisches Einloggen aufrufen
-                await autoLogin(identifier, password, provider);
             }
         } catch (error) {
             console.error('Error loading saved user:', error);
@@ -241,14 +230,14 @@
     function loadModePreference() {
             // Lade den gespeicherten Moduswert aus dem Local Storage
             const mode = localStorage.getItem('mode');
-            if (mode === 'dark') {
+            if (mode === 'light') {
                 // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-                document.body.classList.remove('light-mode');
-                document.body.classList.add('dark-mode');
-            } else {
-                // Andernfalls füge die Klasse für den hellen Modus hinzu
                 document.body.classList.remove('dark-mode');
                 document.body.classList.add('light-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
             }
             console.log('Mode Loaded:', mode);
         }

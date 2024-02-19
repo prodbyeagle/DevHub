@@ -293,7 +293,7 @@
                             </button>
                             <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="objective-c">
                                 <i class="devicon-objectivec-plain"></i>
-                                <span>Obj. C</span>
+                                <span>Ob. C</span>
                             </button>
                             <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="clojure">
                                 <i class="devicon-clojure-plain"></i>
@@ -309,7 +309,7 @@
                             </button>
                             <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="powershell">
                                 <i class="devicon-powershell-plain"></i>
-                                <span>PowerShell</span>
+                                <span>PS</span>
                             </button>
                             <button type="button" class="language-button rounded-md flex flex-col items-center mx-2 mb-2" data-language="fsharp">
                                 <i class="devicon-fsharp-plain"></i>
@@ -467,14 +467,14 @@
         function loadModePreference() {
             // Lade den gespeicherten Moduswert aus dem Local Storage
             const mode = localStorage.getItem('mode');
-            if (mode === 'dark') {
+            if (mode === 'light') {
                 // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-                document.body.classList.remove('light-mode');
-                document.body.classList.add('dark-mode');
-            } else {
-                // Andernfalls füge die Klasse für den hellen Modus hinzu
                 document.body.classList.remove('dark-mode');
                 document.body.classList.add('light-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
             }
             console.log('Mode Loaded:', mode);
         }
