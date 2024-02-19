@@ -1,38 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <title>Profil</title>
     <style>
         body {
-            font-family: 'SF Pro Medium', Arial, sans-serif;
+            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        /* Neumorphism styles for Dark Mode */
+        body.dark-mode {
+            background-color: #222;
+            color: #eee;
+            transition: all 0.3s ease;
+        }
+
+        /* Neumorphism styles for the form */
+        .neumorphism-form {
+            background-color: #f0f0f0;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-form {
+            background-color: #222;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Neumorphism styles for the input fields */
+        .neumorphism-input {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-input {
+            border-color: #555;
+            background-color: #333;
+            color: #eee;
+        }
+
+        /* Neumorphism styles for the submit button */
+        .neumorphism-button {
+            background-color: #007bff;
+            color: #fff;
+            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .neumorphism-button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .neumorphism-button {
+            background-color: #222;
+            color: #eee;
+            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .neumorphism-button:hover {
+            background-color: #333;
+        }
+
+        /* Dark Mode styles for the checkbox */
+        .neumorphism-checkbox {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1.4em;
+            height: 1.4em;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .neumorphism-checkbox:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        /* Custom styles for the switch label */
+        .switch-label {
+            margin-left: 0.5rem;
+            font-size: 0.875rem;
+            color: #333;
+        }
+
+        /* Dark Mode styles for the switch label */
+        body.dark-mode .switch-label {
+            color: #eee;
+        }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .overlay-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none;
+        }
+        
+        .content-container {
+            padding: 1rem;
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 16px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode .content-container {
+            padding: 1rem;
+            background-color: #222;
+            color: #eee;
+            border-radius: 16px;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+            
+        }
+
+            /* Neumorphism styles for the posts */
+    .post {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: #333;
+        border-radius: 16px;
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+    }
+
+    .post:hover {
+        transform: scale(1.03); /* Vergrößern des Posts beim Hover */
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
+    }
+
+    /* Neumorphism styles for dark mode */
+    body.dark-mode .post {
+        background-color: #222;
+        border: 1px solid #333;
+        color: #eee;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    }
+
+    body.dark-mode .post:hover {
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
+        transform: scale(1.03);
+    }
+
+    .scroll-to-top {
+            position: fixed;
+            bottom: 20px; /* Adjust as needed */
+            right: 20px; /* Adjust as needed */
+            z-index: 9999;
+            display: none; /* Hide by default */
+            width: 60px;
+            height: 60px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .scroll-to-top:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .scroll-to-top {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .scroll-to-top:hover {
+            background-color: #333;
         }
     </style>
 </head>
+
 <body class="bg-gray-100">
-<div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold text-center mb-8">Profile</h1>
-
-    <!-- Upload Profile Picture Form -->
-    <div class="max-w-md mx-auto bg-white p-8 mt-8 rounded shadow">
-        <h2 class="text-xl font-bold mb-4">Upload Profile Picture</h2>
-        <form id="uploadProfileForm" enctype="multipart/form-data">
-            <div>
-                <label for="profileImage" class="block text-sm font-medium text-gray-700">Choose Profile Picture:</label>
-                <input type="file" id="profileImage" name="profileImage" required accept="image/*"
-                       class="mt-1 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+    <div class="container mx-auto py-8 profile-container neumorphism-form">
+        <div class="profile-card" id="profile-card">
+            <div class="profile-picture">
+                <img src="" alt="Profile Picture" id="profile-picture">
             </div>
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-4">Upload</button>
-        </form>
+            <div class="profile-info">
+                <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
+                <p class="text-gray-600" id="profile-description">Loading...</p>
+            </div>
+            <button onclick="showOverlay()" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Bio bearbeiten</button>
+        </div>
+
+        <div class="overlay hidden" id="overlay">
+            <div class="overlay-content neumorphism-form">
+                <h2 class="text-2xl font-semibold mb-4">Bio bearbeiten</h2>
+                <textarea class="w-full p-2 border border-gray-300 rounded-md mb-4 neumorphism-input"
+                    style="resize: none; white-space: nowrap; font-family: SF Pro Medium, 'Open Sans', sans-serif;" id="bio-input" placeholder="Type your Bio here." rows="4" cols="32" maxlength="32"></textarea>
+                <div class="flex justify-between items-center mb-2">
+                    <p id="char-count"></p>
+                    <button type="button" class="neumorphism-button" onclick="saveBio()">Speichern</button>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="neumorphism-button bg-gray-300 text-gray-700 ml-2"
+                        onclick="closeOverlay()">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <div id="user-posts" class="mt-8">
+            </div>
+        </div>
     </div>
-</div>
-<script>
+    <div class="flex justify-center items-center fixed inset-x-0 bottom-0 mb-8">
+        <div class="container mx-auto">
+            <a href="/home" class="neumorphism-button text-blue-600">Home</a>
+        </div>
+    </div>
+</body>
 
-//TODO: Change Password and Add Profile Picture (DB SAVE)
+<button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+</button>
 
-</script>
+    <script>
+
+        async function fetchUserPosts(username) {
+            try {
+                const response = await fetch(`/api/${username}/posts`);
+                const postsData = await response.json();
+                if (postsData.length === 0) {
+                    renderNoPostsMessage();
+                } else {
+                    renderPosts(postsData);
+                }
+            } catch (error) {
+                console.error('Error fetching user posts:', error);
+            }
+        }
+        
+        function renderNoPostsMessage() {
+            const postsContainer = document.getElementById('user-posts');
+            postsContainer.innerHTML = ''; // Clear previous posts
+        
+            const messageElement = document.createElement('p');
+            messageElement.textContent = '😭 No Posts! ...you can make an posts on your /home page';
+            postsContainer.appendChild(messageElement);
+        }
+
+        function renderPosts(posts) {
+        const postsContainer = document.getElementById('user-posts');
+        postsContainer.innerHTML = ''; // Clear previous posts
+
+        posts.forEach(post => {
+            const postElement = document.createElement('div');
+            postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
+
+            const usernameElement = document.createElement('h3');
+            usernameElement.textContent = `@${post.username} (${post.date})`;
+
+            const contentElement = document.createElement('p');
+            contentElement.textContent = post.content;
+
+            const codeSnippetElement = document.createElement('pre');
+            codeSnippetElement.textContent = post.codesnippet;
+            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
+            codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Wrap lines
+            codeSnippetElement.style.maxWidth = '100%'; // Set max width
+
+            postElement.appendChild(usernameElement);
+            postElement.appendChild(contentElement);
+            postElement.appendChild(codeSnippetElement);
+
+            postsContainer.appendChild(postElement);
+        });
+    }
+
+    applyHoverEffectToPosts();
+
+    // Function to apply hover effect to a post element
+    function applyHoverEffect(postElement) {
+        postElement.addEventListener("mouseenter", function() {
+            this.style.transform = "scale(1.3)";
+            this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
+        });
+        postElement.addEventListener("mouseleave", function() {
+            this.style.transform = "scale(1)";
+            this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
+        });
+    }    
+    // Funktion zum Anwenden des Hover-Effekts auf alle Posts
+    function applyHoverEffectToPosts() {
+        const posts = document.querySelectorAll(".post");
+        posts.forEach(post => {
+            addHoverEffect(post); // Füge den Hover-Effekt zu jedem Post hinzu
+        });
+    }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            if (userData) {
+                const currentUsername = userData.identifier;
+                fetchUserPosts(currentUsername);
+            } else {
+                console.error('User data not found in localStorage.');
+            }
+        });
+
+        function loadModePreference() {
+            // Lade den gespeicherten Moduswert aus dem Local Storage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'light') {
+                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            }
+            console.log('Mode Loaded:', mode);
+        }
+        loadModePreference();
+    
+        window.onload = async function() {
+    try {
+        const userDataString = localStorage.getItem('user');
+        if (!userDataString) {
+            console.error('User data not found in localStorage.');
+            return;
+        }
+
+        const userData = JSON.parse(userDataString);
+        const identifier = userData.identifier;
+
+        const response = await fetch(`/api/username`);
+        const data = await response.json();
+        console.log('User data:', data);
+
+        const users = data.users;
+        let currentUser = null;
+
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].username === identifier) {
+                currentUser = users[i];
+                break;
+            }
+        }
+
+        if (!currentUser) {
+            console.error('User not found in the database.');
+            return;
+        }
+
+        document.getElementById('profile-picture').src = currentUser.pb;
+        document.getElementById('profile-username').innerText = currentUser.username;
+        const profileUsernameElement = document.getElementById('profile-username');
+        profileUsernameElement.textContent = `@${currentUser.username}`;
+
+        // Anzeigen der Biografie im Profil
+        const profileDescriptionElement = document.getElementById('profile-description');
+        if (currentUser.bio) {
+            profileDescriptionElement.innerText = currentUser.bio;
+        } else {
+            profileDescriptionElement.innerText = "❌ Bio not available";
+        }
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+    }
+};
+    
+        // Funktion zum Anzeigen des Overlays
+        function showOverlay() {
+            document.getElementById('overlay').classList.remove('hidden');
+        }
+    
+        // Funktion zum Schließen des Overlays
+        function closeOverlay() {
+            document.getElementById('overlay').classList.add('hidden');
+        }
+    
+        // Funktion zum Speichern der Biografie
+        async function saveBio() {
+            try {
+                // Neue Biografie aus dem Eingabefeld abrufen
+                const newBio = document.getElementById('bio-input').value;
+        
+                // Biografie-Anzeige im Profil aktualisieren
+                document.getElementById('profile-description').innerText = newBio;
+        
+                // Benutzerdaten aus dem Local Storage abrufen
+                const userData = JSON.parse(localStorage.getItem('user'));
+                if (!userData) {
+                    console.error('User data not found in localStorage.');
+                    return;
+                }
+        
+                // Benutzername und neue Biografie für die API-Anfrage vorbereiten
+                const username = userData.identifier;
+        
+                // API-Anfrage senden, um die Biografie des Benutzers zu aktualisieren
+                const response = await fetch('/api/update-bio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, newBio })
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Failed to update bio.');
+                }
+        
+                // Overlay schließen
+                closeOverlay();
+            } catch (error) {
+                console.error('Error saving bio:', error);
+                // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
+            }
+        }
+
+// Funktion zum Anzeigen der Zeichenanzahl und Anpassen der Farbe
+function updateCharCount() {
+    const bioInput = document.getElementById('bio-input');
+    const charCountElement = document.getElementById('char-count');
+    const remainingChars = 32 - bioInput.value.length;
+
+    // Ändere die Farbe basierend auf der verbleibenden Zeichenanzahl
+    if (remainingChars <= 5) {
+        const redIntensity = Math.max(0, Math.min(255, remainingChars * 50));
+        charCountElement.style.color = `rgb(255, ${redIntensity}, ${redIntensity})`;
+    } else if (remainingChars <= 10) {
+        charCountElement.style.color = 'white';
+    } else {
+        charCountElement.style.color = 'inherit'; // Standardfarbe
+    }
+
+    charCountElement.textContent = `${remainingChars} left`;
+}
+
+// Event-Listener für das Eingabefeld, um die Zeichenanzahl zu aktualisieren
+document.getElementById('bio-input').addEventListener('input', updateCharCount);
+
+        // Function to scroll to the top of the page with animation
+        function scrollToTop() {
+            const c = document.documentElement.scrollTop || document.body.scrollTop;
+            if (c > 0) {
+                window.requestAnimationFrame(scrollToTop);
+                window.scrollTo(0, c - c / 8);
+            }
+        }
+
+    window.onscroll = function() {
+        scrollFunction();
+    };
+    
+    function scrollFunction() {
+        const scrollToTopButton = document.querySelector('.scroll-to-top');
+        const scrollPosition = document.documentElement.scrollTop || document.body.scrollTop;
+        
+        // Adjust the threshold value (50) to your desired scroll position before showing the button
+        if (scrollPosition > 1200) {
+            scrollToTopButton.style.display = "block";
+        } else {
+            scrollToTopButton.style.display = "none";
+        }
+    }
+
+    </script>
 </body>
 </html>

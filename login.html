@@ -129,7 +129,7 @@
                        class="mt-1 block w-full neumorphism-input">
             </div>
             <div class="flex items-center">
-                <input type="checkbox" id="rememberMe" name="rememberMe" class="neumorphism-checkbox" disabled checked>
+                <input type="checkbox" id="rememberMe" name="rememberMe" class="neumorphism-checkbox">
                 <label for="rememberMe" class="switch-label">Remember me</label>
             </div>
             <button type="submit" class="neumorphism-button w-full">Login</button>
@@ -177,7 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Wenn "Remember me" ausgewählt ist, Benutzerdaten im lokalen Speicher überschreiben
                 if (rememberMe) {
                     localStorage.setItem('user', JSON.stringify({ identifier, password }));
+                } else {
+                    localStorage.setItem('user', JSON.stringify({ identifier, password }));
                 }
+
                 window.location.href = '/home'; // Weiterleitung zur Startseite nach erfolgreicher Anmeldung
             } else if (response.status === 401) {
                 // Fehlermeldung anzeigen, wenn Anmeldeinformationen ungültig sind

@@ -61,6 +61,60 @@ function formatDateForDisplay(date) {
     return new Date(date).toLocaleString('de-DE', options);
 }
 
+//FIXME: app.get('/profile/:username', async (req, res) => {
+//FIXME:     const username = req.params.username; // Den Benutzernamen aus der URL-Parameter erhalten
+//FIXME:     console.log("Benutzername:", username);
+//FIXME: 
+//FIXME:     try {
+//FIXME:         // Annahme: 'users' ist deine MongoDB-Sammlung, die Benutzerprofile enthält
+//FIXME:         const user = await usersCollection.findOne({ username });
+//FIXME:         console.log("User:", user);
+//FIXME: 
+//FIXME:         if (!user) {
+//FIXME:             // Wenn der Benutzer nicht gefunden wurde, sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
+//FIXME:             return res.status(404).send('Benutzer nicht gefunden');
+//FIXME:         }
+//FIXME: 
+//FIXME:         // Daten des Benutzers aus der API abrufen
+//FIXME:         const encodedUsername = encodeURIComponent(username);
+//FIXME:         const response = await fetch(`http://localhost:3000/api/${encodedUsername}/posts`);
+//FIXME:         const userData = await response.json();
+//FIXME:         console.log("Beiträge:", userData);
+//FIXME: 
+//FIXME:         // Rendern der Profilseite mit den Benutzerdaten
+//FIXME:         res.render('profile', { user, userData }); // Hier 'profile' ist der Name deiner Profil-HTML-Datei (z. B. 'profile.ejs' oder 'profile.hbs')
+//FIXME:     } catch (error) {
+//FIXME:         console.error('Fehler beim Laden des Benutzerprofils:', error);
+//FIXME:         // Bei Fehlern sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
+//FIXME:         res.status(500).send('Interner Serverfehler');
+//FIXME:     }
+//FIXME: });
+
+// GET '/api/username/posts'
+app.get('/api/:username/posts', async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const posts = await db.collection('posts').find({ username }).toArray();
+
+        // Transformieren Sie das Datum jedes Posts und fügen Sie das Bildfeld hinzu
+        const postsWithFormattedData = await Promise.all(posts.map(async post => {
+            const user = await db.collection('users').findOne({ username: post.username });
+            const imageUrl = user ? user.pb : null; // Profilbild-URL aus Benutzerdaten abrufen
+            return {
+                ...post,
+                date: formatDateForDisplay(post.date),
+                imageUrl // Profilbild-URL in den Post einfügen
+            };
+        }));
+
+        res.status(200).json(postsWithFormattedData);
+    } catch (error) {
+        console.error("Fehler beim Abrufen der Beiträge:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // GET '/api/posts'
 app.get('/api/posts', async (req, res) => {
     try {
@@ -151,7 +205,7 @@ app.post('/signup', async (req, res) => {
 
         // Neuen Benutzer erstellen
         console.log('Creating new user:', email, username);
-        await usersCollection.insertOne({ email, password, username, admin: false, googlelogin: false });
+        await usersCollection.insertOne({ email, password, username, bio, admin: false, googlelogin: false });
         
         console.log('User created successfully:', email, username, password);
         res.status(201).send('User created successfully');
@@ -222,6 +276,7 @@ app.get('/api/username', async (req, res) => {
             email: user.email,
             password: user.password,
             pb: user.pb,
+            bio: user.bio,
         }));
         
         // JSON-Antwort mit Benutzerdaten senden
@@ -230,6 +285,31 @@ app.get('/api/username', async (req, res) => {
     } catch (error) {
         console.error("Error fetching userdata:", error);
         res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// API-Route zum Aktualisieren der Benutzer-Biografie
+app.post('/api/update-bio', async (req, res) => {
+    try {
+        const { username, newBio } = req.body;
+        const collection = db.collection('users');
+
+        // Überprüfen, ob der Benutzer vorhanden ist
+        const user = await collection.findOne({ username });
+
+        if (!user) {
+            console.log(`User "${username}" not found`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Biografie des Benutzers aktualisieren
+        await collection.updateOne({ username }, { $set: { bio: newBio } });
+
+        console.log(`Bio updated successfully for user "${username}"`);
+        return res.status(200).json({ message: 'Bio updated successfully' });
+    } catch (error) {
+        console.error("Error updating bio:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
@@ -242,20 +322,17 @@ app.post('/api/username', async (req, res) => {
         const user = await collection.findOne({ username });
 
         if (!user) {
-            console.log(`User "${username}" not found`);
             return res.status(404).json({ error: 'User not found' });
         }
 
         // Überprüfen, ob das aktuelle Passwort korrekt ist
         if (user.password !== currentPassword) {
-            console.log(`Incorrect current password provided for user "${username}"`);
             return res.status(400).json({ error: 'Current password is incorrect' });
         }
 
         // Passwort aktualisieren
         await collection.updateOne({ username }, { $set: { password: newPassword } });
 
-        console.log(`Password changed successfully for user "${username}"`);
         return res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
         console.error("Error processing request:", error);
@@ -297,12 +374,12 @@ passport.use(new GoogleStrategy({
                 email: userEmail,
                 password: randomPassword,
                 pb: userPhoto,
+                bio: "Hello, I'm New here!",
                 admin: false,
                 googlelogin: true
             };
 
             await collection.insertOne(newUser);
-            console.log('New user created:', newUser.username);
             return done(null, newUser);
         }
     } catch (error) {
@@ -315,7 +392,6 @@ passport.use(new GoogleStrategy({
 app.post('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
-        // Erfolgreiche Authentifizierung, senden Sie die Benutzerdaten an den Client
         res.status(200).json({ 
             username: req.user.username, 
             password: req.user.password,
@@ -326,10 +402,8 @@ app.post('/auth/google/callback',
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
-        console.log('req.user:', req.user); // Output the entire req.user object for debugging
 
         if (req.user && req.user.username && req.user.password) {
-            console.log('Authenticated User:', req.user.username, req.user.password);
 
             // Weiterleitung zur Home-Seite mit Benutzerdaten als URL-Parameter
             const user = {
@@ -344,7 +418,6 @@ app.get('/auth/google/callback',
     }
 );
 
-// Sitzungsserialisierung und Deserialisierung
 passport.serializeUser((user, done) => {
     done(null, user);
 });
@@ -352,16 +425,9 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user);
 });
-
-// GET-Route für den Start der Google-Authentifizierung
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-// Passport-Initialisierung und Sitzungsverwaltung
 app.use(passport.initialize());
 app.use(passport.session());
-
-
-
 
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); // Laden Sie die index.html-Datei
