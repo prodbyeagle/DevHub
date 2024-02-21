@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='/SF-Pro.woff2' rel='stylesheet' type='font-face/css'>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <title>Profil</title>
+    <style>
+        body {
+            @font-face {
+              font-family: 'Font';
+              src:  url('SF-Pro.woff2') format('woff2'),
+            }
+            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        /* Neumorphism styles for Dark Mode */
+        body.dark-mode {
+            background-color: #222;
+            color: #eee;
+            transition: all 0.3s ease;
+        }
+
+        /* Neumorphism styles for the form */
+        .neumorphism-form {
+            background-color: #f0f0f0;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-form {
+            background-color: #222;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Neumorphism styles for the input fields */
+        .neumorphism-input {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-input {
+            border-color: #555;
+            background-color: #333;
+            color: #eee;
+        }
+
+        /* Neumorphism styles for the submit button */
+        .neumorphism-button {
+            background-color: #007bff;
+            color: #fff;
+            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            padding: 0.5rem 1rem;
+            border: none;
+            border: 1px solid; /* 1px-Rand hinzufügen */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .neumorphism-button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .neumorphism-button {
+            background-color: #222;
+            color: #eee;
+            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .neumorphism-button:hover {
+            background-color: #333;
+        }
+
+        /* Dark Mode styles for the checkbox */
+        .neumorphism-checkbox {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1.4em;
+            height: 1.4em;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .neumorphism-checkbox:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        /* Custom styles for the switch label */
+        .switch-label {
+            margin-left: 0.5rem;
+            font-size: 0.875rem;
+            color: #333;
+        }
+
+        /* Dark Mode styles for the switch label */
+        body.dark-mode .switch-label {
+            color: #eee;
+        }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .overlay-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .content-container {
+            padding: 1rem;
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            border-radius: 16px;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode .content-container {
+            padding: 1rem;
+            background-color: #222;
+            color: #eee;
+            border-radius: 16px;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+            
+        }
+
+            /* Neumorphism styles for the posts */
+    .post {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: #333;
+        border-radius: 16px;
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+    }
+
+    .post:hover {
+        transform: scale(1.03); /* Vergrößern des Posts beim Hover */
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
+    }
+
+    /* Neumorphism styles for dark mode */
+    body.dark-mode .post {
+        background-color: #222;
+        border: 1px solid #333;
+        color: #eee;
+        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    }
+
+    body.dark-mode .post:hover {
+        box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
+        transform: scale(1.03);
+    }
+
+    .scroll-to-top {
+            position: fixed;
+            bottom: 20px; /* Adjust as needed */
+            right: 20px; /* Adjust as needed */
+            z-index: 9999;
+            display: none; /* Hide by default */
+            width: 60px;
+            height: 60px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .scroll-to-top:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .scroll-to-top {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .scroll-to-top:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8 profile-container neumorphism-form">
+        <div class="profile-card" id="profile-card">
+            <div class="profile-picture">
+                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px;">
+            </div>
+            <div class="profile-info">
+                <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
+                <p class="text-gray-600" id="profile-description">Loading...</p>
+            </div>
+            <div class="follower-section">
+                <h2>Follower</h2>
+                <p id="follower-count">0</p>
+            </div>
+        </div>
+        <button id="follow-button" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Follow</button>
+    </div>
+    <div class="content-container">
+        <div id="user-posts" class="mt-8" style="font-family: Font, SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+        </div>
+    </div>
+    <div class="flex justify-center items-center fixed inset-x-0 bottom-0 mb-8">
+        <div class="container mx-auto">
+            <a href="/home" class="neumorphism-button text-blue-600">Home</a>
+        </div>
+    </div>
+    <button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+    <script>
+        async function fetchUserPosts() {
+            const currentPath = window.location.pathname;
+            const username = currentPath.split('/').pop().replace(/_/g, ' '); // Benutzernamen extrahieren und Unterstriche durch Leerzeichen ersetzen
+            try {
+                const response = await fetch(`/api/${encodeURIComponent(username)}/posts`);
+                const postsData = await response.json();
+                if (postsData.length === 0) {
+                    renderNoPostsMessage(username); // Benutzernamen übergeben
+                } else {
+                    renderPosts(postsData);
+                }
+            } catch (error) {
+                console.error('Error fetching user posts:', error);
+            }
+        }
+        
+        const loggedInUser = localStorage.getItem('user');
+        const currentPath = window.location.pathname;
+        const username = decodeURIComponent(currentPath.split('/').pop().replace(/_/g, ' ')); // Leerzeichen im Benutzernamen behandeln
+        if (loggedInUser) {
+            const loggedInUsername = JSON.parse(loggedInUser).identifier;
+            if (loggedInUsername === username) {
+                window.location.href = '/profile';
+            }
+        }
+
+        function renderNoPostsMessage() {
+            const currentPath = window.location.pathname;
+            const username = decodeURIComponent(currentPath.split('/').pop().replace(/_/g, ' ')); // Leerzeichen im Benutzernamen behandeln
+            const postsContainer = document.getElementById('user-posts');
+            postsContainer.innerHTML = ''; // Clear previous posts
+        
+            const messageElement = document.createElement('p');
+            messageElement.innerHTML = `😭 ${username} has no Posts! Tell him to post ASAP!`;
+            postsContainer.appendChild(messageElement);
+        }
+
+        function renderPosts(posts) {
+        const postsContainer = document.getElementById('user-posts');
+        postsContainer.innerHTML = ''; // Clear previous posts
+
+        posts.forEach(post => {
+            const postElement = document.createElement('div');
+            postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
+
+            const usernameElement = document.createElement('h3');
+            usernameElement.textContent = `@${post.username} (${post.date})`;
+
+            const contentElement = document.createElement('p');
+            contentElement.textContent = post.content;
+
+            const codeSnippetElement = document.createElement('pre');
+            codeSnippetElement.textContent = post.codesnippet;
+            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
+            codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Wrap lines
+            codeSnippetElement.style.maxWidth = '100%'; // Set max width
+
+            postElement.appendChild(usernameElement);
+            postElement.appendChild(contentElement);
+            postElement.appendChild(codeSnippetElement);
+
+            postsContainer.appendChild(postElement);
+        });
+        }
+    
+        applyHoverEffectToPosts();
+    
+        function applyHoverEffect(postElement) {
+            postElement.addEventListener("mouseenter", function() {
+                this.style.transform = "scale(1.03)";
+                this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
+            });
+            postElement.addEventListener("mouseleave", function() {
+                this.style.transform = "scale(1)";
+                this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
+            });
+        }    
+        
+        function applyHoverEffectToPosts() {
+            const posts = document.querySelectorAll(".post");
+            posts.forEach(post => {
+                addHoverEffect(post);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const username = currentPath.split('/').pop();
+
+            if (username) {
+                fetchUserPosts(username);
+                fetchAndDisplayFollowerCount(username);
+            } else {
+                console.error('Username not found in URL.');
+            }
+        });
+
+        function loadModePreference() {
+            const mode = localStorage.getItem('mode');
+            if (mode === 'light') {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            }
+            console.log('Mode Loaded:', mode);
+        }
+        loadModePreference();
+
+        window.onload = async function() {
+    try {
+        // Den Benutzernamen aus dem Pfad der aktuellen URL abrufen
+        const currentPath = window.location.pathname;
+        const username = currentPath.split('/').pop().replace(/ /g, '_');
+
+        if (!username) {
+            console.error('Username not found in URL.');
+            return;
+        }
+
+        // Die Benutzerdaten für den angegebenen Benutzernamen abrufen
+        const response = await fetch(`/api/profile/${username}`);
+        const userData = await response.json();
+
+        // Die Benutzerdaten im Profil anzeigen
+        document.getElementById('profile-picture').src = userData.pb;
+        document.getElementById('profile-username').innerText = userData.username;
+        const profileUsernameElement = document.getElementById('profile-username');
+        profileUsernameElement.textContent = `@${userData.username}`;
+
+        const profileDescriptionElement = document.getElementById('profile-description');
+        if (userData.bio) {
+            profileDescriptionElement.innerText = userData.bio;
+        } else {
+            profileDescriptionElement.innerText = "❌ Bio not available";
+        }
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+    }
+};
+
+    // Function to scroll to the top of the page with animation
+    function scrollToTop() {
+        const c = document.documentElement.scrollTop || document.body.scrollTop;
+        if (c > 0) {
+            window.requestAnimationFrame(scrollToTop);
+            window.scrollTo(0, c - c / 8);
+        }
+    }
+
+    window.onscroll = function() {
+        scrollFunction();
+    };
+    
+    function scrollFunction() {
+        const scrollToTopButton = document.querySelector('.scroll-to-top');
+        const scrollPosition = document.documentElement.scrollTop || document.body.scrollTop;
+        
+        // Adjust the threshold value (50) to your desired scroll position before showing the button
+        if (scrollPosition > 1200) {
+            scrollToTopButton.style.display = "block";
+        } else {
+            scrollToTopButton.style.display = "none";
+        }
+    }
+
+
+// FOLLOWER
+
+// Funktion zum Abrufen und Anzeigen der Anzahl der Follower für einen bestimmten Benutzer
+async function fetchAndDisplayFollowerCount(username) {
+    try {
+        console.log(`Abrufen und Anzeigen der Anzahl der Follower für Benutzer "${username}" gestartet.`);
+        
+        // URL-decodierten Benutzernamen erstellen
+        const decodedUsername = decodeURIComponent(username);
+
+        // API-Antwort mit den Benutzerdaten abrufen
+        const response = await fetch(`/api/profile/${decodedUsername}`);
+        console.log('API-Antwort erhalten:', response);
+
+        const data = await response.json();
+        console.log('Daten aus der API erhalten:', data);
+
+        // Überprüfen, ob die API-Antwort gültige Daten enthält
+        if (!data || !data.follower) {
+            console.error('Ungültige API-Antwort:', data);
+            return;
+        }
+
+        // Anzahl der Follower des Benutzers abrufen und anzeigen
+        let followerCount = data.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
+        if (followerCount < 0) {
+            followerCount = 0; // Sicherstellen, dass die Anzahl nicht negativ ist
+        }
+
+        const followerCountElement = document.getElementById('follower-count');
+        followerCountElement.textContent = followerCount;
+        console.log(`Anzahl der Follower für Benutzer "${username}" erfolgreich angezeigt:`, followerCount);
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
+    }
+}
+
+// Event-Listener für den Follow-Button hinzufügen
+document.getElementById('follow-button').addEventListener('click', toggleFollow);
+
+// Funktion zum Folgen oder Entfolgen eines Benutzers
+async function toggleFollow() {
+    try {
+        console.log('Toggle Follow Button wurde geklickt.');
+
+        // Benutzerdaten aus dem Local Storage abrufen
+        const userDataString = localStorage.getItem('user');
+        if (!userDataString) {
+            throw new Error('Benutzerdaten nicht im Local Storage gefunden.');
+        }
+        console.log('Benutzerdaten aus dem Local Storage erfolgreich abgerufen:', userDataString);
+
+        const userData = JSON.parse(userDataString);
+        if (!userData || !userData.identifier) {
+            throw new Error('Ungültige Benutzerdaten im Local Storage.');
+        }
+        console.log('Benutzerdaten erfolgreich geparst:', userData);
+
+        const followerUsername = userData.identifier; // Benutzername des aktuellen Benutzers
+        console.log('Follower-Benutzername:', followerUsername);
+
+        // Zielbenutzername aus dem HTML-Element entnehmen
+        const followedUsernameElement = document.getElementById('profile-username');
+        let followedUsername = followedUsernameElement.textContent.trim(); // Benutzername des Zielbenutzers ohne Leerzeichen am Anfang und Ende
+        if (followedUsername.startsWith('@')) {
+            followedUsername = followedUsername.slice(1); // Entferne das '@' am Anfang
+        }
+        console.log('Zielbenutzername erfolgreich aus dem HTML-Element entnommen:', followedUsername);
+
+        // Daten, die an die API gesendet werden
+        const requestData = { followerUsername: followerUsername, followedUsername: followedUsername };
+        console.log('Daten, die an die API gesendet werden:', requestData);
+
+        // API-Anfrage senden, um dem ausgewählten Benutzer zu folgen oder ihn zu entfolgen
+        const response = await fetch(`/api/update/follower`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Fehler beim Ändern des Follow-Status.');
+        }
+        console.log('API-Anfrage erfolgreich gesendet.');
+
+        // Antwortdaten abrufen
+        const responseData = await response.json();
+
+        // Follower-Zähler aktualisieren
+        const followerCountElement = document.getElementById('follower-count');
+        let followerCount = parseInt(followerCountElement.textContent);
+
+        if (response.status === 200) {
+            // Benutzer hat erfolgreich den Zielbenutzer gefolgt
+            followerCount++;
+            document.getElementById('follow-button').textContent = 'Followed';
+            document.getElementById('follow-button').style.borderColor = 'green';
+            localStorage.setItem('followStatus', 'followed'); // Follow-Status im Local Storage speichern
+        } else if (response.status === 201) {
+            // Benutzer hat erfolgreich den Zielbenutzer entfolgt
+            followerCount--;
+            document.getElementById('follow-button').textContent = 'Follow';
+            document.getElementById('follow-button').style.borderColor = 'red';
+            localStorage.setItem('followStatus', 'follow'); // Follow-Status im Local Storage speichern
+        }
+        followerCountElement.textContent = followerCount;
+        console.log('Follower-Zähler erfolgreich aktualisiert.');
+
+        // Erfolgreiche Nachricht anzeigen oder ggf. weitere Aktionen ausführen
+        console.log('Follow-Status erfolgreich aktualisiert.');
+
+    } catch (error) {
+        console.error('Fehler beim Ändern des Follow-Status:', error);
+        // Hier kannst du eine Fehlermeldung anzeigen oder entsprechend reagieren
+    }
+}
+const followStatus = localStorage.getItem('followStatus');
+    if (followStatus === 'followed') {
+        document.getElementById('follow-button').textContent = 'Followed';
+        document.getElementById('follow-button').style.borderColor = 'green';
+    } else if (followStatus === 'follow') {
+        document.getElementById('follow-button').textContent = 'Follow';
+        document.getElementById('follow-button').style.borderColor = 'red';
+    }
+    </script>
+</body>
+</html>

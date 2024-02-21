@@ -4,10 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='/SF-Pro.woff2' rel='stylesheet' type='font-face/css'>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <title>Profil</title>
     <style>
         body {
-            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: SF Pro Medium, 'Helvetica Neue', sans-serif;
             background-color: #f0f0f0;
             color: #333;
             transition: all 0.3s ease;
@@ -53,7 +56,7 @@
         .neumorphism-button {
             background-color: #007bff;
             color: #fff;
-            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: SF Pro Medium, 'Helvetica Neue', sans-serif;
             padding: 0.5rem 1rem;
             border: none;
             border-radius: 8px;
@@ -70,7 +73,7 @@
         body.dark-mode .neumorphism-button {
             background-color: #222;
             color: #eee;
-            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: SF Pro Medium, 'Helvetica Neue', sans-serif;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
 
@@ -121,6 +124,7 @@
             justify-content: center;
             align-items: center;
             z-index: 999;
+            transition: all 0.3s ease;
         }
 
         .overlay-content {
@@ -132,12 +136,14 @@
         /* Hidden class */
         .hidden {
             display: none;
+            transition: all 0.3s ease;
         }
         
         .content-container {
             padding: 1rem;
             background-color: #f0f0f0;
             color: #333;
+            font-family: SF Pro Medium, 'Helvetica Neue', sans-serif;
             border-radius: 16px;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             margin-bottom: 20px;
@@ -217,56 +223,66 @@
         }
     </style>
 </head>
-
 <body class="bg-gray-100">
     <div class="container mx-auto py-8 profile-container neumorphism-form">
         <div class="profile-card" id="profile-card">
             <div class="profile-picture">
-                <img src="" alt="Profile Picture" id="profile-picture">
+                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px;">
             </div>
             <div class="profile-info">
                 <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
                 <p class="text-gray-600" id="profile-description">Loading...</p>
             </div>
-            <button onclick="showOverlay()" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Bio bearbeiten</button>
-        </div>
-
-        <div class="overlay hidden" id="overlay">
-            <div class="overlay-content neumorphism-form">
-                <h2 class="text-2xl font-semibold mb-4">Bio bearbeiten</h2>
-                <textarea class="w-full p-2 border border-gray-300 rounded-md mb-4 neumorphism-input"
-                    style="resize: none; white-space: nowrap; font-family: SF Pro Medium, 'Open Sans', sans-serif;" id="bio-input" placeholder="Type your Bio here." rows="4" cols="32" maxlength="32"></textarea>
-                <div class="flex justify-between items-center mb-2">
-                    <p id="char-count"></p>
-                    <button type="button" class="neumorphism-button" onclick="saveBio()">Speichern</button>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" class="neumorphism-button bg-gray-300 text-gray-700 ml-2"
-                        onclick="closeOverlay()">Abbrechen</button>
-                </div>
+            <div class="follower-section">
+                <h2>Follower</h2>
+                <p id="follower-count">0</p>
             </div>
         </div>
 
-        <div class="content-container">
-            <div id="user-posts" class="mt-8">
+        <div class="change-bio">
+            <button onclick="showOverlay()" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Update Bio</button>
+        </div>
+
+        <div class="file-upload">
+            <input type="file" id="profile-picture-upload" accept="image/*" style="display: none;">
+            <label for="profile-picture-upload" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Upload Profile Picture</label>
+        </div>
+
+    </div>
+
+    <div class="overlay hidden" id="overlay">
+        <div class="overlay-content neumorphism-form">
+            <h2 class="text-2xl font-semibold mb-4">Change Bio</h2>
+            <textarea class="w-full p-2 border border-gray-300 rounded-md mb-4 neumorphism-input"
+                style="resize: none; white-space: nowrap; font-family: Font, SF Pro Medium, 'Open Sans', sans-serif;" id="bio-input" placeholder="Type your Bio here." rows="4" cols="32" maxlength="32"></textarea>
+            <div class="flex justify-between items-center mb-2">
+                <p id="char-count"></p>
+                <button type="button" class="neumorphism-button" onclick="saveBio()">Save</button>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" class="neumorphism-button bg-gray-300 text-gray-700 ml-2"
+                    onclick="closeOverlay()">Close</button>
             </div>
         </div>
     </div>
+
+    <div class="content-container">
+        <div id="user-posts" class="mt-8" style="font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+        </div>
+    </div>
+
     <div class="flex justify-center items-center fixed inset-x-0 bottom-0 mb-8">
         <div class="container mx-auto">
             <a href="/home" class="neumorphism-button text-blue-600">Home</a>
         </div>
     </div>
 </body>
-
 <button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
     </svg>
 </button>
-
     <script>
-
         async function fetchUserPosts(username) {
             try {
                 const response = await fetch(`/api/${username}/posts`);
@@ -316,48 +332,45 @@
 
             postsContainer.appendChild(postElement);
         });
-    }
-
-    applyHoverEffectToPosts();
-
-    // Function to apply hover effect to a post element
-    function applyHoverEffect(postElement) {
-        postElement.addEventListener("mouseenter", function() {
-            this.style.transform = "scale(1.3)";
-            this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
-        });
-        postElement.addEventListener("mouseleave", function() {
-            this.style.transform = "scale(1)";
-            this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
-        });
-    }    
-    // Funktion zum Anwenden des Hover-Effekts auf alle Posts
-    function applyHoverEffectToPosts() {
-        const posts = document.querySelectorAll(".post");
-        posts.forEach(post => {
-            addHoverEffect(post); // Füge den Hover-Effekt zu jedem Post hinzu
-        });
-    }
+        }
+    
+        applyHoverEffectToPosts();
+    
+        function applyHoverEffect(postElement) {
+            postElement.addEventListener("mouseenter", function() {
+                this.style.transform = "scale(1.03)";
+                this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
+            });
+            postElement.addEventListener("mouseleave", function() {
+                this.style.transform = "scale(1)";
+                this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
+            });
+        }    
+        
+        function applyHoverEffectToPosts() {
+            const posts = document.querySelectorAll(".post");
+            posts.forEach(post => {
+                addHoverEffect(post);
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const userData = JSON.parse(localStorage.getItem('user'));
             if (userData) {
                 const currentUsername = userData.identifier;
                 fetchUserPosts(currentUsername);
+                fetchAndDisplayFollowerCount(currentUsername);
             } else {
                 console.error('User data not found in localStorage.');
             }
         });
 
         function loadModePreference() {
-            // Lade den gespeicherten Moduswert aus dem Local Storage
             const mode = localStorage.getItem('mode');
             if (mode === 'light') {
-                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
                 document.body.classList.remove('dark-mode');
                 document.body.classList.add('light-mode');
             } else {
-                // Andernfalls füge die Klasse für den hellen Modus hinzu
                 document.body.classList.remove('light-mode');
                 document.body.classList.add('dark-mode');
             }
@@ -378,8 +391,6 @@
 
         const response = await fetch(`/api/username`);
         const data = await response.json();
-        console.log('User data:', data);
-
         const users = data.users;
         let currentUser = null;
 
@@ -427,7 +438,11 @@
             try {
                 // Neue Biografie aus dem Eingabefeld abrufen
                 const newBio = document.getElementById('bio-input').value;
-        
+
+                if (newBio.trim() === '') {
+                    return;
+                }
+
                 // Biografie-Anzeige im Profil aktualisieren
                 document.getElementById('profile-description').innerText = newBio;
         
@@ -442,7 +457,7 @@
                 const username = userData.identifier;
         
                 // API-Anfrage senden, um die Biografie des Benutzers zu aktualisieren
-                const response = await fetch('/api/update-bio', {
+                const response = await fetch('/api/update/bio', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -469,13 +484,13 @@ function updateCharCount() {
     const remainingChars = 32 - bioInput.value.length;
 
     // Ändere die Farbe basierend auf der verbleibenden Zeichenanzahl
-    if (remainingChars <= 5) {
-        const redIntensity = Math.max(0, Math.min(255, remainingChars * 50));
+    if (remainingChars <= 10) {
+        const redIntensity = Math.max(0, Math.min(255, remainingChars * 25));
         charCountElement.style.color = `rgb(255, ${redIntensity}, ${redIntensity})`;
-    } else if (remainingChars <= 10) {
+    } else if (remainingChars <= 15) {
         charCountElement.style.color = 'white';
     } else {
-        charCountElement.style.color = 'inherit'; // Standardfarbe
+        charCountElement.style.color = 'white'; // Standardfarbe
     }
 
     charCountElement.textContent = `${remainingChars} left`;
@@ -509,6 +524,178 @@ document.getElementById('bio-input').addEventListener('input', updateCharCount);
         }
     }
 
+// PROFILBILD UPLOAD 
+
+document.getElementById('profile-picture-upload').addEventListener('change', async function(event) {
+    try {
+        const file = event.target.files[0]; // Die ausgewählte Datei aus dem Eingabefeld lesen
+        if (!file) return;
+
+        console.log('Original image size before compression:', file.size);
+
+        // Überprüfen, ob die Dateigröße größer als 1 MB ist
+        if (file.size > 1024 * 1024) {
+            // Wenn die Dateigröße größer als 1 MB ist, komprimiere das Bild
+            const compressedFile = await compressImage(file);
+            if (!compressedFile) return;
+            uploadImage(compressedFile);
+        } else {
+            // Wenn die Dateigröße kleiner oder gleich 1 MB ist, lade das Bild ohne Komprimierung hoch
+            uploadImage(file);
+        }
+    } catch (error) {
+        console.error('Error uploading profile picture:', error);
+        // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
+    }
+});
+
+async function compressImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let maxSize = 100; // Maximale Breite und Höhe für das Bild
+
+                // Überprüfen, ob das Bild größer als maxSize x maxSize ist
+                if (img.width > maxSize || img.height > maxSize) {
+                    Toastify({
+                        text: `Das Bild wird auf ${maxSize}x${maxSize} skaliert.`,
+                        backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                        className: 'info-toast'
+                    }).showToast();
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        const compressedFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
+                        resolve(compressedFile);
+                    }, 'image/jpeg', 0.7); // 0.7 ist die Bildqualität (0.0 - 1.0), ändern Sie dies nach Bedarf
+                } else {
+                    // Bild ist bereits kleiner als die maximale Größe, daher keine Komprimierung erforderlich
+                    resolve(file);
+                }
+            };
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+async function uploadImage(imageFile) {
+    try {
+        // Benutzerdaten aus dem Local Storage abrufen
+        const userDataString = localStorage.getItem('user');
+        if (!userDataString) {
+            throw new Error('Benutzerdaten nicht im Local Storage gefunden.');
+        }
+        const userData = JSON.parse(userDataString);
+        if (!userData || !userData.identifier) {
+            throw new Error('Ungültige Benutzerdaten im Local Storage.');
+        }
+        const username = userData.identifier;
+
+        // Konvertieren des Bilds in einen Base64-codierten String
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        reader.onload = async function () {
+            const base64Image = reader.result;
+
+            // Erstellen des JSON-Datenobjekts
+            const jsonData = {
+                username: username,
+                newPB: base64Image,
+            };
+
+            const response = await fetch('/api/update/pb', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Fehler beim Aktualisieren des Profilbildes.');
+            }
+
+            Toastify({
+                text: 'Profilbild erfolgreich aktualisiert.',
+                duration: 3000,
+                close: true,
+                gravity: 'top', // Optionen: 'top', 'bottom', 'center'
+                position: 'center', // Optionen: 'left', 'right', 'center'
+                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+            }).showToast();
+
+            // Bild im Profil aktualisieren
+            document.getElementById('profile-picture').src = base64Image;
+        };
+    } catch (error) {
+        Toastify({
+            text: 'Fehler beim Aktualisieren des Profilbildes: ' + error.message,
+            duration: 3000,
+            close: true,
+            gravity: 'top', // Optionen: 'top', 'bottom', 'center'
+            position: 'center', // Optionen: 'left', 'right', 'center'
+            backgroundColor: 'linear-gradient(to right, #e74c3c, #e67e22)',
+        }).showToast();
+    }
+}
+
+// Funktion zum Abrufen und Anzeigen der Anzahl der Follower
+async function fetchAndDisplayFollowerCount() {
+    try {
+        // Benutzerdaten aus dem Local Storage abrufen
+        const userDataString = localStorage.getItem('user');
+        if (!userDataString) {
+            console.error('Benutzerdaten nicht im Local Storage gefunden.');
+            return;
+        }
+        const userData = JSON.parse(userDataString);
+        const username = userData.identifier;
+
+        // API-Antwort mit Benutzerdaten abrufen
+        const response = await fetch('/api/username');
+        const data = await response.json();
+        const users = data.users;
+
+        // Benutzer in der API finden, der dem im Local Storage gespeicherten Benutzer entspricht
+        const currentUser = users.find(user => user.username === username);
+        if (!currentUser) {
+            console.error('Benutzer nicht in der API gefunden.');
+            return;
+        }
+
+        // Anzahl der Follower des aktuellen Benutzers abrufen und anzeigen
+        const followerCount = currentUser.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
+
+        const followerCountElement = document.getElementById('follower-count');
+        followerCountElement.textContent = followerCount;
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
+    }
+}
     </script>
 </body>
 </html>

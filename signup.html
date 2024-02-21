@@ -7,7 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            @font-face {
+              font-family: 'Font';
+              src:  url('SF-Pro.woff2') format('woff2'),
+            }
+            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
             background-color: #f0f0f0;
             color: #333;
             transition: all 0.3s ease;
@@ -135,13 +139,20 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
     event.preventDefault(); // Standardformularübermittlung verhindern
 
     const email = document.getElementById('email').value;
-    const username = document.getElementById('username').value;
+    const identifier = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
     // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
     if (password !== confirmPassword) {
         console.error('Password and confirmation do not match');
+        return;
+    }
+
+    // Überprüfen, ob der Benutzername spezielle Zeichen oder Leerzeichen enthält
+    const regex = /^[a-zA-Z0-9_]+$/;
+    if (!regex.test(identifier)) {
+        alert('Username can only contain letters, numbers, and underscores.');
         return;
     }
 
@@ -153,15 +164,17 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
             },
             body: JSON.stringify({
                 email: email,
-                username: username,
+                username: identifier,
                 password: password,
+                bio: "none",
+                pb: "https://placehold.co/80x80",
                 admin: false,
             })
         });
         const data = await response.text();
 
         if (response.status === 201) {
-            localStorage.setItem('user', JSON.stringify({ email, username, password }));
+            localStorage.setItem('user', JSON.stringify({ identifier, password }));
             window.location.href = '/intro';
         } else {
             alert('Sign up failed! Please try again.');
@@ -173,19 +186,19 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
 });
 
 function loadModePreference() {
-            // Lade den gespeicherten Moduswert aus dem Local Storage
-            const mode = localStorage.getItem('mode');
-            if (mode === 'light') {
-                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-                document.body.classList.remove('dark-mode');
-                document.body.classList.add('light-mode');
-            } else {
-                // Andernfalls füge die Klasse für den hellen Modus hinzu
-                document.body.classList.remove('light-mode');
-                document.body.classList.add('dark-mode');
-            }
-        }
-        loadModePreference();
+    // Lade den gespeicherten Moduswert aus dem Local Storage
+    const mode = localStorage.getItem('mode');
+    if (mode === 'light') {
+        // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+    } else {
+        // Andernfalls füge die Klasse für den hellen Modus hinzu
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+    }
+}
+loadModePreference();
 </script>
 </body>
 </body>

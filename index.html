@@ -15,7 +15,11 @@
     <style>
         /* Common styles for Dark and Light Mode */
         body {
-            font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            @font-face {
+              font-family: 'Font';
+              src:  url('SF-Pro.woff2') format('woff2'),
+            }
+            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
             background-color: #f0f0f0;
             color: #333;
             transition: all 0.3s ease;
@@ -555,11 +559,11 @@ async function getPosts() {
             // Benutzerdaten finden
             const user = usersArray.find(user => user.username === username);
             if (user && user.pb) {
-                console.log('user.pb:', user.pb); // Logging hinzugefügt
                 const profileImageElement = document.createElement('img');
                 profileImageElement.src = user.pb;
                 profileImageElement.alt = `user_pic`;
                 profileImageElement.classList.add('profile-image');
+                profileImageElement.style.width = '30px';
                 postElement.appendChild(profileImageElement);
             }
 

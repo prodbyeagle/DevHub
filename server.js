@@ -1,4 +1,5 @@
 //server.js
+// noinspection SpellCheckingInspection
 
 const express = require('express');
 const path = require('path');
@@ -15,6 +16,8 @@ const PORT = process.env.PORT || 3000;
 
 const sessionSecret = require('crypto').randomBytes(64).toString('hex');
 
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(session({
@@ -29,7 +32,6 @@ let db;
 let usersCollection;
 
 async function run() {
-    console.log("URI:", uri); // Überprüfe die URI
     const client = new MongoClient(uri, {
         serverApi: {
             version: ServerApiVersion.v1,
@@ -61,34 +63,42 @@ function formatDateForDisplay(date) {
     return new Date(date).toLocaleString('de-DE', options);
 }
 
-//FIXME: app.get('/profile/:username', async (req, res) => {
-//FIXME:     const username = req.params.username; // Den Benutzernamen aus der URL-Parameter erhalten
-//FIXME:     console.log("Benutzername:", username);
-//FIXME: 
-//FIXME:     try {
-//FIXME:         // Annahme: 'users' ist deine MongoDB-Sammlung, die Benutzerprofile enthält
-//FIXME:         const user = await usersCollection.findOne({ username });
-//FIXME:         console.log("User:", user);
-//FIXME: 
-//FIXME:         if (!user) {
-//FIXME:             // Wenn der Benutzer nicht gefunden wurde, sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
-//FIXME:             return res.status(404).send('Benutzer nicht gefunden');
-//FIXME:         }
-//FIXME: 
-//FIXME:         // Daten des Benutzers aus der API abrufen
-//FIXME:         const encodedUsername = encodeURIComponent(username);
-//FIXME:         const response = await fetch(`http://localhost:3000/api/${encodedUsername}/posts`);
-//FIXME:         const userData = await response.json();
-//FIXME:         console.log("Beiträge:", userData);
-//FIXME: 
-//FIXME:         // Rendern der Profilseite mit den Benutzerdaten
-//FIXME:         res.render('profile', { user, userData }); // Hier 'profile' ist der Name deiner Profil-HTML-Datei (z. B. 'profile.ejs' oder 'profile.hbs')
-//FIXME:     } catch (error) {
-//FIXME:         console.error('Fehler beim Laden des Benutzerprofils:', error);
-//FIXME:         // Bei Fehlern sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
-//FIXME:         res.status(500).send('Interner Serverfehler');
-//FIXME:     }
-//FIXME: });
+app.get('/u/:username', async (req, res) => {
+    const username = req.params.username; // Den Benutzernamen aus der URL-Parameter erhalten
+
+    try {
+        // Annahme: 'users' ist deine MongoDB-Sammlung, die Benutzerprofile enthält
+        const user = await usersCollection.findOne({ username });
+
+        if (!user) {
+            // Wenn der Benutzer nicht gefunden wurde, sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
+            return res.status(404).send('Benutzer nicht gefunden');
+        }
+
+        // Sende die HTML-Seite mit den Benutzerdaten
+        res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+    } catch (error) {
+        console.error('Fehler beim Laden des Benutzerprofils:', error);
+        // Bei Fehlern sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
+        res.status(500).send('Interner Serverfehler');
+    }
+});
+
+app.get('/api/profile/:username', async (req, res) => {
+    let encodedUsername = req.params.username; // Benutzername mit Codierung (z.B. "Noah%20Hecht")
+    let username = decodeURIComponent(encodedUsername); // Benutzername ohne Codierung (z.B. "Noah Hecht")
+
+    try {
+        const user = await usersCollection.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+        }
+        res.json(user); // Sende die Benutzerdaten als JSON zurück
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
 
 // GET '/api/username/posts'
 app.get('/api/:username/posts', async (req, res) => {
@@ -189,25 +199,17 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/signup', async (req, res) => {
-    const { email, password, username } = req.body;
+    const { email, password, username, pb } = req.body;
 
     try {
-        console.log('Received signup request for:', email, username);
-
-        // Überprüfen, ob der Benutzername bereits verwendet wird
         const existingUserByUsername = await usersCollection.findOne({ username });
-        console.log('Existing user by username:', existingUserByUsername);
 
         if (existingUserByUsername) {
-            console.log('Username already taken:', username);
             return res.status(400).send('Username already taken');
         }        
 
         // Neuen Benutzer erstellen
-        console.log('Creating new user:', email, username);
-        await usersCollection.insertOne({ email, password, username, bio, admin: false, googlelogin: false });
-        
-        console.log('User created successfully:', email, username, password);
+        await usersCollection.insertOne({ email, password, username, bio: "Hello, Im New Here!", pb, follower: 0, followers: [], admin: false, googlelogin: false });
         res.status(201).send('User created successfully');
     } catch (error) {
         console.error('Error during sign up:', error);
@@ -277,6 +279,7 @@ app.get('/api/username', async (req, res) => {
             password: user.password,
             pb: user.pb,
             bio: user.bio,
+            admin: user.admin,
         }));
         
         // JSON-Antwort mit Benutzerdaten senden
@@ -289,7 +292,7 @@ app.get('/api/username', async (req, res) => {
 });
 
 // API-Route zum Aktualisieren der Benutzer-Biografie
-app.post('/api/update-bio', async (req, res) => {
+app.post('/api/update/bio', async (req, res) => {
     try {
         const { username, newBio } = req.body;
         const collection = db.collection('users');
@@ -309,6 +312,72 @@ app.post('/api/update-bio', async (req, res) => {
         return res.status(200).json({ message: 'Bio updated successfully' });
     } catch (error) {
         console.error("Error updating bio:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// API-Route zum Aktualisieren des ProfilBilds
+app.post('/api/update/pb', async (req, res) => {
+    try {
+        const { username, newPB } = req.body;
+        const collection = db.collection('users');
+
+        // Überprüfen, ob der Benutzer vorhanden ist
+        const user = await collection.findOne({ username });
+
+        if (!user) {
+            console.log(`User "${username}" not found`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Biografie des Benutzers aktualisieren
+        await collection.updateOne({ username }, { $set: { pb: newPB } });
+
+        console.log(`PB updated successfully for user "${username}"`);
+        return res.status(200).json({ message: 'PB updated successfully' });
+    } catch (error) {
+        console.error("Error updating PB:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// API-Route zum Aktualisieren der Follower
+app.post('/api/update/follower', async (req, res) => {
+    try {
+        const { followerUsername, followedUsername } = req.body;
+
+        // Überprüfen, ob der Follower sich selbst folgt
+        if (followerUsername === followedUsername) {
+            console.log(`Benutzer "${followerUsername}" versucht, sich selbst zu folgen.`);
+            return res.status(400).json({ error: 'Cannot follow yourself' });
+        }
+
+        const collection = db.collection('users');
+
+        // Benutzer mit dem angegebenen followedUsername finden
+        const user = await collection.findOne({ username: followedUsername });
+
+        if (!user) {
+            console.log(`Benutzer "${followedUsername}" nicht gefunden.`);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Überprüfen, ob der Zielbenutzer bereits gefolgt wird
+        const isAlreadyFollowing = user.followers.includes(followerUsername);
+
+        if (isAlreadyFollowing) {
+            // Entferne den Follower
+            await collection.updateOne({ username: followedUsername }, { $pull: { followers: followerUsername }, $inc: { follower: -1 } });
+            console.log(`Benutzer "${followerUsername}" hat Benutzer "${followedUsername}" entfolgt.`);
+            return res.status(201).json({ message: 'User unfollowed successfully' });
+        } else {
+            // Füge den Follower hinzu
+            await collection.updateOne({ username: followedUsername }, { $push: { followers: followerUsername }, $inc: { follower: 1 } });
+            console.log(`Benutzer "${followerUsername}" folgt jetzt Benutzer "${followedUsername}".`);
+            return res.status(200).json({ message: 'User followed successfully' });
+        }
+    } catch (error) {
+        console.error("Fehler beim Ändern des Follow-Status:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -348,6 +417,15 @@ function generateRandomPassword() {
         .slice(0, length); // Begrenzen Sie die Länge auf die gewünschte Anzahl von Zeichen
 }
 
+// Function to sanitize username extracted from Google profile
+function sanitizeUsername(username) {
+    const regex = /^[a-zA-Z0-9_]+$/;
+    if (!regex.test(username)) {
+        username = username.replace(/[^a-zA-Z0-9_]/g, '_');
+    }
+    return username;
+}
+
 const passport = require('passport');
 const { randomUUID, randomBytes } = require('crypto');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -370,13 +448,16 @@ passport.use(new GoogleStrategy({
         } else {
             const randomPassword = generateRandomPassword(); // Function to generate random password
             const newUser = {
-                username: profile.displayName,
+                username: sanitizeUsername(profile.displayName),
                 email: userEmail,
                 password: randomPassword,
+                follower: 0,
                 pb: userPhoto,
                 bio: "Hello, I'm New here!",
                 admin: false,
-                googlelogin: true
+                googlelogin: true,
+                follower: 0, 
+                followers: [],
             };
 
             await collection.insertOne(newUser);
