@@ -152,49 +152,56 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4 border-t border-gray-200">
-                <h2 class="block text-sm font-bold mb-2">Change Password</h2>
-                <form id="changePasswordForm">
-                    <div class="mb-4">
-                        <div class="p-4 border-t border-gray-200"></div>
-                        <label class="block text-sm font-bold mb-2" for="currentPassword">
-                            Current Password
-                        </label>
-                        <input type="password" id="currentPassword" name="currentPassword" class="neumorphism-input" autocomplete>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-bold mb-2" for="newPassword">
-                            New Password
-                        </label>
-                        <input type="password" id="newPassword" name="newPassword" class="neumorphism-input" autocomplete>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-bold mb-2" for="confirmPassword">
-                            Confirm New Password
-                        </label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" class="neumorphism-input" autocomplete>
-                    </div>
-                    <button type="submit" class="neumorphism-button w-full">Change Password</button>
-                </form>
+
+            <div id="changePasswordOverlay" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center hidden" style="z-index: 1000;">
+                <div class="neumorphism-form max-w-md mx-auto p-8">
+                    <h1 class="text-3xl font-bold text-center mb-8">Change Password</h1>
+                    <form id="changePasswordForm">
+                        <div class="mb-4">
+                            <label class="block text-sm font-bold mb-2" for="currentPassword">
+                                Current Password
+                            </label>
+                            <input type="password" id="currentPassword" name="currentPassword" class="neumorphism-input" autocomplete>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-bold mb-2" for="newPassword">
+                                New Password
+                            </label>
+                            <input type="password" id="newPassword" name="newPassword" class="neumorphism-input" autocomplete>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-bold mb-2" for="confirmPassword">
+                                Confirm New Password
+                            </label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="neumorphism-input" autocomplete>
+                        </div>
+                        <button id="submitPasswordChange" class="neumorphism-button w-full mt-4">Change Password</button>
+                    </form>
+                    <button id="closePasswordOverlay" class="neumorphism-button w-full mt-4">Close</button>
+                </div>
             </div>
+
+
         </div>
     </div>
-
-<!-- Delete Account Button -->
-
-
-
-
-    <div class="flex justify-center items-center fixed inset-x-0 top-120">
+    
+    <div class="flex justify-center items-center fixed inset-x-0 top-120" style="z-index: 999;">
         <div class="switch-container mr-4">
             <label class="switch">
                 <input id="modeSwitch" type="checkbox" style="display: none;">
                 <span class="neumorphism-button h-full text-blue-600">Dark Mode</span>
             </label>
         </div>
-        <a href="/home" class="neumorphism-button text-blue-600">Home</a>
-<button id="deleteAccountBtn">Delete Account</button>        
+        <div class="mr-4">
+            <button id="openChangePasswordOverlayBtn" class="neumorphism-button" style="font-size: 16px;">Change Password</button>
+        <!-- <button id="openChangePasswordOverlayBtn" class="neumorphism-button" style="font-size: 16px;">Change Username</button> -->    
+        <!-- <button id="openChangePasswordOverlayBtn" class="neumorphism-button" style="font-size: 16px;">Change Email</button> -->    
+        </div>
+        <div>
+            <a href="/home" class="neumorphism-button text-blue-600">Home</a>
+        </div>
     </div>
+
 </body>
 
 <script>
@@ -258,7 +265,6 @@ document.getElementById('toggleEmailVisibility').addEventListener('click', funct
     }
 });
 
-
     // JavaScript für Dark/White Mode Switch und das Speichern des Moduswerts im Benutzerprofil
     const modeSwitch = document.getElementById('modeSwitch');
     modeSwitch.addEventListener('change', () => {
@@ -293,94 +299,85 @@ document.getElementById('toggleEmailVisibility').addEventListener('click', funct
         }
         loadModePreference();
     
-        // Formular für Passwortänderung
-        const changePasswordForm = document.getElementById('changePasswordForm');
-        changePasswordForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
-
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            // Hier kannst du weitere Validierungen für die Passwortänderung durchführen
-
-            try {
-                // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-                const savedUser = localStorage.getItem('user');
-                if (!savedUser) {
-                    console.error('User not found in local storage');
-                    return;
-                }
-
-                // Parse die Benutzerdaten aus dem Local Storage
-                const { identifier, password } = JSON.parse(savedUser);
-
-                // Senden der Passwortänderungsanforderung an den Server
-                const response = await fetch('/api/username', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        username: identifier, // Verwende den Benutzernamen aus dem Local Storage
-                        currentPassword: currentPassword, // Hier wird das aktuelle Passwort gesendet
-                        newPassword: newPassword
-                    })
-                });
-
-                if (response.ok) {
-                    const savedUser = JSON.parse(localStorage.getItem('user'));
-                    savedUser.password = newPassword;
-                    localStorage.setItem('user', JSON.stringify(savedUser));
-                    Toastify({
-                        text: 'Password changed successfully',
-                        duration: 3000,
-                        close: true,
-                        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-                    }).showToast();
-                } else {
-                    console.error('Failed to change password:', response.statusText);
-                    // Hier kannst du eine Fehlermeldung anzeigen
-                    Toastify({
-                        text: 'Failed to change password: ' + response.statusText,
-                        duration: 3000,
-                        close: true,
-                        backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-                    }).showToast();
-                }
-            } catch (error) {
-                console.error('Error changing password:', error);
-                // Hier kannst du eine Fehlermeldung anzeigen
-                Toastify({
-                    text: 'Error changing password: ' + error,
-                    duration: 3000,
-                    close: true,
-                    backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-                }).showToast();
-            }
-        });
-
-document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
-    try {
-        const response = await fetch('/deleteAccount', {
-            method: 'DELETE'
-        });
-        if (response.ok) {
-            // Weiterleitung des Benutzers zur Login-Seite oder einer anderen Seite
-            window.location.href = '/login';
-        } else {
-            // Fehlerbehandlung, falls die Anfrage nicht erfolgreich war
-            console.error('Fehler beim Löschen des Kontos:', response.statusText);
-            // Anzeige einer Fehlermeldung für den Benutzer
-            alert('Fehler beim Löschen des Kontos. Bitte versuchen Sie es später erneut.');
-        }
-    } catch (error) {
-        console.error('Fehler beim Löschen des Kontos:', error);
-        // Anzeige einer Fehlermeldung für den Benutzer
-        alert('Fehler beim Löschen des Kontos. Bitte versuchen Sie es später erneut.');
-    }
+// JavaScript, um das Passwortänderungs-Overlay zu öffnen
+document.getElementById('openChangePasswordOverlayBtn').addEventListener('click', function() {
+    document.getElementById('changePasswordOverlay').classList.remove('hidden');
 });
 
+// JavaScript, um das Passwortänderungs-Overlay zu schließen
+document.getElementById('closePasswordOverlay').addEventListener('click', function() {
+    document.getElementById('changePasswordOverlay').classList.add('hidden');
+});
+
+const changePasswordForm = document.getElementById('changePasswordForm'); // Ändern Sie die ID hier
+changePasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    try {
+        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            console.error('User not found in local storage');
+            return;
+        }
+
+        // Parse die Benutzerdaten aus dem Local Storage
+        const { identifier, password } = JSON.parse(savedUser);
+
+        console.log('Sending password change request...');
+        console.log('Current Password:', currentPassword);
+        console.log('New Password:', newPassword);
+
+        // Senden der Passwortänderungsanforderung an den Server
+        const response = await fetch('/api/username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: identifier, // Verwende den Benutzernamen aus dem Local Storage
+                currentPassword: currentPassword, // Hier wird das aktuelle Passwort gesendet
+                newPassword: newPassword
+            })
+        });
+
+        console.log('Response received:', response);
+
+        if (response.ok) {
+            const savedUser = JSON.parse(localStorage.getItem('user'));
+            savedUser.password = newPassword;
+            localStorage.setItem('user', JSON.stringify(savedUser));
+            Toastify({
+                text: 'Password changed successfully',
+                duration: 3000,
+                close: true,
+                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+            }).showToast();
+        } else {
+            console.error('Failed to change password:', response.statusText);
+            // Hier kannst du eine Fehlermeldung anzeigen
+            Toastify({
+                text: 'Failed to change password: ' + response.statusText,
+                duration: 3000,
+                close: true,
+                backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+            }).showToast();
+        }
+    } catch (error) {
+        console.error('Error changing password:', error);
+        // Hier kannst du eine Fehlermeldung anzeigen
+        Toastify({
+            text: 'Error changing password: ' + error,
+            duration: 3000,
+            close: true,
+            backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+        }).showToast();
+    }
+});
 </script>
 </body>
 </body>
