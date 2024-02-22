@@ -173,7 +173,7 @@
     }
 
     .post:hover {
-        transform: scale(1.03); /* Vergrößern des Posts beim Hover */
+        transform: scale(1.02); /* Vergrößern des Posts beim Hover */
         box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
     }
 
@@ -187,7 +187,7 @@
 
     body.dark-mode .post:hover {
         box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
-        transform: scale(1.03);
+        transform: scale(1.02);
     }
 
     .scroll-to-top {
@@ -227,7 +227,7 @@
     <div class="container mx-auto py-8 profile-container neumorphism-form">
         <div class="profile-card" id="profile-card">
             <div class="profile-picture">
-                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px;">
+                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%;">
             </div>
             <div class="profile-info">
                 <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
@@ -236,6 +236,10 @@
             <div class="follower-section">
                 <h2>Follower</h2>
                 <p id="follower-count">0</p>
+            </div>
+            <div class="following-section">
+                <h2>Following</h2>
+                <p id="following-names"></p>
             </div>
         </div>
 
@@ -531,8 +535,6 @@ document.getElementById('profile-picture-upload').addEventListener('change', asy
         const file = event.target.files[0]; // Die ausgewählte Datei aus dem Eingabefeld lesen
         if (!file) return;
 
-        console.log('Original image size before compression:', file.size);
-
         // Überprüfen, ob die Dateigröße größer als 1 MB ist
         if (file.size > 1024 * 1024) {
             // Wenn die Dateigröße größer als 1 MB ist, komprimiere das Bild
@@ -676,16 +678,36 @@ async function fetchAndDisplayFollowerCount() {
         const username = userData.identifier;
 
         // API-Antwort mit Benutzerdaten abrufen
-        const response = await fetch('/api/username');
-        const data = await response.json();
-        const users = data.users;
+        const response = await fetch(`/api/profile/${username}`);
+        const currentUser = await response.json();
 
-        // Benutzer in der API finden, der dem im Local Storage gespeicherten Benutzer entspricht
-        const currentUser = users.find(user => user.username === username);
+        // Überprüfen, ob der aktuelle Benutzer gefunden wurde
         if (!currentUser) {
             console.error('Benutzer nicht in der API gefunden.');
             return;
         }
+
+        // Anzahl der Benutzer, denen der aktuelle Benutzer folgt, abrufen
+        const followingList = data.followers || []; // Liste der Benutzer, denen der aktuelle Benutzer folgt
+        const followingCount = followingList.length; // Anzahl der Benutzer, denen der aktuelle Benutzer folgt
+        
+        // Namen der Benutzer, denen der aktuelle Benutzer folgt, anzeigen
+        let followingNames = "";
+        if (followingCount === 0) {
+            followingNamesElement.textContent = "😭 No Followers";
+        } else if (followingCount <= 3) {
+            // Wenn es drei oder weniger Benutzer gibt, alle Namen anzeigen
+            followingNames = followingList.join(", ");
+        } else {
+            // Wenn es mehr als drei Benutzer gibt, nur die ersten drei Namen anzeigen, gefolgt von "+10 andere"
+            const firstThreeNames = followingList.slice(0, 3).join(", ");
+            const remainingCount = followingCount - 3;
+            followingNames = `${firstThreeNames} +${remainingCount} other`;
+        }
+        
+        // Die angezeigten Namen in das HTML-Element einfügen
+        const followingNamesElement = document.getElementById('following-names');
+        followingNamesElement.textContent = followingNames;
 
         // Anzahl der Follower des aktuellen Benutzers abrufen und anzeigen
         const followerCount = currentUser.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden

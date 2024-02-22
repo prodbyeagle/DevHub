@@ -180,6 +180,11 @@
         </div>
     </div>
 
+<!-- Delete Account Button -->
+
+
+
+
     <div class="flex justify-center items-center fixed inset-x-0 top-120">
         <div class="switch-container mr-4">
             <label class="switch">
@@ -187,8 +192,8 @@
                 <span class="neumorphism-button h-full text-blue-600">Dark Mode</span>
             </label>
         </div>
-
         <a href="/home" class="neumorphism-button text-blue-600">Home</a>
+<button id="deleteAccountBtn">Delete Account</button>        
     </div>
 </body>
 
@@ -354,6 +359,27 @@ document.getElementById('toggleEmailVisibility').addEventListener('click', funct
                 }).showToast();
             }
         });
+
+document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+    try {
+        const response = await fetch('/deleteAccount', {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            // Weiterleitung des Benutzers zur Login-Seite oder einer anderen Seite
+            window.location.href = '/login';
+        } else {
+            // Fehlerbehandlung, falls die Anfrage nicht erfolgreich war
+            console.error('Fehler beim Löschen des Kontos:', response.statusText);
+            // Anzeige einer Fehlermeldung für den Benutzer
+            alert('Fehler beim Löschen des Kontos. Bitte versuchen Sie es später erneut.');
+        }
+    } catch (error) {
+        console.error('Fehler beim Löschen des Kontos:', error);
+        // Anzeige einer Fehlermeldung für den Benutzer
+        alert('Fehler beim Löschen des Kontos. Bitte versuchen Sie es später erneut.');
+    }
+});
 
 </script>
 </body>

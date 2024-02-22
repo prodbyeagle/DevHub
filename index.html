@@ -373,7 +373,198 @@
             background-color: #333;
         }
 
-        
+                /* Neumorphism styles for the input fields */
+                .neumorphism-input {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        body.dark-mode .neumorphism-input {
+            border-color: #555;
+            background-color: #333;
+            color: #eee;
+        }
+
+        /* Neumorphism styles for the submit button */
+        .neumorphism-button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .neumorphism-button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .neumorphism-button {
+            background-color: #222;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .neumorphism-button:hover {
+            background-color: #333;
+        }
+    
+        .search-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 999;
+    display: none; /* Suchoverlay standardmäßig ausgeblendet */
+    animation: fadeIn 0.3s ease; /* Fade-In-Animation hinzugefügt */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.search-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-right: 0.5rem;
+}
+
+/* Dark-Mode-Stile für das Textfeld */
+body.dark-mode .search-input {
+    background-color: #333; /* Hintergrundfarbe im Dark Mode */
+    color: #eee; /* Textfarbe im Dark Mode */
+    border-color: #555; /* Randfarbe im Dark Mode */
+}
+
+.search-button,
+.close-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover,
+.close-button:hover {
+    filter: brightness(0.8); /* Leichtes Verblassen beim Hover-Effekt */
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Hintergrund leicht verdunkeln */
+    z-index: 998; /* Unterhalb des Suchoverlays */
+    display: none; /* standardmäßig ausgeblendet */
+    animation: all 0.3s ease;
+}
+
+.search-overlay.active {
+    display: block; /* Suchoverlay anzeigen, wenn die Klasse 'active' hinzugefügt wird */
+}
+
+.search-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 999;
+    display: none; /* Suchoverlay standardmäßig ausgeblendet */
+    animation: fadeIn 0.3s ease; /* Fade-In-Animation */
+}
+
+/* Fade-In-Animation für das Suchoverlay */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.search-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark-Mode-Stile für den Suchcontainer */
+body.dark-mode .search-container {
+    background-color: #333; /* Hintergrundfarbe im Dark Mode */
+    color: #eee; /* Textfarbe im Dark Mode */
+}
+
+.search-overlay.fade-out {
+    animation: fadeOut 0.3s ease; /* Fade-Out-Animation */
+}
+
+/* Dark-Mode-Stile für das Suchoverlay */
+body.dark-mode .search-overlay {
+    background: #333; /* Hintergrundfarbe im Dark Mode */
+    color: #eee; /* Textfarbe im Dark Mode */
+}
+
+/* Dark-Mode-Stile für die Schaltflächen */
+body.dark-mode .search-button,
+body.dark-mode .close-button {
+    background-color: #555; /* Hintergrundfarbe im Dark Mode */
+    color: #eee; /* Textfarbe im Dark Mode */
+}
+
+/* Dark-Mode-Stile für das Schließ-Symbol */
+body.dark-mode .close-button:hover {
+    background-color: #ff4444; /* Schaltflächenfarbe im Dark Mode */
+}
+
+/* Dark-Mode-Stile für das Schließ-Symbol */
+body.dark-mode .search-button:hover {
+    background-color: #1ce358; /* Schaltflächenfarbe im Dark Mode */
+}
     </style>
 </head>
 <body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
@@ -384,13 +575,12 @@
             <h2 class="text-lg font-semibold mb-4">Welcome, <span id="username"></span>!</h2>
             <h2></h2>
             <ul>
+                <li><a id="search-btn" class="search-btn">Search User</a></li>
                 <li><a href="/settings">Settings</a></li>
                 <li><a href="/profile">Profile</a></li>
                 <li id="loginLink"><a href="/login">Login</a></li>
                 <li id="signupLink"><a href="/signup">Sign-Up</a></li>
                 <li id="signoutLink"><a href="#" id="signoutBtn">Sign Out</a></li>
-                <li><a href="/intro">DEV: Intro</a></li>
-                <li><a href="/admin">DEV: Admin</a></li>
             </ul>
         </div>
 
@@ -411,6 +601,26 @@
     <!-- Latest posts section -->
     <div id="latestPosts"></div>
 </div>
+
+<div class="search-overlay hidden" id="overlay">
+    <div class="overlay-content">
+        <h2>User not found</h2>
+        <p>The user you are searching for does not exist.</p>
+        <button id="closeOverlayButton" class="neumorphism-button text-red-600 close-button">Close</button>
+    </div>
+</div>
+
+<div class="search-overlay" id="searchOverlay">
+    <div class="search-container">
+        <div class="search-bar mb-4 neumorphism-input">
+            <input type="text" id="searchInput" placeholder="Search for a username..." class="search-input">
+            <button id="searchButton" class="neumorphism-button text-blue-600 search-button">Search</button>
+            <button id="closeButton" class="neumorphism-button text-red-600 close-button">Close</button> <!-- Close-Button hinzugefügt -->
+        </div>
+    </div>
+</div>
+<div class="overlay"></div> <!-- Overlay für Hintergrundverdunkelung -->
+
 <button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -418,6 +628,44 @@
 </button>
 
 <script> 
+    document.addEventListener("DOMContentLoaded", function() {
+        const username = localStorage.getItem("user");
+
+        if (username) {
+            document.getElementById("loginLink").style.display = "none";
+            document.getElementById("signupLink").style.display = "none";
+            document.getElementById("signoutLink").style.display = "block";
+        } else {
+            document.getElementById("loginLink").style.display = "block";
+            document.getElementById("signupLink").style.display = "block";
+            document.getElementById("signoutLink").style.display = "none";
+        }
+    });
+
+const searchBtn = document.getElementById('search-btn');
+const closeButton = document.getElementById('closeButton');
+const overlay = document.querySelector('.overlay');
+const searchOverlay = document.getElementById('searchOverlay'); // geändert, um das Suchoverlay zu korrekt zu wählen
+
+searchBtn.addEventListener('click', () => {
+    // Überprüfen, ob das Suchoverlay angezeigt oder ausgeblendet ist
+    if (!searchOverlay.classList.contains('active')) {
+        // Wenn ausgeblendet, dann einblenden
+        searchOverlay.classList.add('active');
+        overlay.style.display = 'block'; // Overlay anzeigen
+    } else {
+        // Wenn angezeigt, dann ausblenden
+        searchOverlay.classList.remove('active');
+        overlay.style.display = 'none'; // Overlay ausblenden
+    }
+});
+
+closeButton.addEventListener('click', () => {
+    // Bei Klick auf den Close-Button das Overlay ausblenden
+    searchOverlay.classList.remove('active');
+    overlay.style.display = 'none'; // Overlay ausblenden
+});
+
 async function showWelcomeMessage() {
     try {
         const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
@@ -450,6 +698,45 @@ async function showWelcomeMessage() {
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
+    }
+}
+
+// Suchfunktion
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
+
+// Event-Listener für das Klicken auf den Suchbutton
+searchButton.addEventListener('click', async function() {
+    search();
+});
+
+// Event-Listener für das Drücken der Enter-Taste im Eingabefeld
+searchInput.addEventListener('keypress', async function(e) {
+    if (e.key === 'Enter') {
+        search();
+    }
+});
+
+async function search() {
+    const username = searchInput.value.trim();
+    console.log('Suche nach Benutzer:', username); // Debug-Ausgabe für den gesuchten Benutzernamen
+
+    if (username) {
+        const response = await fetch(`/api/profile/${username}`);
+        const userData = await response.json();
+        console.log('Benutzerdaten erhalten:', userData); // Debug-Ausgabe für die erhaltenen Benutzerdaten
+
+        if (userData.username) {
+            console.log('Benutzer gefunden:', username); // Debug-Ausgabe für den gefundenen Benutzer
+            window.location.href = `/u/${username}`; // Weiterleitung zum Benutzerprofil
+        } else {
+            console.log('Benutzer nicht gefunden:', username); // Debug-Ausgabe für den nicht gefundenen Benutzer
+            Toastify({
+                text: "User not found",
+                duration: 3000,
+                close: true
+            }).showToast();
+        }
     }
 }
 
@@ -495,7 +782,13 @@ async function createPost(event) {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ codesnippet: postContent, identifier: identifier, content: postDescription }) // Benutzername zum Beitrag hinzufügen
+                    body: JSON.stringify({ 
+                        codesnippet: postContent, 
+                        identifier: identifier, 
+                        content: postDescription, 
+                        likes: 0,
+                        replies: [] 
+                    })
                 });
                 const data = await response.json();
                 document.getElementById('postContent').value = '';
@@ -564,6 +857,8 @@ async function getPosts() {
                 profileImageElement.alt = `user_pic`;
                 profileImageElement.classList.add('profile-image');
                 profileImageElement.style.width = '30px';
+                profileImageElement.style.height = '30px';
+                profileImageElement.style.borderRadius = '50%';
                 postElement.appendChild(profileImageElement);
             }
 
@@ -577,10 +872,20 @@ async function getPosts() {
             codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Text in Zeilen umbrechen
             codeSnippetElement.style.maxWidth = '100%'; // Maximalbreite setzen
 
+            // Überprüfen, ob der Post Antworten hat, und die Anzahl der Antworten anzeigen
+            const repliesElement = document.createElement('p');
+            repliesElement.textContent = `Replies: ${post.replies ? post.replies.length : 0}`;
+            
+            // Erstellen des Elements für die Anzeige der Likes
+            const likesElement = document.createElement('p');
+            likesElement.textContent = `Likes: ${post.likes ? post.likes : 0}`; // Änderung: 'post.likes' statt 'post.likes.length'
+            
             postElement.appendChild(usernameElement);
             postElement.appendChild(contentElement);
             postElement.appendChild(codeSnippetElement);
-
+            postElement.appendChild(repliesElement);
+            postElement.appendChild(likesElement); // Änderung: Likes-Element richtig hinzufügen
+            
             postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu
         });
     } catch (error) {

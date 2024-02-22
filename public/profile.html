@@ -232,7 +232,7 @@
     <div class="container mx-auto py-8 profile-container neumorphism-form">
         <div class="profile-card" id="profile-card">
             <div class="profile-picture">
-                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px;">
+                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%;">
             </div>
             <div class="profile-info">
                 <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
@@ -242,8 +242,13 @@
                 <h2>Follower</h2>
                 <p id="follower-count">0</p>
             </div>
+            <div class="following-section">
+                <h2>Following</h2>
+                <p id="following-names"></p>
+            </div>
         </div>
         <button id="follow-button" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Follow</button>
+        <button id="blockUserButton" class="neumorphism-button mt-4" style="margin-bottom: 15px; background-color: red;">Blockieren</button>
     </div>
     <div class="content-container">
         <div id="user-posts" class="mt-8" style="font-family: Font, SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
@@ -433,17 +438,14 @@
 // Funktion zum Abrufen und Anzeigen der Anzahl der Follower für einen bestimmten Benutzer
 async function fetchAndDisplayFollowerCount(username) {
     try {
-        console.log(`Abrufen und Anzeigen der Anzahl der Follower für Benutzer "${username}" gestartet.`);
         
         // URL-decodierten Benutzernamen erstellen
         const decodedUsername = decodeURIComponent(username);
 
         // API-Antwort mit den Benutzerdaten abrufen
         const response = await fetch(`/api/profile/${decodedUsername}`);
-        console.log('API-Antwort erhalten:', response);
 
         const data = await response.json();
-        console.log('Daten aus der API erhalten:', data);
 
         // Überprüfen, ob die API-Antwort gültige Daten enthält
         if (!data || !data.follower) {
@@ -457,9 +459,30 @@ async function fetchAndDisplayFollowerCount(username) {
             followerCount = 0; // Sicherstellen, dass die Anzahl nicht negativ ist
         }
 
+        // Anzahl der Benutzer, denen der aktuelle Benutzer folgt, abrufen
+        const followingList = data.followers || []; // Liste der Benutzer, denen der aktuelle Benutzer folgt
+        const followingCount = followingList.length; // Anzahl der Benutzer, denen der aktuelle Benutzer folgt
+        
+        // Namen der Benutzer, denen der aktuelle Benutzer folgt, anzeigen
+        let followingNames = "";
+        if (followingCount === 0) {
+            followingNames = "Noch niemandem folgen";
+        } else if (followingCount <= 3) {
+            // Wenn es drei oder weniger Benutzer gibt, alle Namen anzeigen
+            followingNames = followingList.join(", ");
+        } else {
+            // Wenn es mehr als drei Benutzer gibt, nur die ersten drei Namen anzeigen, gefolgt von "+10 andere"
+            const firstThreeNames = followingList.slice(0, 3).join(", ");
+            const remainingCount = followingCount - 3;
+            followingNames = `${firstThreeNames} +${remainingCount} other`;
+        }
+        
+        // Die angezeigten Namen in das HTML-Element einfügen
+        const followingNamesElement = document.getElementById('following-names');
+        followingNamesElement.textContent = followingNames;
+
         const followerCountElement = document.getElementById('follower-count');
         followerCountElement.textContent = followerCount;
-        console.log(`Anzahl der Follower für Benutzer "${username}" erfolgreich angezeigt:`, followerCount);
     } catch (error) {
         console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
     }
@@ -471,23 +494,19 @@ document.getElementById('follow-button').addEventListener('click', toggleFollow)
 // Funktion zum Folgen oder Entfolgen eines Benutzers
 async function toggleFollow() {
     try {
-        console.log('Toggle Follow Button wurde geklickt.');
 
         // Benutzerdaten aus dem Local Storage abrufen
         const userDataString = localStorage.getItem('user');
         if (!userDataString) {
             throw new Error('Benutzerdaten nicht im Local Storage gefunden.');
         }
-        console.log('Benutzerdaten aus dem Local Storage erfolgreich abgerufen:', userDataString);
 
         const userData = JSON.parse(userDataString);
         if (!userData || !userData.identifier) {
             throw new Error('Ungültige Benutzerdaten im Local Storage.');
         }
-        console.log('Benutzerdaten erfolgreich geparst:', userData);
 
         const followerUsername = userData.identifier; // Benutzername des aktuellen Benutzers
-        console.log('Follower-Benutzername:', followerUsername);
 
         // Zielbenutzername aus dem HTML-Element entnehmen
         const followedUsernameElement = document.getElementById('profile-username');
@@ -495,11 +514,9 @@ async function toggleFollow() {
         if (followedUsername.startsWith('@')) {
             followedUsername = followedUsername.slice(1); // Entferne das '@' am Anfang
         }
-        console.log('Zielbenutzername erfolgreich aus dem HTML-Element entnommen:', followedUsername);
 
         // Daten, die an die API gesendet werden
         const requestData = { followerUsername: followerUsername, followedUsername: followedUsername };
-        console.log('Daten, die an die API gesendet werden:', requestData);
 
         // API-Anfrage senden, um dem ausgewählten Benutzer zu folgen oder ihn zu entfolgen
         const response = await fetch(`/api/update/follower`, {
@@ -513,7 +530,6 @@ async function toggleFollow() {
         if (!response.ok) {
             throw new Error('Fehler beim Ändern des Follow-Status.');
         }
-        console.log('API-Anfrage erfolgreich gesendet.');
 
         // Antwortdaten abrufen
         const responseData = await response.json();
@@ -536,14 +552,9 @@ async function toggleFollow() {
             localStorage.setItem('followStatus', 'follow'); // Follow-Status im Local Storage speichern
         }
         followerCountElement.textContent = followerCount;
-        console.log('Follower-Zähler erfolgreich aktualisiert.');
-
-        // Erfolgreiche Nachricht anzeigen oder ggf. weitere Aktionen ausführen
-        console.log('Follow-Status erfolgreich aktualisiert.');
 
     } catch (error) {
         console.error('Fehler beim Ändern des Follow-Status:', error);
-        // Hier kannst du eine Fehlermeldung anzeigen oder entsprechend reagieren
     }
 }
 const followStatus = localStorage.getItem('followStatus');

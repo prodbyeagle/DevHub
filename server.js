@@ -157,7 +157,9 @@ app.post('/api/posts', async (req, res) => {
             content,
             username: identifier,
             date,
-            codesnippet
+            codesnippet,
+            likes: 0,
+            replies: []
         });
 
         const newPost = {
@@ -166,6 +168,8 @@ app.post('/api/posts', async (req, res) => {
             username: identifier,
             date: formatDateForDisplay(date), // Datum im gewünschten Format zurückgeben
             codesnippet,
+            likes: 0,
+            replies: 0
         };
         res.status(201).json(newPost);
     } catch (error) {
@@ -271,8 +275,6 @@ app.get('/api/username', async (req, res) => {
     try {
         const collection = db.collection('users');
         const users = await collection.find().toArray();
-        
-        // Extrahieren Sie Benutzernamen, E-Mails und Passwörter aus den Benutzerdaten
         const userData = users.map(user => ({
             username: user.username,
             email: user.email,
@@ -286,7 +288,6 @@ app.get('/api/username', async (req, res) => {
         res.json({ users: userData });
 
     } catch (error) {
-        console.error("Error fetching userdata:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -301,17 +302,13 @@ app.post('/api/update/bio', async (req, res) => {
         const user = await collection.findOne({ username });
 
         if (!user) {
-            console.log(`User "${username}" not found`);
             return res.status(404).json({ error: 'User not found' });
         }
 
         // Biografie des Benutzers aktualisieren
         await collection.updateOne({ username }, { $set: { bio: newBio } });
-
-        console.log(`Bio updated successfully for user "${username}"`);
         return res.status(200).json({ message: 'Bio updated successfully' });
     } catch (error) {
-        console.error("Error updating bio:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -321,22 +318,17 @@ app.post('/api/update/pb', async (req, res) => {
     try {
         const { username, newPB } = req.body;
         const collection = db.collection('users');
-
-        // Überprüfen, ob der Benutzer vorhanden ist
         const user = await collection.findOne({ username });
 
         if (!user) {
-            console.log(`User "${username}" not found`);
             return res.status(404).json({ error: 'User not found' });
         }
 
         // Biografie des Benutzers aktualisieren
         await collection.updateOne({ username }, { $set: { pb: newPB } });
 
-        console.log(`PB updated successfully for user "${username}"`);
         return res.status(200).json({ message: 'PB updated successfully' });
     } catch (error) {
-        console.error("Error updating PB:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -348,7 +340,6 @@ app.post('/api/update/follower', async (req, res) => {
 
         // Überprüfen, ob der Follower sich selbst folgt
         if (followerUsername === followedUsername) {
-            console.log(`Benutzer "${followerUsername}" versucht, sich selbst zu folgen.`);
             return res.status(400).json({ error: 'Cannot follow yourself' });
         }
 
@@ -358,7 +349,6 @@ app.post('/api/update/follower', async (req, res) => {
         const user = await collection.findOne({ username: followedUsername });
 
         if (!user) {
-            console.log(`Benutzer "${followedUsername}" nicht gefunden.`);
             return res.status(404).json({ error: 'User not found' });
         }
 
@@ -368,12 +358,10 @@ app.post('/api/update/follower', async (req, res) => {
         if (isAlreadyFollowing) {
             // Entferne den Follower
             await collection.updateOne({ username: followedUsername }, { $pull: { followers: followerUsername }, $inc: { follower: -1 } });
-            console.log(`Benutzer "${followerUsername}" hat Benutzer "${followedUsername}" entfolgt.`);
             return res.status(201).json({ message: 'User unfollowed successfully' });
         } else {
             // Füge den Follower hinzu
             await collection.updateOne({ username: followedUsername }, { $push: { followers: followerUsername }, $inc: { follower: 1 } });
-            console.log(`Benutzer "${followerUsername}" folgt jetzt Benutzer "${followedUsername}".`);
             return res.status(200).json({ message: 'User followed successfully' });
         }
     } catch (error) {
@@ -409,6 +397,37 @@ app.post('/api/username', async (req, res) => {
     }
 });
 
+// Annahme: Du verwendest Mongoose als deine MongoDB-Bibliothek
+
+app.delete('/deleteAccount', async (req, res) => {
+    try {
+      // Überprüfe, ob der Benutzer authentifiziert ist
+      if (!req.user || !req.user.username) {
+        return res.status(401).send('Benutzer nicht authentifiziert');
+      }
+  
+      // Benutzername des zu löschenden Benutzers
+      const usernameToDelete = req.user.username;
+  
+      // Datenbank und Sammlung auswählen
+      const database = client.db('snippetDB'); // Datenbankname hier einsetzen
+      const collection = database.collection('users'); // Sammlungsname hier einsetzen
+  
+      // Benutzer anhand des Benutzernamens löschen
+      const deleteResult = await collection.deleteOne({ username: usernameToDelete });
+  
+      if (deleteResult.deletedCount === 0) {
+        // Benutzer nicht gefunden
+        return res.status(404).send('Benutzer nicht gefunden');
+      }
+  
+      res.sendStatus(200); // Erfolgsstatus zurückgeben
+    } catch (error) {
+      console.error('Fehler beim Löschen des Benutzers:', error);
+      res.status(500).send(`Interner Serverfehler beim Löschen des Benutzers: ${error.message}`);
+    }
+  });
+  
 // Function to generate random password
 function generateRandomPassword() {
     const length = 10; // Länge des generierten Passworts
