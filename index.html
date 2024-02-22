@@ -15,11 +15,7 @@
     <style>
         /* Common styles for Dark and Light Mode */
         body {
-            @font-face {
-              font-family: 'Font';
-              src:  url('SF-Pro.woff2') format('woff2'),
-            }
-            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            font-family: SF Pro Medium, 'Helvetica Neue', sans-serif;
             background-color: #f0f0f0;
             color: #333;
             transition: all 0.3s ease;
@@ -278,15 +274,9 @@
             background: transparent; /* Hintergrundfarbe der Scrollleiste */
         }
 
-        /* Bei Hover die Scrollleistenbreite ändern */
-        ::-webkit-scrollbar:hover {
-            width: 14px; /* Breite der Scrollleiste bei Hover */
-            cursor: pointer;
-        }
-
         ::-webkit-scrollbar-thumb {
             background: #888; /* Farbe des Scrollleisten-Griffs */
-            border-radius: 10px; /* Radius der Scrollleisten-Griffkanten */
+            border-radius: 8px; /* Radius der Scrollleisten-Griffkanten */
         }
 
         /* Neumorphismus-Stil für den Dark/White Mode Switch */
@@ -475,7 +465,7 @@ body.dark-mode .search-input {
 
 .search-button:hover,
 .close-button:hover {
-    filter: brightness(0.8); /* Leichtes Verblassen beim Hover-Effekt */
+    background-color: #0056b3;;
 }
 
 .overlay {
@@ -617,6 +607,7 @@ body.dark-mode .search-button:hover {
             <button id="searchButton" class="neumorphism-button text-blue-600 search-button">Search</button>
             <button id="closeButton" class="neumorphism-button text-red-600 close-button">Close</button> <!-- Close-Button hinzugefügt -->
         </div>
+        <div id="searchResults" class="neumorphism-input"></div>
     </div>
 </div>
 <div class="overlay"></div> <!-- Overlay für Hintergrundverdunkelung -->
@@ -671,7 +662,6 @@ async function showWelcomeMessage() {
         const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
         if (savedUser) {
             const { identifier } = JSON.parse(savedUser);
-            console.log(savedUser);
 
             // Überprüfen, ob der Identifier eine E-Mail-Adresse ist
             if (isValidEmail(identifier)) {
@@ -719,18 +709,18 @@ searchInput.addEventListener('keypress', async function(e) {
 
 async function search() {
     const username = searchInput.value.trim();
-    console.log('Suche nach Benutzer:', username); // Debug-Ausgabe für den gesuchten Benutzernamen
+
+    if (!username) {
+        return;
+    }
 
     if (username) {
         const response = await fetch(`/api/profile/${username}`);
         const userData = await response.json();
-        console.log('Benutzerdaten erhalten:', userData); // Debug-Ausgabe für die erhaltenen Benutzerdaten
 
         if (userData.username) {
-            console.log('Benutzer gefunden:', username); // Debug-Ausgabe für den gefundenen Benutzer
             window.location.href = `/u/${username}`; // Weiterleitung zum Benutzerprofil
         } else {
-            console.log('Benutzer nicht gefunden:', username); // Debug-Ausgabe für den nicht gefundenen Benutzer
             Toastify({
                 text: "User not found",
                 duration: 3000,
@@ -739,6 +729,38 @@ async function search() {
         }
     }
 }
+
+    // Autocomplete-Funktion
+    async function autocomplete() {
+        const searchInput = document.getElementById("searchInput");
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const searchResultsDiv = document.getElementById("searchResults");
+
+        if (searchTerm.length === 0) {
+            searchResultsDiv.innerHTML = ""; // Clear the search results if the search input is empty
+            return;
+        }
+
+        const response = await fetch(`/api/username`); // API-Endpunkt für die Benutzernamen
+        if (response.ok) {
+            const userData = await response.json();
+            const usernames = userData.users.map(user => user.username); // Extrahiere Benutzernamen aus den Benutzerdaten
+
+            const filteredResults = usernames.filter(username => username.toLowerCase().startsWith(searchTerm)); // Filtere Benutzernamen, die mit dem Suchbegriff beginnen
+
+            if (filteredResults.length > 0) {
+                const resultHTML = filteredResults.map(result => `<div><a href="/u/${result}">${result}</a></div>`).join(""); // Erstelle HTML für Suchergebnisse mit Links
+                searchResultsDiv.innerHTML = resultHTML; // Zeige Suchergebnisse an
+            } else {
+                searchResultsDiv.innerHTML = "<div>No results found</div>"; // Zeige Meldung an, wenn keine Ergebnisse gefunden wurden
+            }
+        } else {
+            console.error('Error fetching search results');
+        }
+    }
+
+    // Event-Handler für das searchInput-Element hinzufügen, um das Autocomplete-Verhalten zu aktivieren
+    document.getElementById("searchInput").addEventListener("input", autocomplete);
 
 // Funktion zur Überprüfung, ob eine Zeichenkette eine gültige E-Mail-Adresse ist
 function isValidEmail(email) {
