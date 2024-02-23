@@ -557,6 +557,10 @@ app.get('/admin', (req, res) => {
     res.sendFile(__dirname + '/admin.html');
 });
 
+app.get('/explore', (req, res) => {
+    res.sendFile(__dirname + '/explore.html');
+});
+
 app.listen(PORT, () => {
     run().catch(error => console.error('Fehler beim Starten des Servers:', error));
     console.log('Link: http://localhost:' + PORT + '/home');

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div class="title-container">
+        <h1 class="text-3xl font-bold mb-8">Explore</h1>
+    </div>
+    <style>
+        body {
+            font-family: SF Pro Medium, 'Helvetica Neue', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+        }
+
+        .post-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .post {
+        width: calc(30% - 0rem);
+        max-height: 200px; /* Begrenzen Sie die Höhe des Posts */
+        overflow: hidden; /* Verstecken Sie den überlaufenden Inhalt */
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 16px;
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .post:hover {
+            transform: scale(1.02); /* Vergrößern des Posts beim Hover */
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
+        }
+
+        .post.overflowing {
+            box-shadow: 0 0 16px rgba(255, 0, 0, 0.5); /* Roter Schatten, wenn Text über 200px Höhe */
+        }
+
+        /* Dark Mode-Stile */
+        body.dark-mode {
+            background-color: #222;
+            color: #eee;
+        }
+
+        body.dark-mode .post {
+            background-color: #222;
+            border-color: #333;
+            color: #eee;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .post:hover {
+            box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
+        }
+
+        /* Neumorphism styles for title and content */
+        .title-container {
+            padding: 1rem;
+            background-color: #f0f0f0;
+            color: #333;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .title-container {
+            padding: 1rem;
+            background-color: #222;
+            color: #eee;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="post-container" id="posts-container">
+            <!-- Hier werden die Posts eingefügt -->
+        </div>
+    </div>
+
+    <script>
+async function fetchProfilePicture(username) {
+    try {
+        const response = await fetch(`/api/profile/${username}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile picture');
+        }
+        const profile = await response.json();
+        const profilePicture = profile.pb; // Profilbild des Benutzers
+        // Hier können Sie das Profilbild verwenden, z.B. anzeigen oder weiterverarbeiten
+        console.log('Profilbild für Benutzer', username + ':', profilePicture);
+    } catch (error) {
+        console.error('Error fetching profile picture:', error);
+    }
+}
+
+// Funktion zum Abrufen und Anzeigen der Posts
+async function fetchAndDisplayPosts() {
+    try {
+        // Beiträge von der API abrufen
+        const response = await fetch('/api/posts');
+        if (!response.ok) {
+            throw new Error('Failed to fetch posts');
+        }
+        let posts = await response.json();
+
+        // Posts zufällig mischen
+        posts = shuffleArray(posts);
+
+        // Posts auf der Seite anzeigen
+        const postsContainer = document.getElementById('posts-container');
+        posts.forEach(async post => {
+            const postElement = document.createElement('div');
+            postElement.classList.add('post');
+
+            // Nur anzeigen, wenn sowohl content als auch codesnippet vorhanden sind
+            if (post.content && post.codesnippet) {
+                // Benutzerdaten abrufen
+                const userDataResponse = await fetch(`/api/profile/${post.username}`);
+                const userData = await userDataResponse.json();
+
+                // Profilbild und Benutzername in den Post einfügen
+                postElement.innerHTML = `
+                    <h3>${post.content}</h3>
+                    <p>${truncateText(post.codesnippet, 200)}</p>
+                    <div class="user-info">
+                        <img src="${userData.pb}" alt="Profilbild" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px; float: left;">
+                        <p>Author: ${post.username}</p>
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+    }
+}
+
+// Funktion zum Mischen eines Arrays (Fisher-Yates Algorithmus)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Funktion zum Kürzen des Textes
+function truncateText(text, maxLength) {
+    if (text.length > maxLength) {
+        return text.slice(0, maxLength) + '...';
+    }
+    return text;
+}
+
+// Seite lädt, Beiträge abrufen und anzeigen
+window.onload = fetchAndDisplayPosts;
+
+// Funktion zum Anwenden des Hover-Effekts auf alle Posts
+function applyHoverEffectToPosts() {
+    const posts = document.querySelectorAll(".post");
+    posts.forEach(post => {
+        addHoverEffect(post); // Füge den Hover-Effekt zu jedem Post hinzu
+        checkTextHeight(post); // Überprüfe die Höhe des Textbereichs und ändere den Schatten entsprechend
+    });
+}
+
+// Funktion zum Überprüfen der Höhe des Textbereichs und Ändern des Schattens
+function checkTextHeight(post) {
+    const textArea = post.querySelector("p"); // Nehme den Textbereich des Posts
+    if (textArea.scrollHeight > 200) { // Überprüfe, ob die Höhe des Textbereichs größer als 200px ist
+        post.style.boxShadow = "0 0 16px rgba(255, 0, 0, 0.5)"; // Ändere den Schatten, wenn die Bedingung erfüllt ist
+    }
+}
+
+// Funktionsaufruf beim Laden der Seite
+window.onload = function() {
+    fetchAndDisplayPosts();
+    applyHoverEffectToPosts();
+};
+
+        // Funktion zum Hinzufügen des Hover-Effekts zu einem einzelnen Post
+        function addHoverEffect(post) {
+            post.addEventListener("mouseenter", function() {
+                this.style.transform = "scale(1.03)";
+                this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
+            });
+            post.addEventListener("mouseleave", function() {
+                this.style.transform = "scale(1)";
+                this.style.boxShadow = "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
+            });
+        }
+
+        // Funktion zum Laden der bevorzugten Anzeigemodus
+        function loadModePreference() {
+            // Lade den gespeicherten Moduswert aus dem Local Storage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'light') {
+                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            } else {
+                // Andernfalls füge die Klasse für den hellen Modus hinzu
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        loadModePreference();
+    </script>
+</body>
+</html>

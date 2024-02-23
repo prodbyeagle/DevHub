@@ -169,9 +169,8 @@
 
         body.dark-mode .sidebar:hover {
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
-            transform: scale(1.1);
+            transform: scale(1.05);
             transition: all 0.3s ease;
-
         }
 
         body.dark-mode .create-post-form textarea {
@@ -591,12 +590,14 @@ body.dark-mode .search-button:hover {
             <h2></h2>
             <ul>
                 <li><a id="search-btn" class="search-btn">Search User</a></li>
-                <li><a href="https://www.youtube.com/watch?v=t179PiWXDnA">Explore</a></li>
+                <li><a href="/explore">Explore</a></li>
                 <li><a href="/profile">Profile</a></li>
                 <li><a href="/settings">Settings</a></li>
                 <li id="loginLink"><a href="/login">Login</a></li>
                 <li id="signupLink"><a href="/signup">Sign-Up</a></li>
                 <li id="signoutLink"><a href="#" id="signoutBtn">Sign Out</a></li>
+                <h2 class="text-lg font-semibold mb-4">Followers</h2>
+                <ul id="follower-list">
             </ul>
         </div>
 
@@ -633,9 +634,7 @@ body.dark-mode .search-button:hover {
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
     </svg>
 </button>
-
 <script> 
-
     document.addEventListener("DOMContentLoaded", function() {
         const username = localStorage.getItem("user");
 
@@ -1063,6 +1062,95 @@ var formattedPostContent = formatCode(postContent);
             scrollToTopButton.style.display = "none";
         }
     }
+
+    // Following list on Sidebar
+
+    async function fetchUserData(username) {
+    try {
+        const response = await fetch(`/api/profile/${username}`);
+        const userData = await response.json();
+        return userData;
+    } catch (error) {
+        throw new Error('Fehler beim Abrufen der Benutzerdaten.');
+    }
+}
+
+async function fetchFollowers(username) {
+    try {
+        const response = await fetch(`/api/profile/${username}`);
+        const userData = await response.json();
+        const followers = userData.followers || [];
+        return followers;
+    } catch (error) {
+        throw new Error('Fehler beim Abrufen der Follower.');
+    }
+}
+
+async function displayFollowersWithPictures() {
+    const savedUser = localStorage.getItem('user');
+    let username = null;
+
+    if (savedUser) {
+        const { identifier } = JSON.parse(savedUser);
+        username = identifier;
+    }
+
+    if (username) {
+        try {
+            const followers = await fetchFollowers(username);
+            const followerList = document.getElementById('follower-list');
+            followerList.innerHTML = ''; // Leere die vorherige Liste
+
+            const maxUsers = 5;
+            let count = 0;
+
+            for (const follower of followers) {
+                if (count >= maxUsers) break;
+                
+                const userData = await fetchUserData(follower);
+                const followerItem = document.createElement('li');
+
+                // Erstelle das Profilbild-Element und füge die Stile hinzu
+                const profilePicture = new Image();
+                profilePicture.src = userData.pb;
+                profilePicture.alt = `${userData.username}'s Profilbild`;
+                profilePicture.style.width = '25px';
+                profilePicture.style.height = '25px';
+                profilePicture.style.borderRadius = '50%';
+                profilePicture.style.float = 'left';
+                profilePicture.style.marginRight = '5px';
+                followerItem.appendChild(profilePicture);
+
+                // Erstelle den Benutzernamen-Text und füge ihn hinzu
+                const usernameElement = document.createElement('span');
+                usernameElement.textContent = userData.username;
+                followerItem.appendChild(usernameElement);
+
+                // Füge den Follower der Liste hinzu
+                followerList.appendChild(followerItem);
+
+                count++;
+            }
+
+            // Falls es mehr als fünf Benutzer gibt, füge einen "Other" Button hinzu
+            if (followers.length > maxUsers) {
+                const otherButton = document.createElement('button');
+                otherButton.textContent = 'Other';
+                otherButton.addEventListener('click', () => {
+                    // Funktion, um das Overlay anzuzeigen, wenn auf den "Other" Button geklickt wird
+                });
+                followerList.appendChild(otherButton);
+            }
+        } catch (error) {
+            console.error('Fehler:', error);
+        }
+    } else {
+        console.error('Benutzername nicht gefunden.');
+    }
+}
+
+// Rufe die Funktion zum Anzeigen der Follower mit Profilbildern auf
+displayFollowersWithPictures();
 
 </script>
 </body>
