@@ -125,6 +125,20 @@ app.get('/api/:username/posts', async (req, res) => {
     }
 });
 
+// DELETE '/api/:username/posts'
+app.delete('/api/:username/posts', async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        await db.collection('posts').deleteMany({ username });
+
+        res.status(200).json({ message: 'All user posts deleted successfully' });
+    } catch (error) {
+        console.error("Fehler beim Löschen der Beiträge:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // GET '/api/posts'
 app.get('/api/posts', async (req, res) => {
     try {
@@ -370,7 +384,7 @@ app.post('/api/update/follower', async (req, res) => {
     }
 });
 
-app.post('/api/username', async (req, res) => {
+app.post('/api/profile/change/passwort', async (req, res) => {
     try {
         const { username, currentPassword, newPassword } = req.body;
         const collection = db.collection('users');
@@ -397,37 +411,95 @@ app.post('/api/username', async (req, res) => {
     }
 });
 
-// Annahme: Du verwendest Mongoose als deine MongoDB-Bibliothek
-
-app.delete('/deleteAccount', async (req, res) => {
+app.post('/api/profile/change/email', async (req, res) => {
     try {
-      // Überprüfe, ob der Benutzer authentifiziert ist
-      if (!req.user || !req.user.username) {
-        return res.status(401).send('Benutzer nicht authentifiziert');
-      }
-  
-      // Benutzername des zu löschenden Benutzers
-      const usernameToDelete = req.user.username;
-  
-      // Datenbank und Sammlung auswählen
-      const database = client.db('snippetDB'); // Datenbankname hier einsetzen
-      const collection = database.collection('users'); // Sammlungsname hier einsetzen
-  
-      // Benutzer anhand des Benutzernamens löschen
-      const deleteResult = await collection.deleteOne({ username: usernameToDelete });
-  
-      if (deleteResult.deletedCount === 0) {
-        // Benutzer nicht gefunden
-        return res.status(404).send('Benutzer nicht gefunden');
-      }
-  
-      res.sendStatus(200); // Erfolgsstatus zurückgeben
+        const { username, currentEmail, newEmail } = req.body;
+        const collection = db.collection('users');
+        
+        // Überprüfen, ob der Benutzer vorhanden ist
+        const user = await collection.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Überprüfen, ob das aktuelle Passwort korrekt ist
+        if (user.email !== currentEmail) {
+            return res.status(400).json({ error: 'Current Email is incorrect' });
+        }
+
+        // Passwort aktualisieren
+        await collection.updateOne({ username }, { $set: { email: newEmail } });
+
+        return res.status(200).json({ message: 'Email changed successfully' });
     } catch (error) {
-      console.error('Fehler beim Löschen des Benutzers:', error);
-      res.status(500).send(`Interner Serverfehler beim Löschen des Benutzers: ${error.message}`);
+        console.error("Error processing request:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
-  
+});
+
+app.post('/api/profile/change/username', async (req, res) => {
+    try {
+        const { username, currentUsername, newUsername } = req.body;
+        const collection = db.collection('users');
+        
+        console.log('Received request to change username...');
+        console.log('Username:', username);
+        console.log('Current Username:', currentUsername);
+        console.log('New Username:', newUsername);
+
+        // Überprüfen, ob der Benutzer vorhanden ist
+        const user = await collection.findOne({ username });
+
+        if (!user) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Überprüfen, ob das aktuelle Username korrekt ist
+        if (user.username !== currentUsername) {
+            console.log('Current username is incorrect');
+            return res.status(400).json({ error: 'Current Username is incorrect' });
+        }
+
+        // Username aktualisieren
+        await collection.updateOne({ username }, { $set: { username: newUsername } });
+
+        console.log('Username changed successfully');
+        return res.status(200).json({ message: 'Username changed successfully' });
+    } catch (error) {
+        console.error("Error processing request:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.delete('/api/profile/delete/:username', async (req, res) => {
+    try {
+        // Überprüfen, ob der Benutzername in der Anfrage vorhanden ist
+        const username = req.params.username;
+        if (!username) {
+            console.error('Error deleting account: Username not provided');
+            return res.status(400).send('Username not provided');
+        }
+
+        console.log(`Deleting account for username: ${username}`);
+
+        // Den Benutzer aus der Datenbank entfernen
+        const deletionResult = await usersCollection.deleteOne({ username });
+
+        if (deletionResult.deletedCount === 0) {
+            console.log(`No account found for username: ${username}`);
+            return res.status(404).send('Account not found');
+        }
+
+        console.log(`Account successfully deleted for username: ${username}`);
+        res.status(200).send('Account successfully deleted');
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // Function to generate random password
 function generateRandomPassword() {
     const length = 10; // Länge des generierten Passworts
