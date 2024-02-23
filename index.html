@@ -569,6 +569,17 @@ body.dark-mode .close-button:hover {
 body.dark-mode .search-button:hover {
     background-color: #1ce358; /* Schaltflächenfarbe im Dark Mode */
 }
+
+/* Stil für die Suchergebnisse */
+.search-results-item {
+    padding: 5px; /* Fügen Sie hier nach Bedarf Abstand hinzu */
+    transition: color 0.2s ease; /* Übergangseffekt für Farbänderungen */
+}
+
+/* Stil für den Hover-Effekt */
+.search-results-item:hover {
+    color: #007bff; /* Hellere Farbe bei Hover */
+}
     </style>
 </head>
 <body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
@@ -580,6 +591,7 @@ body.dark-mode .search-button:hover {
             <h2></h2>
             <ul>
                 <li><a id="search-btn" class="search-btn">Search User</a></li>
+                <li><a href="https://www.youtube.com/watch?v=t179PiWXDnA">Explore</a></li>
                 <li><a href="/profile">Profile</a></li>
                 <li><a href="/settings">Settings</a></li>
                 <li id="loginLink"><a href="/login">Login</a></li>
@@ -606,23 +618,13 @@ body.dark-mode .search-button:hover {
     <div id="latestPosts"></div>
 </div>
 
-<div class="search-overlay hidden" id="overlay">
-    <div class="overlay-content">
-        <h2>User not found</h2>
-        <p>The user you are searching for does not exist.</p>
-        <button id="closeOverlayButton" class="neumorphism-button text-red-600 close-button">Close</button>
-    </div>
-</div>
-
 <div class="search-overlay" id="searchOverlay">
-    <div class="search-container">
         <div class="search-bar mb-4 neumorphism-input">
             <input type="text" id="searchInput" placeholder="Search for a username..." class="search-input">
             <button id="searchButton" class="neumorphism-button text-blue-600 search-button">Search</button>
             <button id="closeButton" class="neumorphism-button text-red-600 close-button">Close</button> <!-- Close-Button hinzugefügt -->
         </div>
         <div id="searchResults" class="neumorphism-input"></div>
-    </div>
 </div>
 <div class="overlay"></div> <!-- Overlay für Hintergrundverdunkelung -->
 
@@ -752,9 +754,10 @@ async function autocomplete() {
     const searchResultsDiv = document.getElementById("searchResults");
 
     if (searchTerm.length === 0) {
-        searchResultsDiv.innerHTML = ""; // Clear the search results if the search input is empty
-        return;
-    }
+    searchResultsDiv.innerHTML = "<div></div>"; // Anzeige der Platzhaltermeldung
+    return;
+}
+
 
     const response = await fetch(`/api/username`); // API-Endpunkt für die Benutzernamen
     if (response.ok) {
@@ -766,10 +769,10 @@ async function autocomplete() {
         if (filteredResults.length > 0) {
             // Erstelle HTML für Suchergebnisse mit Links zu den Benutzerprofilen
             const resultHTML = filteredResults.map((user, index) => {
-                const profilePic = user.pb ? `<img src="${user.pb}" alt="Profile Pic" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px; float: left;"/>` : ''; // Wenn ein Profilbild vorhanden ist, füge es hinzu
-                const marginBottom = index === filteredResults.length - 1 ? '0' : '5px'; // Bestimme den margin-bottom-Wert
-                return `<div style="margin-bottom: ${marginBottom};">${profilePic}<a href="/u/${user.username}">${user.username}</a></div>`;
-            }).join("");
+            const profilePic = user.pb ? `<img src="${user.pb}" alt="Profile Pic" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px; float: left;"/>` : ''; // Wenn ein Profilbild vorhanden ist, füge es hinzu
+            const marginBottom = index === filteredResults.length - 1 ? '0' : '10px'; // Bestimme den margin-bottom-Wert
+            return `<div class="search-results-item" style="margin-bottom: ${marginBottom};">${profilePic}<a href="/u/${user.username}">${user.username}</a></div>`;
+        }).join("");
             searchResultsDiv.innerHTML = resultHTML; // Zeige Suchergebnisse an
         } else {
             searchResultsDiv.innerHTML = "<div>❌ No results found</div>"; // Zeige Meldung an, wenn keine Ergebnisse gefunden wurden
@@ -930,7 +933,6 @@ async function getPosts() {
             postElement.appendChild(usernameElement);
             postElement.appendChild(contentElement);
             postElement.appendChild(codeSnippetElement);
-            postElement.appendChild(repliesElement);
             postElement.appendChild(likesElement); // Änderung: Likes-Element richtig hinzufügen
             
             postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu

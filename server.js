@@ -53,7 +53,7 @@ async function run() {
 // Funktion zum Formatieren des Datums in Ihrem gewünschten Format
 function formatDateForDisplay(date) {
     const options = { 
-        hour: 'numeric', 
+        hour: '2-digit', 
         minute: '2-digit',
         second: '2-digit',
         day: '2-digit', 
