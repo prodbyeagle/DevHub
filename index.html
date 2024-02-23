@@ -596,6 +596,11 @@ body.dark-mode .search-button:hover {
                 <li id="loginLink"><a href="/login">Login</a></li>
                 <li id="signupLink"><a href="/signup">Sign-Up</a></li>
                 <li id="signoutLink"><a href="#" id="signoutBtn">Sign Out</a></li>
+                <h2 class="text-lg font-semibold mb-4">DEV</h2>
+                <li ><a href="/admin">Admin</a></li>
+                <li ><a href="/intro">Intro</a></li>
+                <li ><a href="/api/posts">Posts API</a></li>
+                <li ><a href="/api/username">Users API</a></li>
                 <h2 class="text-lg font-semibold mb-4">Followers</h2>
                 <ul id="follower-list">
             </ul>
@@ -649,31 +654,7 @@ body.dark-mode .search-button:hover {
         }
     });
 
-const searchBtn = document.getElementById('search-btn');
-const closeButton = document.getElementById('closeButton');
-const overlay = document.querySelector('.overlay');
-const searchOverlay = document.getElementById('searchOverlay'); // geändert, um das Suchoverlay zu korrekt zu wählen
-
-searchBtn.addEventListener('click', () => {
-    // Überprüfen, ob das Suchoverlay angezeigt oder ausgeblendet ist
-    if (!searchOverlay.classList.contains('active')) {
-        // Wenn ausgeblendet, dann einblenden
-        searchOverlay.classList.add('active');
-        overlay.style.display = 'block'; // Overlay anzeigen
-    } else {
-        // Wenn angezeigt, dann ausblenden
-        searchOverlay.classList.remove('active');
-        overlay.style.display = 'none'; // Overlay ausblenden
-    }
-});
-
-closeButton.addEventListener('click', () => {
-    // Bei Klick auf den Close-Button das Overlay ausblenden
-    searchOverlay.classList.remove('active');
-    overlay.style.display = 'none'; // Overlay ausblenden
-});
-
-async function showWelcomeMessage() {
+    async function showWelcomeMessage() {
     try {
         const savedUser = localStorage.getItem('user'); // Benutzerdaten aus dem Speicher abrufen
         if (savedUser) {
@@ -706,6 +687,31 @@ async function showWelcomeMessage() {
         console.error('Error fetching user data:', error);
     }
 }
+
+
+const searchBtn = document.getElementById('search-btn');
+const closeButton = document.getElementById('closeButton');
+const overlay = document.querySelector('.overlay');
+const searchOverlay = document.getElementById('searchOverlay'); // geändert, um das Suchoverlay zu korrekt zu wählen
+
+searchBtn.addEventListener('click', () => {
+    // Überprüfen, ob das Suchoverlay angezeigt oder ausgeblendet ist
+    if (!searchOverlay.classList.contains('active')) {
+        // Wenn ausgeblendet, dann einblenden
+        searchOverlay.classList.add('active');
+        overlay.style.display = 'block'; // Overlay anzeigen
+    } else {
+        // Wenn angezeigt, dann ausblenden
+        searchOverlay.classList.remove('active');
+        overlay.style.display = 'none'; // Overlay ausblenden
+    }
+});
+
+closeButton.addEventListener('click', () => {
+    // Bei Klick auf den Close-Button das Overlay ausblenden
+    searchOverlay.classList.remove('active');
+    overlay.style.display = 'none'; // Overlay ausblenden
+});
 
 // Suchfunktion
 const searchInput = document.getElementById('searchInput');
