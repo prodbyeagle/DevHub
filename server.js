@@ -100,6 +100,44 @@ app.get('/api/profile/:username', async (req, res) => {
     }
 });
 
+app.put('/api/profile/:username/ban', async (req, res) => {
+    let encodedUsername = req.params.username;
+    let username = decodeURIComponent(encodedUsername);
+    try {
+        const user = await usersCollection.findOneAndUpdate(
+            { username },
+            { $set: { banned: true } }, // Setze den Benutzer auf "gebannen"
+            { returnOriginal: false }
+        );
+        if (!user) {
+            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+        }
+        res.status(200).json({ message: `Benutzer ${username} erfolgreich gebannt` });
+    } catch (error) {
+        console.error('Fehler beim Bannen des Benutzers:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
+app.put('/api/profile/:username/unban', async (req, res) => {
+    let encodedUsername = req.params.username;
+    let username = decodeURIComponent(encodedUsername);
+    try {
+        const user = await usersCollection.findOneAndUpdate(
+            { username },
+            { $set: { banned: false } }, // Setze den Benutzer auf "nicht gebannen"
+            { returnOriginal: false }
+        );
+        if (!user) {
+            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+        }
+        res.status(200).json({ message: `Ban für Benutzer ${username} erfolgreich aufgehoben` });
+    } catch (error) {
+        console.error('Fehler beim Aufheben des Bans des Benutzers:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
 // GET '/api/username/posts'
 app.get('/api/:username/posts', async (req, res) => {
     const { username } = req.params;
@@ -227,7 +265,7 @@ app.post('/signup', async (req, res) => {
         }        
 
         // Neuen Benutzer erstellen
-        await usersCollection.insertOne({ email, password, username, bio: "Hello, Im New Here!", pb, follower: 0, followers: [], admin: false, googlelogin: false });
+        await usersCollection.insertOne({ email, password, username, bio: "Hello, Im New Here!", follower: 0, followers: [], admin: false, googlelogin: false, banned: false, pb });
         res.status(201).send('User created successfully');
     } catch (error) {
         console.error('Error during sign up:', error);
@@ -296,6 +334,7 @@ app.get('/api/username', async (req, res) => {
             pb: user.pb,
             bio: user.bio,
             admin: user.admin,
+            banned: user.banned
         }));
         
         // JSON-Antwort mit Benutzerdaten senden
@@ -547,6 +586,7 @@ passport.use(new GoogleStrategy({
                 bio: "Hello, I'm New here!",
                 admin: false,
                 googlelogin: true,
+                banned: false,
                 follower: 0, 
                 followers: [],
             };

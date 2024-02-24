@@ -85,9 +85,45 @@
             text-align: center;
             transition: all 0.3s ease;
         }
+
+        .banned-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 222222;
+        }
+
+        #suspendedUser {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: #222;
+            color: #eee;
+            padding: 20px;
+            border-radius: 10px;
+            display: none; /* Standardmäßig ausgeblendet */
+        }
+
+        body.dark-mode #suspendedUser {
+            background-color: #eee;
+            color: #222;
+        }
     </style>
 </head>
 <body>
+    <div id="suspendedUser">
+        <h2>The user: <span id="suspendedUsername"></span> is suspended from here</h2>
+    </div>
+
     <div class="container">
         <div class="post-container" id="posts-container">
 
@@ -151,9 +187,54 @@ async function fetchAndDisplayPosts() {
                 postsContainer.appendChild(postElement);
             }
         });
-    } catch (error) {
-        console.error('Error fetching posts:', error);
+
+        const userData = JSON.parse(localStorage.getItem('user'));
+    if (!userData || !userData.identifier) {
+        console.error('User identifier not found in local storage');
+        return;
     }
+
+    const username = userData.identifier;
+
+    // Prüfen, ob der Benutzer gesperrt ist
+    const userResponse = await fetch(`/api/profile/${username}`);
+    const userDataResponse = await userResponse.json();
+    if (userDataResponse.banned) {
+        // Der Benutzer ist gesperrt, daher wird das Banned-Overlay angezeigt
+        showBannedOverlay(username);
+    } else {
+        // Der Benutzer ist nicht gesperrt, daher wird der normale Inhalt angezeigt
+        showNormalContent();
+    }
+} catch (error) {
+    console.error('Error fetching posts:', error);
+}
+}
+
+// Funktion zum Anzeigen des gesperrten Benutzers
+function showSuspendedUser(username) {
+    const suspendedUserDiv = document.getElementById('suspendedUser');
+    const suspendedUsernameSpan = document.getElementById('suspendedUsername');
+    suspendedUsernameSpan.textContent = `@${username}`;
+    suspendedUserDiv.style.display = 'block'; // Anzeigen der gesperrten Benachrichtigung
+}
+
+function showBannedOverlay(username) {
+    // Verstecke den normalen Inhalt
+    document.getElementById('posts-container').style.display = 'none';
+    
+    // Zeige das Banned-Overlay an
+    const overlay = document.createElement('div');
+    overlay.classList.add('banned-overlay');
+    overlay.innerHTML = `
+        <p>The user ${username} is suspended.</p>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function showNormalContent() {
+    // Zeige den normalen Inhalt an
+    document.getElementById('posts-container').style.display = 'block';
 }
 
 // Funktion zum Mischen eines Arrays (Fisher-Yates Algorithmus)

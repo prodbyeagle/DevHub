@@ -40,10 +40,13 @@
             user-select: none;
             position: sticky;
             top: 43px;
+            transition: all 0.3s ease;
         }
 
         .sidebar:hover {
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+            transition: all 0.3s ease;
         }
 
         .content {
@@ -159,14 +162,14 @@
             background-color: #222;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
             position: sticky;
-            top: 20px;
+            top: 43px;
             transition: all 0.3s ease;
         }
 
         body.dark-mode .sidebar a {
             color: #aaa;
         }
-
+        
         body.dark-mode .sidebar:hover {
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
             transform: scale(1.05);
@@ -653,6 +656,36 @@ body.dark-mode .search-button:hover {
             document.getElementById("signoutLink").style.display = "none";
         }
     });
+
+    // Überprüfen Sie die Benutzersperrstatus
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (!userData || !userData.identifier) {
+        console.error('User identifier not found in local storage');
+    } else {
+        const username = userData.identifier;
+        checkUserBanStatus(username);
+    }
+    
+    async function checkUserBanStatus(username) {
+        try {
+            const userResponse = await fetch(`/api/profile/${username}`);
+            const userDataResponse = await userResponse.json();
+            if (userDataResponse.banned) {
+                alert('You are Suspended from this Platform. ~ @admin');
+                localStorage.clear();
+                window.location.href = '/login';
+            } else {
+                document.body.classList.add('dark-mode');
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    function showNormalContent() {
+        // Zeige den normalen Inhalt an
+        document.body.classList.add('dark-mode');
+    }
 
     async function showWelcomeMessage() {
     try {

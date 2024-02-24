@@ -110,6 +110,34 @@
         body.dark-mode .switch-label {
             color: #eee;
         }
+
+        .banned-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Höheren Z-Index-Wert verwenden */
+}
+
+#suspendedUser {
+    text-align: center;
+    background-color: #eee;
+    color: #222;
+    padding: 20px;
+    border-radius: 10px;
+    display: none; /* Standardmäßig ausgeblendet */
+}
+
+body.dark-mode #suspendedUser {
+    background-color: #222;
+    color: #eee;
+}
     </style>
 </head>
 <body class="dark-mode">
@@ -243,12 +271,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         const matchedUser = userData.users.find(user => (user.username === identifier || user.email === identifier) && user.password === password);
 
         if (matchedUser) {
-            document.getElementById('username').textContent = matchedUser.username;
-            document.getElementById('email').textContent = '********************';
-            document.getElementById('password').textContent = '********************';
-            // Setze das Passwort in einem Attribut, um es später wiederherzustellen
-            document.getElementById('password').setAttribute('data-real-password', matchedUser.password);
-            document.getElementById('email').setAttribute('data-real-email', matchedUser.email);
+            // Check if the user is banned
+            if (matchedUser.banned) {
+                // The user is banned, show the banned overlay
+                showBannedOverlay(matchedUser.username);
+            } else {
+                // The user is not banned, display the user data
+                document.getElementById('username').textContent = matchedUser.username;
+                document.getElementById('email').textContent = '********************';
+                document.getElementById('password').textContent = '********************';
+                // Set the password in an attribute to restore it later
+                document.getElementById('password').setAttribute('data-real-password', matchedUser.password);
+                document.getElementById('email').setAttribute('data-real-email', matchedUser.email);
+            }
         } else {
             console.error('User data does not match stored user');
         }
@@ -256,6 +291,35 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error('Error fetching user data:', error);
     }
 });
+
+// Überprüfen Sie die Benutzersperrstatus
+const userData = JSON.parse(localStorage.getItem('user'));
+if (!userData || !userData.identifier) {
+    console.error('User identifier not found in local storage');
+} else {
+    const username = userData.identifier;
+    checkUserBanStatus(username);
+}
+
+async function checkUserBanStatus(username) {
+    try {
+        const userResponse = await fetch(`/api/profile/${username}`);
+        const userDataResponse = await userResponse.json();
+        if (userDataResponse.banned) {
+            localStorage.clear();
+            window.location.href = '/login';
+        } else {
+            document.body.classList.add('dark-mode');
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+    }
+}
+
+function showNormalContent() {
+    // Zeige den normalen Inhalt an
+    document.body.classList.add('dark-mode');
+}
 
 // JavaScript für das Anzeigen/Verbergen des Passworts
 document.getElementById('togglePasswordVisibility').addEventListener('click', function() {
@@ -402,97 +466,97 @@ changePasswordForm.addEventListener('submit', async (event) => {
     }
 });
 
-// JavaScript, um das Benutzernamenänderungs-Overlay zu öffnen
-document.getElementById('openChangeUsernameOverlayBtn').addEventListener('click', function() {
-    document.getElementById('changeUsernameOverlay').classList.remove('hidden');
-});
-
-// JavaScript, um das Benutzernamenänderungs-Overlay zu schließen
-document.getElementById('closeUsernameOverlay').addEventListener('click', function() {
-    document.getElementById('changeUsernameOverlay').classList.add('hidden');
-});
-
-const changeUsernameForm = document.getElementById('changeUsernameForm');
-changeUsernameForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
-
-    const currentUsername = document.getElementById('currentUsername').value; // Aktuelles Passwort
-    const newUsername = document.getElementById('newUsername').value; // Neuer Benutzername
-    const confirmUsername = document.getElementById('confirmUsername').value; // Bestätigung des neuen Benutzernamens
-
-    try {
-        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-        const savedUser = localStorage.getItem('user');
-        if (!savedUser) {
-            console.error('User not found in local storage');
-            return;
-        }
-
-        // Parse die Benutzerdaten aus dem Local Storage
-        const { identifier } = JSON.parse(savedUser);
-
-        // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
-        if (!newUsername) {
-            console.error('New username cannot be empty');
-            return;
-        }
-
-        // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
-        if (newUsername !== confirmUsername) {
-            console.error('New username and confirm username do not match');
-            return;
-        }
-
-        console.log('Sending username change request...');
-        console.log('New Username:', newUsername);
-
-        // Senden der Benutzernamenänderungsanforderung an den Server
-        const response = await fetch('/api/profile/change/username', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: identifier, // Aktueller Benutzername
-                currentUsername: currentUsername, // Aktuelles Passwort
-                newUsername: newUsername // Neuer Benutzername
-            })
-        });
-
-        console.log('Response received:', response);
-
-        if (response.ok) {
-            const savedUser = JSON.parse(localStorage.getItem('user'));
-            savedUser.identifier = newUsername; // Aktualisieren Sie den Benutzernamen im Local Storage
-            localStorage.setItem('user', JSON.stringify(savedUser));
-            Toastify({
-                text: 'Username changed successfully',
-                duration: 3000,
-                close: true,
-                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-            }).showToast();
-            document.getElementById('changeUsernameOverlay').classList.add('hidden');
-        } else {
-            console.error('Failed to change username:', response.statusText);
-            // Hier kannst du eine Fehlermeldung anzeigen
-            Toastify({
-                text: 'Failed to change username: ' + response.statusText,
-                duration: 3000,
-                close: true,
-                backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-            }).showToast();
-        }
-    } catch (error) {
-        console.error('Error changing username:', error);
-        // Hier kannst du eine Fehlermeldung anzeigen
-        Toastify({
-            text: 'Error changing username: ' + error,
-            duration: 3000,
-            close: true,
-            backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-        }).showToast();
-    }
-});
+// // JavaScript, um das Benutzernamenänderungs-Overlay zu öffnen
+// document.getElementById('openChangeUsernameOverlayBtn').addEventListener('click', function() {
+//     document.getElementById('changeUsernameOverlay').classList.remove('hidden');
+// });
+// 
+// // JavaScript, um das Benutzernamenänderungs-Overlay zu schließen
+// document.getElementById('closeUsernameOverlay').addEventListener('click', function() {
+//     document.getElementById('changeUsernameOverlay').classList.add('hidden');
+// });
+// 
+// const changeUsernameForm = document.getElementById('changeUsernameForm');
+// changeUsernameForm.addEventListener('submit', async (event) => {
+//     event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+// 
+//     const currentUsername = document.getElementById('currentUsername').value; // Aktuelles Passwort
+//     const newUsername = document.getElementById('newUsername').value; // Neuer Benutzername
+//     const confirmUsername = document.getElementById('confirmUsername').value; // Bestätigung des neuen Benutzernamens
+// 
+//     try {
+//         // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+//         const savedUser = localStorage.getItem('user');
+//         if (!savedUser) {
+//             console.error('User not found in local storage');
+//             return;
+//         }
+// 
+//         // Parse die Benutzerdaten aus dem Local Storage
+//         const { identifier } = JSON.parse(savedUser);
+// 
+//         // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
+//         if (!newUsername) {
+//             console.error('New username cannot be empty');
+//             return;
+//         }
+// 
+//         // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
+//         if (newUsername !== confirmUsername) {
+//             console.error('New username and confirm username do not match');
+//             return;
+//         }
+// 
+//         console.log('Sending username change request...');
+//         console.log('New Username:', newUsername);
+// 
+//         // Senden der Benutzernamenänderungsanforderung an den Server
+//         const response = await fetch('/api/profile/change/username', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 username: identifier, // Aktueller Benutzername
+//                 currentUsername: currentUsername, // Aktuelles Passwort
+//                 newUsername: newUsername // Neuer Benutzername
+//             })
+//         });
+// 
+//         console.log('Response received:', response);
+// 
+//         if (response.ok) {
+//             const savedUser = JSON.parse(localStorage.getItem('user'));
+//             savedUser.identifier = newUsername; // Aktualisieren Sie den Benutzernamen im Local Storage
+//             localStorage.setItem('user', JSON.stringify(savedUser));
+//             Toastify({
+//                 text: 'Username changed successfully',
+//                 duration: 3000,
+//                 close: true,
+//                 backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+//             }).showToast();
+//             document.getElementById('changeUsernameOverlay').classList.add('hidden');
+//         } else {
+//             console.error('Failed to change username:', response.statusText);
+//             // Hier kannst du eine Fehlermeldung anzeigen
+//             Toastify({
+//                 text: 'Failed to change username: ' + response.statusText,
+//                 duration: 3000,
+//                 close: true,
+//                 backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+//             }).showToast();
+//         }
+//     } catch (error) {
+//         console.error('Error changing username:', error);
+//         // Hier kannst du eine Fehlermeldung anzeigen
+//         Toastify({
+//             text: 'Error changing username: ' + error,
+//             duration: 3000,
+//             close: true,
+//             backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+//         }).showToast();
+//     }
+// });
 
 
 // // JavaScript, um das E-Mail-Änderungs-Overlay zu öffnen
@@ -624,7 +688,6 @@ document.getElementById('deleteAccountBtn').addEventListener('click', async () =
         // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
 });
-
 </script>
 </body>
 </body>

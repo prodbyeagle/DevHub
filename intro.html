@@ -392,6 +392,36 @@
         </div>
     </div>
     <script>
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (!userData || !userData.identifier) {
+        console.error('User identifier not found in local storage');
+    } else {
+        const username = userData.identifier;
+        checkUserBanStatus(username);
+    }
+    
+    async function checkUserBanStatus(username) {
+        try {
+            const userResponse = await fetch(`/api/profile/${username}`);
+            const userDataResponse = await userResponse.json();
+            if (userDataResponse.banned) {
+                alert('You are Suspended from this Platform. ~ @admin');
+                localStorage.clear();
+                window.location.href = '/login';
+            } else {
+                document.body.classList.add('dark-mode');
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
+    
+    function showNormalContent() {
+        // Zeige den normalen Inhalt an
+        document.body.classList.add('dark-mode');
+    }
+
+
         // Funktion zum Erfassen der ausgewählten Sprachen und Senden an den Server
         const introForm = document.getElementById('introForm');
         introForm.addEventListener('submit', (event) => {
