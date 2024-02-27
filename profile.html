@@ -408,14 +408,26 @@
             
                 const contentElement = document.createElement('p');
                 contentElement.textContent = post.content;
-            
+                contentElement.setAttribute('id', 'content_' + post._id);
+
                 const codeSnippetElement = document.createElement('pre');
                 codeSnippetElement.textContent = post.codesnippet;
-                codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
-                codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Wrap lines
-                codeSnippetElement.style.maxWidth = '100%'; // Set max width
-            
-                // Erstelle den Delete-Button
+                codeSnippetElement.classList.add('bg-blue-800', 'text-white', 'p-4', 'rounded', 'text-xs');
+                codeSnippetElement.style.whiteSpace = 'pre-wrap';
+                codeSnippetElement.style.maxWidth = '100%';
+                codeSnippetElement.setAttribute('id', 'codesnippet_' + post._id);
+
+                const selectedContentElement = document.getElementById('content_' + post._id);
+                const selectedCodeSnippetElement = document.getElementById('codesnippet_' + post._id);
+
+                // Überprüfen, ob die Elemente erfolgreich ausgewählt wurden
+                if (selectedContentElement && selectedCodeSnippetElement) {
+                    console.log('Content Element found:', selectedContentElement);
+                    console.log('Code Snippet Element found:', selectedCodeSnippetElement);
+                } else {
+                    console.error('Content or Code Snippet element not found.');
+                }
+
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete Post';
                 deleteButton.classList.add('neumorphism-button', 'text-red-600', 'delete-post-btn');
@@ -941,19 +953,67 @@ async function displayPinnedPosts(postId) {
 }
 
 function showEditForm(postId) {
-    const username = JSON.parse(localStorage.getItem('user')); // Benutzername aus dem Objekt abrufen
-    const newContent = prompt("Enter the new content for the post:");
-    const newCodeSnippet = prompt("Enter the new code snippet for the post:");
-
-    if (newContent !== null && newCodeSnippet !== null) {
-        // Wenn der Benutzer eine Eingabe macht, senden Sie die Bearbeitungsanfrage
-        editPost(username, postId, newContent, newCodeSnippet);
+    const postsContainer = document.getElementById('user-posts');
+    if (!postsContainer) {
+        console.error('Posts container element not found.');
+        return;
     }
+
+    const postElement = postsContainer.querySelector(`[data-post-id="${postId}"]`);
+    if (!postElement) {
+        console.error(`Post element with ID ${postId} not found.`);
+        return;
+    }
+
+    const contentElement = postElement.querySelector('content_');
+    const codeSnippetElement = postElement.querySelector('codesnippet_');
+
+    if (!contentElement || !codeSnippetElement) {
+        console.error('Content or Code snippet element not found within post element.');
+        return;
+    }
+    
+    const editContentInput = document.createElement('textarea');
+    editContentInput.classList.add('edit-input');
+    editContentInput.value = contentElement.textContent;
+
+    const editCodeSnippetInput = document.createElement('textarea');
+    editCodeSnippetInput.classList.add('edit-input');
+    editCodeSnippetInput.value = codeSnippetElement.textContent;
+
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save';
+    saveButton.classList.add('neumorphism-button', 'text-red-600', 'mr-2');
+    saveButton.onclick = function() {
+        const newContent = editContentInput.value;
+        const newCodeSnippet = editCodeSnippetInput.value;
+        editPost(postId, newContent, newCodeSnippet);
+    };
+
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.classList.add('neumorphism-button', 'text-red-600');
+    cancelButton.onclick = function() {
+        // Verwerfen Sie die Änderungen und blenden Sie das Bearbeitungsformular aus
+        editContentInput.remove();
+        editCodeSnippetInput.remove();
+        saveButton.remove();
+        cancelButton.remove();
+    };
+
+    // Ersetzen Sie den bestehenden Inhalt und das Code-Snippet durch Bearbeitungseingaben
+    contentElement.innerHTML = '';
+    contentElement.appendChild(editContentInput);
+    codeSnippetElement.innerHTML = '';
+    codeSnippetElement.appendChild(editCodeSnippetInput);
+    // Fügen Sie Speichern- und Abbrechen-Buttons hinzu
+    contentElement.appendChild(saveButton);
+    contentElement.appendChild(cancelButton);
 }
 
 // Funktion zum Bearbeiten eines Posts über eine Fetch-Anfrage
-function editPost(username, postId, newContent, newCodeSnippet) {
-    fetch(`/profile/${username}/edit-post/${postId}`, {
+function editPost(postId, newContent, newCodeSnippet) {
+    fetch(`/edit-post/${postId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -972,6 +1032,7 @@ function editPost(username, postId, newContent, newCodeSnippet) {
         alert('Failed to edit post.');
     });
 }
+
     </script>
 </body>
 </html>

@@ -607,6 +607,7 @@ body.dark-mode .search-button:hover {
                 <h2 class="text-lg font-semibold mb-4">Followers</h2>
                 <ul id="follower-list"></ul>
             </ul>
+            <button id="generatePostsBtn" class="neumorphism-button w-full mt-4">Generate Posts</button>
         </div>
 
 <!-- Content -->
@@ -1220,6 +1221,89 @@ async function displayFollowersWithPictures() {
 
 // Rufe die Funktion zum Anzeigen der Follower mit Profilbildern auf
 displayFollowersWithPictures();
+
+
+// Event-Listener für den Button "Generate Posts" hinzufügen
+document.getElementById('generatePostsBtn').addEventListener('click', createGenPosts);
+
+// Funktion zum Generieren einer zufälligen Anzahl von Beiträgen
+async function createGenPosts(event) {
+    event.preventDefault(); // Verhindert das Standardformularverhalten
+
+    const numberOfPosts = parseInt(prompt('How many posts do you want to create? (1 - 500)'));
+
+    // Überprüfen, ob die eingegebene Anzahl gültig ist
+    if (isNaN(numberOfPosts) || numberOfPosts < 1 || numberOfPosts > 500) {
+        alert('Please enter a valid number between 1 and 500.');
+        return;
+    }
+
+    try {
+        // Schleife zum Erstellen der angegebenen Anzahl von Beiträgen
+        for (let i = 0; i < numberOfPosts; i++) {
+            // Generiere einen zufälligen Inhalt und eine zufällige Beschreibung für den Beitrag
+            const postContent = generateRandomContent();
+            const postDescription = generateRandomDescription();
+
+            // POST-Anfrage zum Erstellen des Beitrags
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    codesnippet: postContent, 
+                    username: username, 
+                    content: postDescription, 
+                    likes: 0,
+                    replies: [],
+                    pinned: false,
+                })
+            });
+
+            // Überprüfen, ob die POST-Anfrage erfolgreich war
+            if (!response.ok) {
+                throw new Error('Failed to create post');
+            }
+
+            console.log(`Post ${i + 1} created successfully.`);
+        }
+
+        // Hier können Sie eine Erfolgsmeldung anzeigen oder andere Aktionen ausführen
+        alert(`${numberOfPosts} posts created successfully.`);
+    } catch (error) {
+        console.error('Error creating posts:', error);
+        // Hier können Sie eine Fehlermeldung anzeigen oder andere Fehlerbehandlungen durchführen
+        alert('An error occurred while creating posts.');
+    }
+}
+
+
+// Funktion zum Generieren eines zufälligen Inhalts für den Beitrag
+function generateRandomContent() {
+    const contentOptions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    ];
+    const randomIndex = Math.floor(Math.random() * contentOptions.length);
+    return contentOptions[randomIndex];
+}
+
+// Funktion zum Generieren einer zufälligen Beschreibung für den Beitrag
+function generateRandomDescription() {
+    const descriptionOptions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    ];
+    const randomIndex = Math.floor(Math.random() * descriptionOptions.length);
+    return descriptionOptions[randomIndex];
+}
 
 </script>
 </body>

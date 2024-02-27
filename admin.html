@@ -34,6 +34,9 @@
             padding: 2rem;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            width: calc(100% - 40px); /* Die Breite ist 100% abzüglich des doppelten Abstands (20px an jedem Rand) */
+            max-width: 1800px; /* Hier können Sie die maximale Breite nach Bedarf anpassen */
+            margin: 0 auto; /* Zentriert das Panel horizontal */
         }
 
         body.dark-mode .neumorphism-form {
@@ -82,6 +85,12 @@
         body.dark-mode .neumorphism-button:hover {
             background-color: #333;
         }
+
+        .container {
+    max-width: calc(100% - 40px); /* Die maximale Breite ist die Bildschirmbreite abzüglich des doppelten Abstands (20px an jedem Rand) */
+    margin: 0 auto; /* Zentriert den Container horizontal */
+}
+
     </style>
 </head>
 <body class="bg-gray-100 dark-mode">
@@ -89,6 +98,7 @@
     <h1 class="text-3xl font-bold text-center mb-8">DEV: Admin Panel</h1>
     <div class="max-w-md mx-auto neumorphism-form">
         <div id="adminData"></div>
+        <div id="graphContainer"></div>
     </div>
 </div>
 <div class="flex justify-center items-center fixed inset-x-0 top-120">
@@ -96,13 +106,22 @@
 </div>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        const adminDataDiv = document.getElementById('adminData');
-        if (!localStorage.getItem('user')) {
-            console.error('No user found in localStorage');
-            return;
-        }
-    
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOMContentLoaded event fired');
+    const graphContainer = document.getElementById('graphContainer');
+    if (!localStorage.getItem('user')) {
+        console.error('No user found in localStorage');
+        return;
+    }
+
+    function formatDate(dateString) {
+        const [datePart, timePart] = dateString.split(', ');
+        const [day, month, year] = datePart.split('.');
+        const [hours, minutes, seconds] = timePart.split(':');
+        const formattedDate = `${year}-${month}-${day}, ${hours}:${minutes}:${seconds}`;
+        return formattedDate;
+    }
+
         const savedUser = localStorage.getItem('user');
         const formData = {
             username: JSON.parse(localStorage.getItem('user')).identifier
@@ -123,12 +142,16 @@
             let data;
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
-                console.log(data);
             } else {
                 data = await response.text();
-                console.log(data);
             }
             if (Array.isArray(data)) {
+                const adminDataDiv = document.getElementById('adminData');
+                if (!adminDataDiv) {
+                    console.error('adminDataDiv not found');
+                    return;
+                }
+            
                 data.forEach(user => {
                     const userDiv = document.createElement('div');
                     userDiv.classList.add('p-4', 'border-t', 'border-gray-350');
@@ -141,7 +164,7 @@
                         <p><strong>Banned:</strong> ${user.banned ? 'Yes' : 'No'}</p>
                         <button onclick="toggleBan('${user.username}', ${user.banned}, this)" class="neumorphism-button text-blue-600">${user.banned ? 'Unban' : 'Ban'}</button>
                     `;
-    
+                
                     adminDataDiv.appendChild(userDiv);
                 });
             } else {
@@ -150,7 +173,6 @@
         } catch (error) {
             console.error('There was a problem with your fetch operation:', error);
         }
-    });
     
     async function toggleBan(username, isBanned, button) {
     const action = isBanned ? 'unban' : 'ban';
@@ -208,6 +230,149 @@
         console.log('Mode Loaded:', mode);
     }
     loadModePreference();
+
+
+
+    try {
+        console.log('Fetching posts data...');
+        const postsDataResponse = await fetch('/api/posts');
+        if (!postsDataResponse.ok) {
+            throw new Error('Failed to fetch posts data');
+        }
+        const postsData = await postsDataResponse.json();
+        console.log('Posts data:', postsData);
+
+        const postDates = postsData.posts.map(post => {
+            const formattedDate = formatDate(post.date);
+            return new Date(formattedDate);
+        });
+        console.log('Post dates:', postDates);
+
+        const currentDate = new Date();
+        const postsLast10Minutes = postDates.filter(date => date.getTime() > (currentDate.getTime() - 10 * 60 * 1000));
+        const postsLast1Hour = postDates.filter(date => date.getTime() > (currentDate.getTime() - 60 * 60 * 1000));
+        const postsLast24Hours = postDates.filter(date => date.getTime() > (currentDate.getTime() - 24 * 60 * 60 * 1000));
+        const postsLast7Days = postDates.filter(date => date.getTime() > (currentDate.getTime() - 7 * 24 * 60 * 60 * 1000));
+        const postsLastMonth = postDates.filter(date => date.getMonth() === currentDate.getMonth() && date.getFullYear() === currentDate.getFullYear());
+        const postsLast6Months = postDates.filter(date => {
+            const monthDiff = (currentDate.getFullYear() - date.getFullYear()) * 12 + currentDate.getMonth() - date.getMonth();
+            return monthDiff < 6;
+        });
+        const postsLastYear = postDates.filter(date => date.getFullYear() === currentDate.getFullYear() - 1);
+
+        const postCountsLast10Minutes = postsLast10Minutes.length;
+        const postCountsLast1Hour = postsLast1Hour.length;
+        const postCountsLast24Hours = postsLast24Hours.length;
+        const postCountsLast7Days = postsLast7Days.length;
+        const postCountsLastMonth = postsLastMonth.length;
+        const postCountsLast6Months = postsLast6Months.length;
+        const postCountsLastYear = postsLastYear.length;
+
+        const data = [
+            [postCountsLast10Minutes], // Hinzugefügt
+            [postCountsLast1Hour],
+            [postCountsLast24Hours],
+            [postCountsLast7Days],
+            [postCountsLastMonth],
+            [postCountsLast6Months] // Hinzugefügt
+        ];
+        
+        const labels = ['Last 10 Minutes', 'Last 1 Hour', 'Last 24 Hours', 'Last 7 Days', 'Last Month', 'Last 6 Months']; // Hinzugefügt
+
+            renderChart(labels, data, graphContainer);
+        } catch (error) {
+            console.error('Error fetching posts data:', error);
+        }
+    });
+
+function renderChart(labels, data, container) {
+    console.log('Rendering chart...');
+    const ctx = document.createElement('canvas').getContext('2d');
+    container.appendChild(ctx.canvas);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Posts Last 10 Minutes', // Hinzugefügt
+                    data: data[0],
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Posts Last 1 Hour',
+                    data: data[1],
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Posts Last 24 Hours',
+                    data: data[2],
+                    fill: false,
+                    borderColor: 'rgba(192, 75, 192, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(192, 75, 192, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Posts Last 7 Days',
+                    data: data[3],
+                    fill: false,
+                    borderColor: 'rgba(192, 192, 75, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(192, 192, 75, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Posts Last Month',
+                    data: data[4],
+                    fill: false,
+                    borderColor: 'rgba(192, 75, 75, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(192, 75, 75, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Posts Last 6 Months', // Hinzugefügt
+                    data: data[5],
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Posts'
+                    }
+                }
+            }
+        }
+    });
+}
+
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</html>
 </body>
 </html>

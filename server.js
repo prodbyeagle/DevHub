@@ -219,7 +219,7 @@ app.get('/profile/:postId', (req, res) => {
     });
 });
 
-app.put('/profile/:username/edit-post/:postId', (req, res) => {
+app.put('/edit-post/:postId', (req, res) => {
     const { username, postId } = req.params;
     const { content, codesnippet } = req.body;
 
