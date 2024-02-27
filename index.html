@@ -605,8 +605,9 @@ body.dark-mode .search-button:hover {
                 <li ><a href="/api/posts">Posts API</a></li>
                 <li ><a href="/api/username">Users API</a></li>
                 <h2 class="text-lg font-semibold mb-4">Followers</h2>
-                <ul id="follower-list">
+                <ul id="follower-list"></ul>
             </ul>
+            <button id="generatePostsBtn" class="neumorphism-button w-full mt-4">Generate Posts</button>
         </div>
 
 <!-- Content -->
@@ -623,8 +624,15 @@ body.dark-mode .search-button:hover {
         <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Send</button>
     </form>
 
-    <!-- Latest posts section -->
     <div id="latestPosts"></div>
+    <div id="loadingAnimation" class="relative flex w-64 animate-pulse gap-2 p-4 hidden">
+        <div class="h-12 w-12 rounded-full bg-slate-400"></div>
+        <div class="flex-1">
+          <div class="mb-1 h-5 w-3/5 rounded-lg bg-slate-400 text-lg"></div>
+          <div class="h-5 w-[90%] rounded-lg bg-slate-400 text-sm"></div>
+        </div>
+        <div class="absolute bottom-5 right-0 h-4 w-4 rounded-full bg-slate-400"></div>
+    </div>
 </div>
 
 <div class="search-overlay" id="searchOverlay">
@@ -655,6 +663,8 @@ body.dark-mode .search-button:hover {
             document.getElementById("signupLink").style.display = "block";
             document.getElementById("signoutLink").style.display = "none";
         }
+
+        getPosts();
     });
 
     // Überprüfen Sie die Benutzersperrstatus
@@ -836,7 +846,6 @@ async function createPost(event) {
     const postContent = document.getElementById('postContent').value;
     const postDescription = document.getElementById('postDescription').value;
 
-    // Überprüfen, ob der Beitragsinhalt leer ist
     if (!postContent.trim()) {
         return;
     }
@@ -848,8 +857,6 @@ async function createPost(event) {
 
                 const response = await fetch('/api/username');
                 const userData = await response.json();
-
-                // Finde den Benutzer, der die angegebene E-Mail-Adresse hat
                 const matchedUser = userData.users.find(user => user.email === identifier);
 
             // Überprüfen, ob der Benutzer den Cooldown erreicht hat
@@ -859,7 +866,6 @@ async function createPost(event) {
             const cooldownDuration = postCount >= 10 ? 5000 : 15000; // 1 Minute Cooldown, wenn mehr als 10 Posts, sonst 15 Sekunden
 
             if (!lastPostTime || currentTime - parseInt(lastPostTime) >= cooldownDuration) {
-                // Benutzer hat den Cooldown erreicht oder ist neu, Beitrag kann gesendet werden
                 const response = await fetch('/api/posts', {
                     method: 'POST',
                     headers: {
@@ -870,13 +876,15 @@ async function createPost(event) {
                         identifier: identifier, 
                         content: postDescription, 
                         likes: 0,
-                        replies: [] 
+                        replies: [],
+                        pinned: false,
                     })
                 });
                 const data = await response.json();
                 document.getElementById('postContent').value = '';
                 document.getElementById('postDescription').value = '';
                 await getPosts();
+                window.location.reload();
 
                 // Cooldown zurücksetzen und aktualisieren
                 localStorage.setItem('lastPostTime', currentTime);
@@ -904,20 +912,138 @@ async function createPost(event) {
     }
 }
 
+// Event-Listener für den Button "Generate Posts" hinzufügen
+document.getElementById('generatePostsBtn').addEventListener('click', createGenPosts);
+
+// Funktion zum Generieren einer zufälligen Anzahl von Beiträgen
+async function createGenPosts(event) {
+    event.preventDefault(); // Verhindert das Standardformularverhalten
+
+    const numberOfPosts = parseInt(prompt('How many posts do you want to create? (1 - 500)'));
+
+    // Überprüfen, ob die eingegebene Anzahl gültig ist
+    if (isNaN(numberOfPosts) || numberOfPosts < 1 || numberOfPosts > 500) {
+        alert('Please enter a valid number between 1 and 500.');
+        return;
+    }
+
+    try {
+        // Schleife zum Erstellen der angegebenen Anzahl von Beiträgen
+        for (let i = 0; i < numberOfPosts; i++) {
+            // Generiere einen zufälligen Inhalt und eine zufällige Beschreibung für den Beitrag
+            const postContent = generateRandomContent();
+            const postDescription = generateRandomDescription();
+
+            // POST-Anfrage zum Erstellen des Beitrags
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    codesnippet: postContent, 
+                    username: username, 
+                    content: postDescription, 
+                    likes: 0,
+                    replies: [],
+                    pinned: false,
+                })
+            });
+
+            // Überprüfen, ob die POST-Anfrage erfolgreich war
+            if (!response.ok) {
+                throw new Error('Failed to create post');
+            }
+
+            console.log(`Post ${i + 1} created successfully.`);
+        }
+
+        // Hier können Sie eine Erfolgsmeldung anzeigen oder andere Aktionen ausführen
+        alert(`${numberOfPosts} posts created successfully.`);
+    } catch (error) {
+        console.error('Error creating posts:', error);
+        // Hier können Sie eine Fehlermeldung anzeigen oder andere Fehlerbehandlungen durchführen
+        alert('An error occurred while creating posts.');
+    }
+}
+
+
+// Funktion zum Generieren eines zufälligen Inhalts für den Beitrag
+function generateRandomContent() {
+    const contentOptions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    ];
+    const randomIndex = Math.floor(Math.random() * contentOptions.length);
+    return contentOptions[randomIndex];
+}
+
+// Funktion zum Generieren einer zufälligen Beschreibung für den Beitrag
+function generateRandomDescription() {
+    const descriptionOptions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    ];
+    const randomIndex = Math.floor(Math.random() * descriptionOptions.length);
+    return descriptionOptions[randomIndex];
+}
+
+let loading = false;
+let pageNumber = 1;
+const postsPerPage = 10;
+let allPosts = [];
+
+// Überprüfen, ob das Ende der Seite erreicht wurde und die Information im Session Storage speichern
+function checkIfReachedEnd() {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    const isReachedEnd = scrollTop + clientHeight >= scrollHeight - 5;
+    // Wenn das Ende mindestens einmal erreicht wurde, im Session Storage speichern
+    if (isReachedEnd) {
+        sessionStorage.setItem('reachedEnd', true);
+    }
+}
+
+// Event-Listener für das Scroll-Ereignis hinzufügen
+window.addEventListener('scroll', () => {
+    checkIfReachedEnd(); // Überprüfen, ob das Ende der Seite erreicht wurde
+});
+
 async function getPosts() {
     try {
-        // Rufen Sie die Posts ab
-        const response = await fetch('/api/posts');
-        const posts = await response.json();
+        // Überprüfen, ob das Ende der Seite erreicht wurde
+        const reachedEnd = JSON.parse(sessionStorage.getItem('reachedEnd'));
+        if (loading || (reachedEnd && pageNumber === -1 && allPosts.length === 0)) return;
 
-        // Rufen Sie die Benutzerdaten ab
+        loading = true;
+        let posts = [];
+
+        if (pageNumber === 1) {
+            // Nur beim ersten Aufruf das Limit setzen
+            const response = await fetch(`/api/posts?limit=30`);
+            posts = await response.json();
+            allPosts = posts;
+        } else {
+            const startIndex = (pageNumber - 1) * postsPerPage;
+            console.log(startIndex);
+            const endIndex = startIndex + postsPerPage;
+            console.log(endIndex);
+            posts = allPosts.slice(startIndex, endIndex);
+            console.log(posts);
+        }
+
+        console.log(`Aktuelle Posts: (${posts.length})`);
+
         const userResponse = await fetch('/api/username');
         const userData = await userResponse.json();
-        const usersArray = userData.users; // Extrahieren Sie das Array der Benutzer
+        const usersArray = userData.users;
 
-        // Verarbeiten und Anzeigen der Posts
         const postsContainer = document.getElementById('latestPosts');
-        postsContainer.innerHTML = ''; // Leeren des Container-Inhalts
 
         posts.forEach(post => {
             const postElement = document.createElement('div');
@@ -974,13 +1100,38 @@ async function getPosts() {
             postElement.appendChild(likesElement); // Änderung: Likes-Element richtig hinzufügen
             
             postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu
-
-            
         });
+
+        if (posts.length === 0) {
+            window.removeEventListener('scroll', handleScroll);
+        }
+
+        pageNumber++;
     } catch (error) {
         console.error('Error fetching posts:', error);
+    } finally {
+        loading = false;
+        loadingAnimation.classList.add('hidden');
     }
 }
+
+// Event-Listener-Funktion für das Scroll-Ereignis
+function handleScroll() {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+        console.log('Lade weitere Posts...');
+        getPosts(); // Wenn der Benutzer fast ans Ende der Seite gescrollt hat, rufen Sie weitere Posts ab
+    }
+}
+
+// Funktion zum Überwachen des Scroll-Events und Laden weiterer Posts beim Erreichen des Seitenendes
+window.addEventListener('scroll', () => {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+        console.log('Lade weitere Posts...');
+        getPosts(); // Wenn der Benutzer fast ans Ende der Seite gescrollt hat, rufen Sie weitere Posts ab
+    }
+});
 
     // Funktion zum Abmelden des Benutzers
     document.getElementById('signoutBtn').addEventListener('click', () => {

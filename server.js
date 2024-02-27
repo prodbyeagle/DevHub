@@ -10,6 +10,7 @@ const multer = require('multer');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,10 +27,11 @@ app.use(session({
     saveUninitialized: true
 }));
 
-const uri = 'mongodb+srv://prodbyeagle:mZPLLs37Oi6x3NbR@snippetdb.wqznr37.mongodb.net/?retryWrites=true&w=majority';
-const dbName = 'snippetDB';
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME;
 let db;
 let usersCollection;
+let postsCollection;
 
 async function run() {
     const client = new MongoClient(uri, {
@@ -44,6 +46,7 @@ async function run() {
         await client.connect();
         db = client.db(dbName);
         usersCollection = db.collection('users');
+        postsCollection = db.collection('posts');
         console.log("Connected to MongoDB successfully!");
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -98,6 +101,23 @@ app.get('/api/profile/:username', async (req, res) => {
         console.error('Fehler beim Abrufen der Benutzerdaten:', error);
         res.status(500).json({ error: 'Interner Serverfehler' });
     }
+});
+
+app.post('/profile/:username/pin-post/:postId', (req, res) => {
+    const { username, postId } = req.params;
+
+    postsCollection.updateOne(
+        { _id: new ObjectId(postId) }, // Konvertiere postId in ObjectId
+        { $set: { pinned: true } },
+        (err, result) => {
+            if (err) {
+                console.error('Failed to pin post:', err);
+                res.status(500).send('Failed to pin post');
+                return;
+            }
+            res.status(200).send('Post pinned successfully.');
+        }
+    );
 });
 
 app.put('/api/profile/:username/ban', async (req, res) => {
@@ -163,6 +183,63 @@ app.get('/api/:username/posts', async (req, res) => {
     }
 });
 
+app.post('/profile/:username/pin-post/:postId', (req, res) => {
+    const { username, postId } = req.params;
+
+    const postsCollection = db.collection('posts');
+
+    postsCollection.updateOne(
+        { _id: ObjectId(postId) }, // Konvertiere postId in ObjectId
+        { $set: { pinned: true } },
+        (err, result) => {
+            if (err) {
+                console.error('Failed to pin post:', err);
+                res.status(500).send('Failed to pin post');
+                return;
+            }
+            res.status(200).send('Post pinned successfully.');
+        }
+    );
+});
+
+app.get('/profile/:postId', (req, res) => {
+    const { postId } = req.params;
+
+    postsCollection.findOne({ _id: postId }, (err, post) => {
+        if (err) {
+            console.error('Failed to fetch post:', err);
+            res.status(500).send('Failed to fetch post');
+            return;
+        }
+        if (!post) {
+            res.status(404).send('Post not found');
+            return;
+        }
+        res.json(post);
+    });
+});
+
+app.put('/profile/:username/edit-post/:postId', (req, res) => {
+    const { username, postId } = req.params;
+    const { content, codesnippet } = req.body;
+
+    const postsCollection = db.collection('posts');
+
+    postsCollection.updateOne(
+        { _id: postId },
+        { $set: { content: content } },
+        { $set: { codesnippet: codesnippet} }, // Aktualisierten Inhalt des Posts
+        (err, result) => {
+            if (err) {
+                console.error('Failed to edit post:', err);
+                res.status(500).send('Failed to edit post');
+                return;
+            }
+            res.status(200).send('Post edited successfully.');
+        }
+    );
+});
+
 // DELETE '/api/:username/posts'
 app.delete('/api/:username/posts', async (req, res) => {
     const { username } = req.params;
@@ -189,7 +266,7 @@ app.get('/api/posts', async (req, res) => {
             return {
                 ...post,
                 date: formatDateForDisplay(post.date),
-                imageUrl // Profilbild-URL in den Post einfügen
+                imageUrl,
             };
         }));
         
@@ -211,7 +288,8 @@ app.post('/api/posts', async (req, res) => {
             date,
             codesnippet,
             likes: 0,
-            replies: []
+            replies: [],
+            pinned: false,
         });
 
         const newPost = {
@@ -221,7 +299,8 @@ app.post('/api/posts', async (req, res) => {
             date: formatDateForDisplay(date), // Datum im gewünschten Format zurückgeben
             codesnippet,
             likes: 0,
-            replies: 0
+            replies: 0,
+            pinned: false,
         };
         res.status(201).json(newPost);
     } catch (error) {
@@ -229,6 +308,7 @@ app.post('/api/posts', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.post('/login', async (req, res) => {
     const { identifier, password } = req.body; // "identifier" kann E-Mail oder Benutzername sein
@@ -265,7 +345,7 @@ app.post('/signup', async (req, res) => {
         }        
 
         // Neuen Benutzer erstellen
-        await usersCollection.insertOne({ email, password, username, bio: "Hello, Im New Here!", follower: 0, followers: [], admin: false, googlelogin: false, banned: false, pb });
+        await usersCollection.insertOne({ email, password, username, bio: "Hello, Im New Here!", follower: 0, followers: [], admin: false, googlelogin: false, githubLogin: false, banned: false, pb });
         res.status(201).send('User created successfully');
     } catch (error) {
         console.error('Error during sign up:', error);
@@ -539,6 +619,37 @@ app.delete('/api/profile/delete/:username', async (req, res) => {
     }
 });
 
+const { ObjectId } = require('mongodb');
+const objectId = new ObjectId();
+
+
+app.delete('/api/posts/delete/:postId', async (req, res) => {
+    try {
+        // Überprüfen, ob die postId in der Anfrage vorhanden ist
+        const postId = req.params.postId;
+        if (!postId) {
+            console.error('Error deleting post: Post ID not provided');
+            return res.status(400).send('Post ID not provided');
+        }
+
+        console.log(`Deleting post with ID: ${postId}`);
+
+        // Den Post aus der Datenbank entfernen
+        const deletionResult = await postsCollection.deleteOne({ _id: new ObjectId(postId) });
+
+        if (deletionResult.deletedCount === 0) {
+            console.log(`No post found with ID: ${postId}`);
+            return res.status(404).send('Post not found');
+        }
+
+        console.log(`Post successfully deleted with ID: ${postId}`);
+        res.status(200).send('Post successfully deleted');
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // Function to generate random password
 function generateRandomPassword() {
     const length = 10; // Länge des generierten Passworts
@@ -557,13 +668,12 @@ function sanitizeUsername(username) {
 }
 
 const passport = require('passport');
-const { randomUUID, randomBytes } = require('crypto');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 passport.use(new GoogleStrategy({
-    clientID: '1058877753013-d83q1elt7pf185pd8v9i1a51fp8dlg7n.apps.googleusercontent.com',
-    clientSecret: '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',
-    callbackURL: 'http://localhost:3000/auth/google/callback'
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
 }, async (accessToken, refreshToken, profile, done) => {
     const collection = db.collection('users');
     
@@ -640,6 +750,92 @@ passport.deserializeUser((user, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+//GITHUB
+
+// const { v4: uuidv4 } = require('uuid');
+// const GitHubStrategy = require('passport-github2').Strategy;
+// 
+// passport.use(new GitHubStrategy({
+//     clientID: process.env.GITHUB_CLIENT_ID,
+//     clientSecret: process.env.GITHUB_CLIENT_SECRET,
+//     callbackURL: process.env.GITHUB_CALLBACK_URL,
+// }, async (accessToken, refreshToken, profile, done) => {
+//     console.log(profile);
+//     const collection = db.collection('users');
+//     
+//     try {
+//         const userEmail = profile.emails ? profile.emails[0].value : null;
+//         const userPhoto = profile.photos ? profile.photos[0].value : null;
+// 
+//         const existingUser = await collection.findOne({ email: userEmail });
+// 
+//         if (existingUser) {
+//             return done(null, existingUser);
+//         } else {
+//             const randomPassword = uuidv4(); // Generate a random password
+//             const newUser = {
+//                 username: profile.username || profile.displayName,
+//                 email: userEmail,
+//                 password: randomPassword,
+//                 pb: userPhoto,
+//                 bio: "Hello, I'm New here!",
+//                 admin: false,
+//                 githubLogin: true,
+//                 banned: false,
+//                 followers: [],
+//             };
+// 
+//             await collection.insertOne(newUser);
+//             return done(null, newUser);
+//         }
+//     } catch (error) {
+//         console.error('Error processing GitHub authentication:', error);
+//         return done(error, null);
+//     }
+// }));
+// 
+// // POST route for GitHub authentication
+// app.post('/auth/github/callback', 
+//     passport.authenticate('github', { failureRedirect: '/login' }),
+//     (req, res) => {
+//         res.status(200).json({ 
+//             username: req.user.username, 
+//             password: req.user.password,
+//         });
+//     }
+// );
+// 
+// app.get('/auth/github/callback',
+//     passport.authenticate('github', { failureRedirect: '/login' }),
+//     (req, res) => {
+// 
+//         if (req.user && req.user.username && req.user.password) {
+// 
+//             // Redirect to the home page with user data as URL parameter
+//             const user = {
+//                 identifier: req.user.username,
+//                 password: req.user.password
+//             };
+//             res.redirect('/login?user=' + encodeURIComponent(JSON.stringify(user)));
+//         } else {
+//             console.error('Error: User username or password not found.');
+//             res.redirect('/login'); // Redirect to login page or handle error accordingly
+//         }
+//     }
+// );
+// 
+// passport.serializeUser((user, done) => {
+//     done(null, user);
+// });
+// 
+// passport.deserializeUser((user, done) => {
+//     done(null, user);
+// });
+// 
+// app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html')); // Laden Sie die index.html-Datei

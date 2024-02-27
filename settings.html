@@ -679,8 +679,7 @@ document.getElementById('deleteAccountBtn').addEventListener('click', async () =
             throw new Error('Failed to delete user posts');
         }
 
-        localStorage.removeItem('user');
-        localStorage.removeItem('mode');
+        localStorage.clear();
 
         window.location.href = '/login';
     } catch (error) {

@@ -326,6 +326,7 @@
 
     <div class="content-container">
         <div id="user-posts" class="mt-8" style="font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            <button onclick="displayPinnedPosts()">Pin Post</button>
         </div>
     </div>
 
@@ -393,35 +394,74 @@
             messageElement.textContent = '😭 No Posts! ...you can make an posts on your /home page';
             postsContainer.appendChild(messageElement);
         }
-
+        
         function renderPosts(posts) {
-        const postsContainer = document.getElementById('user-posts');
-        postsContainer.innerHTML = ''; // Clear previous posts
+            const postsContainer = document.getElementById('user-posts');
+            postsContainer.innerHTML = ''; // Clear previous posts
 
-        posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
+            
+                const usernameElement = document.createElement('h3');
+                usernameElement.textContent = `@${post.username} (${post.date})`;
+            
+                const contentElement = document.createElement('p');
+                contentElement.textContent = post.content;
+            
+                const codeSnippetElement = document.createElement('pre');
+                codeSnippetElement.textContent = post.codesnippet;
+                codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
+                codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Wrap lines
+                codeSnippetElement.style.maxWidth = '100%'; // Set max width
+            
+                // Erstelle den Delete-Button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete Post';
+                deleteButton.classList.add('neumorphism-button', 'text-red-600', 'delete-post-btn');
+                deleteButton.dataset.postId = post._id;
+                deleteButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 50 50">
+                    <path d="M 21 0 C 19.355469 0 18 1.355469 18 3 L 18 5 L 10.1875 5 C 10.0625 4.976563 9.9375 4.976563 9.8125 5 L 8 5 C 7.96875 5 7.9375 5 7.90625 5 C 7.355469 5.027344 6.925781 5.496094 6.953125 6.046875 C 6.980469 6.597656 7.449219 7.027344 8 7 L 9.09375 7 L 12.6875 47.5 C 12.8125 48.898438 14.003906 50 15.40625 50 L 34.59375 50 C 35.996094 50 37.1875 48.898438 37.3125 47.5 L 40.90625 7 L 42 7 C 42.359375 7.003906 42.695313 6.816406 42.878906 6.503906 C 43.058594 6.191406 43.058594 5.808594 42.878906 5.496094 C 42.695313 5.183594 42.359375 4.996094 42 5 L 32 5 L 32 3 C 32 1.355469 30.644531 0 29 0 Z M 21 2 L 29 2 C 29.5625 2 30 2.4375 30 3 L 30 5 L 20 5 L 20 3 C 20 2.4375 20.4375 2 21 2 Z M 11.09375 7 L 38.90625 7 L 35.3125 47.34375 C 35.28125 47.691406 34.910156 48 34.59375 48 L 15.40625 48 C 15.089844 48 14.71875 47.691406 14.6875 47.34375 Z M 18.90625 9.96875 C 18.863281 9.976563 18.820313 9.988281 18.78125 10 C 18.316406 10.105469 17.988281 10.523438 18 11 L 18 44 C 17.996094 44.359375 18.183594 44.695313 18.496094 44.878906 C 18.808594 45.058594 19.191406 45.058594 19.503906 44.878906 C 19.816406 44.695313 20.003906 44.359375 20 44 L 20 11 C 20.011719 10.710938 19.894531 10.433594 19.6875 10.238281 C 19.476563 10.039063 19.191406 9.941406 18.90625 9.96875 Z M 24.90625 9.96875 C 24.863281 9.976563 24.820313 9.988281 24.78125 10 C 24.316406 10.105469 23.988281 10.523438 24 11 L 24 44 C 23.996094 44.359375 24.183594 44.695313 24.496094 44.878906 C 24.808594 45.058594 25.191406 45.058594 25.503906 44.878906 C 25.816406 44.695313 26.003906 44.359375 26 44 L 26 11 C 26.011719 10.710938 25.894531 10.433594 25.6875 10.238281 C 25.476563 10.039063 25.191406 9.941406 24.90625 9.96875 Z M 30.90625 9.96875 C 30.863281 9.976563 30.820313 9.988281 30.78125 10 C 30.316406 10.105469 29.988281 10.523438 30 11 L 30 44 C 29.996094 44.359375 30.183594 44.695313 30.496094 44.878906 C 30.808594 45.058594 31.191406 45.058594 31.503906 44.878906 C 31.816406 44.695313 32.003906 44.359375 32 44 L 32 11 C 32.011719 10.710938 31.894531 10.433594 31.6875 10.238281 C 31.476563 10.039063 31.191406 9.941406 30.90625 9.96875 Z"></path>
+                    </svg>`;
 
-            const usernameElement = document.createElement('h3');
-            usernameElement.textContent = `@${post.username} (${post.date})`;
+                const pinButton = document.createElement('button');
+                pinButton.textContent = 'Pin Post';
+                pinButton.classList.add('neumorphism-button', 'text-red-600');
+                pinButton.dataset.postId = post._id;
+                pinButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" id="pin">
+                <path d="M85.4 45 54.9 14.6c-2.8-2.9-3.5-1.1-3.5.3v14L28.7 45.7H15c-3.9 0-.8 4.2-1.4 3.5l17.2 17.1-14.4 14.5c-.8.8-.8 2.1 0 2.9.8.8 2.1.8 2.9 0l14.4-14.4 17.1 17.2c-.5-.5 3.6 2.2 3.6-1.4V71.3l16.8-22.7h12.7c2.1-.1 4.9-.1 1.5-3.6zm-65.5 4.6h8.9l21.7 21.7v8.9L19.9 49.6zm32.5 17.7L32.7 47.6 52.8 33l14.4 14.6-14.8 19.7zm17.8-22.7L55.4 29.8v-8.9l23.7 23.7h-8.9z"></path>
+                <path fill="#00F" d="M804-1070V614H-980v-1684H804m8-8H-988V622H812v-1700z"></path>
+                </svg>`;
+                pinButton.onclick = function() {
+                const postId = this.dataset.postId;
+                pinPost(postId);
+                };
 
-            const contentElement = document.createElement('p');
-            contentElement.textContent = post.content;
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit Post';
+                editButton.classList.add('neumorphism-button', 'text-red-600');
+                editButton.dataset.postId = post._id;
+                editButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0 0 50 50">
+                        <path d="M 43.125 2 C 41.878906 2 40.636719 2.488281 39.6875 3.4375 L 38.875 4.25 L 45.75 11.125 C 45.746094 11.128906 46.5625 10.3125 46.5625 10.3125 C 48.464844 8.410156 48.460938 5.335938 46.5625 3.4375 C 45.609375 2.488281 44.371094 2 43.125 2 Z M 37.34375 6.03125 C 37.117188 6.0625 36.90625 6.175781 36.75 6.34375 L 4.3125 38.8125 C 4.183594 38.929688 4.085938 39.082031 4.03125 39.25 L 2.03125 46.75 C 1.941406 47.09375 2.042969 47.457031 2.292969 47.707031 C 2.542969 47.957031 2.90625 48.058594 3.25 47.96875 L 10.75 45.96875 C 10.917969 45.914063 11.070313 45.816406 11.1875 45.6875 L 43.65625 13.25 C 44.054688 12.863281 44.058594 12.226563 43.671875 11.828125 C 43.285156 11.429688 42.648438 11.425781 42.25 11.8125 L 9.96875 44.09375 L 5.90625 40.03125 L 38.1875 7.75 C 38.488281 7.460938 38.578125 7.011719 38.410156 6.628906 C 38.242188 6.246094 37.855469 6.007813 37.4375 6.03125 C 37.40625 6.03125 37.375 6.03125 37.34375 6.03125 Z"></path>
+                    </svg>`;
+                editButton.onclick = function() {
+                    const postId = this.dataset.postId;
+                    showEditForm(postId);
+                };
 
-            const codeSnippetElement = document.createElement('pre');
-            codeSnippetElement.textContent = post.codesnippet;
-            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
-            codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Wrap lines
-            codeSnippetElement.style.maxWidth = '100%'; // Set max width
+                postElement.appendChild(editButton);
+                postElement.appendChild(pinButton);
+                postElement.appendChild(deleteButton);
+                postElement.appendChild(usernameElement);
+                postElement.appendChild(contentElement);
+                postElement.appendChild(codeSnippetElement);
+                postsContainer.appendChild(postElement);
+    });
+}
 
-            postElement.appendChild(usernameElement);
-            postElement.appendChild(contentElement);
-            postElement.appendChild(codeSnippetElement);
-
-            postsContainer.appendChild(postElement);
-        });
-        }
-    
         applyHoverEffectToPosts();
     
         function applyHoverEffect(postElement) {
@@ -448,6 +488,7 @@
                 const currentUsername = userData.identifier;
                 fetchUserPosts(currentUsername);
                 fetchAndDisplayFollowerCount(currentUsername);
+                displayPinnedPosts;
             } else {
                 console.error('User data not found in localStorage.');
             }
@@ -749,26 +790,28 @@ async function uploadImage(imageFile) {
     }
 }
 
-// Funktion zum Abrufen und Anzeigen der Anzahl der Follower
-async function fetchAndDisplayFollowerCount() {
+// Funktion zum Abrufen und Anzeigen der Anzahl der Follower für einen bestimmten Benutzer
+async function fetchAndDisplayFollowerCount(username) {
     try {
-        // Benutzerdaten aus dem Local Storage abrufen
-        const userDataString = localStorage.getItem('user');
-        if (!userDataString) {
-            console.error('Benutzerdaten nicht im Local Storage gefunden.');
+        
+        // URL-decodierten Benutzernamen erstellen
+        const decodedUsername = decodeURIComponent(username);
+
+        // API-Antwort mit den Benutzerdaten abrufen
+        const response = await fetch(`/api/profile/${decodedUsername}`);
+
+        const data = await response.json();
+
+        // Überprüfen, ob die API-Antwort gültige Daten enthält
+        if (!data || !data.follower) {
+            console.error('Ungültige API-Antwort:', data);
             return;
         }
-        const userData = JSON.parse(userDataString);
-        const username = userData.identifier;
 
-        // API-Antwort mit Benutzerdaten abrufen
-        const response = await fetch(`/api/profile/${username}`);
-        const currentUser = await response.json();
-
-        // Überprüfen, ob der aktuelle Benutzer gefunden wurde
-        if (!currentUser) {
-            console.error('Benutzer nicht in der API gefunden.');
-            return;
+        // Anzahl der Follower des Benutzers abrufen und anzeigen
+        let followerCount = data.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
+        if (followerCount < 0) {
+            followerCount = 0; // Sicherstellen, dass die Anzahl nicht negativ ist
         }
 
         // Anzahl der Benutzer, denen der aktuelle Benutzer folgt, abrufen
@@ -778,7 +821,7 @@ async function fetchAndDisplayFollowerCount() {
         // Namen der Benutzer, denen der aktuelle Benutzer folgt, anzeigen
         let followingNames = "";
         if (followingCount === 0) {
-            followingNamesElement.textContent = "😭 No Followers";
+            followingNames = "😭 No Followers!";
         } else if (followingCount <= 3) {
             // Wenn es drei oder weniger Benutzer gibt, alle Namen anzeigen
             followingNames = followingList.join(", ");
@@ -793,14 +836,141 @@ async function fetchAndDisplayFollowerCount() {
         const followingNamesElement = document.getElementById('following-names');
         followingNamesElement.textContent = followingNames;
 
-        // Anzahl der Follower des aktuellen Benutzers abrufen und anzeigen
-        const followerCount = currentUser.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
-
         const followerCountElement = document.getElementById('follower-count');
         followerCountElement.textContent = followerCount;
     } catch (error) {
         console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
     }
+}
+
+document.getElementById('user-posts').addEventListener('click', async (event) => {
+    if (event.target.classList.contains('neumorphism-button') && event.target.classList.contains('text-red-600')) {
+        // Stelle sicher, dass der Klick auf den Delete-Button erfolgt ist
+        const postId = event.target.dataset.postId; // Hole die Post-ID aus dem Dataset
+
+        try {
+            console.log(`Deleting post with ID: ${postId}`);
+
+            // Überprüfen, ob eine gültige Post-ID vorhanden ist
+            if (!postId) {
+                throw new Error('Post ID is undefined');
+            }
+
+            // Zeige eine Bestätigungsdialog an
+            const confirmed = confirm('Are you sure you want to delete this post?');
+
+            // Wenn der Benutzer die Aktion bestätigt hat
+            if (confirmed) {
+                // Senden der Anfrage zum Löschen des Posts
+                const response = await fetch(`/api/posts/delete/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete post');
+                }
+
+                // Post erfolgreich gelöscht
+                console.log(`Post with ID ${postId} successfully deleted`);
+
+                // Seite neu laden
+                window.location.reload();
+            }
+
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
+        }
+    }
+});
+
+function pinPost(postId) {
+    const username = JSON.parse(localStorage.getItem('user'));
+    console.log("Post ID:", postId); // Überprüfen der Post-ID
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    fetch(`/profile/${username}/pin-post/${postId}`, requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to pin post.');
+            }
+            return response.json(); // Parse the response body as JSON
+        })
+        .then(data => {
+            console.log(data); // Log the parsed JSON response
+            alert('Post pinned successfully.');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+async function displayPinnedPosts(postId) {
+    const username = JSON.parse(localStorage.getItem('user'));
+    console.log("Post ID:", postId);
+    try {
+        const response = await fetch(`/profile/${postId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch posts.');
+        }
+        const posts = await response.json();
+
+        const postsContainer = document.getElementById('user-posts');
+        postsContainer.innerHTML = ''; // Clear previous posts
+
+        posts.forEach(post => {
+            const postElement = createPostElement(post);
+            if (post.pinned) {
+                postsContainer.prepend(postElement); // Append pinned post at the beginning
+            } else {
+                postsContainer.appendChild(postElement); // Append unpinned post at the end
+            }
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function showEditForm(postId) {
+    const username = JSON.parse(localStorage.getItem('user')); // Benutzername aus dem Objekt abrufen
+    const newContent = prompt("Enter the new content for the post:");
+    const newCodeSnippet = prompt("Enter the new code snippet for the post:");
+
+    if (newContent !== null && newCodeSnippet !== null) {
+        // Wenn der Benutzer eine Eingabe macht, senden Sie die Bearbeitungsanfrage
+        editPost(username, postId, newContent, newCodeSnippet);
+    }
+}
+
+// Funktion zum Bearbeiten eines Posts über eine Fetch-Anfrage
+function editPost(username, postId, newContent, newCodeSnippet) {
+    fetch(`/profile/${username}/edit-post/${postId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: newContent, codesnippet: newCodeSnippet }) // Neuer Inhalt und neues Code-Snippet des Posts
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to edit post.');
+        }
+        alert('Post edited successfully.');
+        // Hier können Sie die Seite aktualisieren oder andere Aktionen ausführen, die nach dem Bearbeiten des Posts erforderlich sind
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to edit post.');
+    });
 }
     </script>
 </body>

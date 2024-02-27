@@ -648,6 +648,42 @@ const followStatus = localStorage.getItem('followStatus');
         document.getElementById('follow-button').textContent = 'Follow';
         document.getElementById('follow-button').style.borderColor = 'red';
     }
+    
+// Event-Listener für alle Anpinn-Schaltflächen hinzufügen
+document.querySelectorAll('.pin-button').forEach(button => {
+    button.addEventListener('click', async () => {
+        const postId = button.closest('.post').dataset.postId;
+        const pinned = await togglePinStatus(postId);
+        if (pinned) {
+            button.textContent = 'Unpin';
+        } else {
+            button.textContent = 'Pin';
+        }
+    });
+});
+
+// Funktion zum Umschalten des Anpinnstatus eines Posts
+async function togglePinStatus(postId) {
+    try {
+        // Senden Sie eine Anfrage an den Server, um den Anpinnstatus des Posts zu ändern
+        const response = await fetch(`/api/posts/${postId}/pin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ postId: postId })
+        });
+        if (!response.ok) {
+            throw new Error('Fehler beim Umschalten des Anpinnstatus.');
+        }
+        const data = await response.json();
+        return data.pinned; // Rückgabe des aktualisierten Anpinnstatus
+    } catch (error) {
+        console.error('Fehler beim Umschalten des Anpinnstatus:', error);
+        return null;
+    }
+}
+
     </script>
 </body>
 </html>
