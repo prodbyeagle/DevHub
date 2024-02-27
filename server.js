@@ -256,9 +256,21 @@ app.delete('/api/:username/posts', async (req, res) => {
 
 // GET '/api/posts'
 app.get('/api/posts', async (req, res) => {
+    const page = parseInt(req.query.page) || 1; // Aktuelle Seite, standardmäßig 1
+    const limit = parseInt(req.query.limit) || 10; // Anzahl der Posts pro Seite, standardmäßig 10
+
     try {
-        const posts = await db.collection('posts').find().toArray();
-        
+        const skip = (page - 1) * limit; // Anzahl der zu überspringenden Posts
+
+        const postsCount = await db.collection('posts').countDocuments();
+        const totalPages = Math.ceil(postsCount / limit);
+
+        const posts = await db.collection('posts')
+            .find()
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+
         // Transformieren Sie das Datum jedes Posts und fügen Sie das Bildfeld hinzu
         const postsWithFormattedData = await Promise.all(posts.map(async post => {
             const user = await db.collection('users').findOne({ username: post.username });
@@ -270,7 +282,11 @@ app.get('/api/posts', async (req, res) => {
             };
         }));
         
-        res.status(200).json(postsWithFormattedData);
+        res.status(200).json({
+            totalPages,
+            currentPage: page,
+            posts: postsWithFormattedData
+        });
     } catch (error) {
         console.error("Fehler beim Abrufen der Beiträge:", error);
         res.status(500).json({ error: 'Internal Server Error' });
