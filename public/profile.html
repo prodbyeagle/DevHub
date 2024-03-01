@@ -400,10 +400,19 @@
             contentElement.textContent = post.content;
 
             const codeSnippetElement = document.createElement('pre');
-            codeSnippetElement.textContent = post.codesnippet;
+            const codeSnippetText = post.codesnippet;
             codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
             codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Wrap lines
             codeSnippetElement.style.maxWidth = '100%'; // Set max width
+            
+            if (codeSnippetText.length > 200) {
+                    // Wenn das Codesnippet länger als 50 Zeichen ist, fügen Sie Zeilenumbrüche ein
+                    const formattedCodeSnippet = codeSnippetText.replace(/(.{200})/g, "$1\n");
+                    codeSnippetElement.textContent = formattedCodeSnippet;
+                } else {
+                    // Wenn das Codesnippet weniger als oder genau 50 Zeichen hat, fügen Sie es einfach hinzu
+                    codeSnippetElement.textContent = codeSnippetText;
+                }
 
             postElement.appendChild(usernameElement);
             postElement.appendChild(contentElement);
@@ -412,7 +421,7 @@
             postsContainer.appendChild(postElement);
         });
         }
-    
+
         applyHoverEffectToPosts();
     
         function applyHoverEffect(postElement) {

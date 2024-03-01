@@ -11,11 +11,23 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const crypto = require('crypto');
 require('dotenv').config();
+const { ObjectId } = require('mongodb');
+const objectId = new ObjectId();
+const socketIo = require('socket.io');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = socketIo(server);
 
 const sessionSecret = require('crypto').randomBytes(64).toString('hex');
+
+// Middleware, um statische Dateien aus dem "public"-Verzeichnis zu servieren
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'html')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -158,6 +170,44 @@ app.put('/api/profile/:username/unban', async (req, res) => {
     }
 });
 
+app.put('/api/profile/:username/true', async (req, res) => {
+    let encodedUsername = req.params.username;
+    let username = decodeURIComponent(encodedUsername);
+    try {
+        const user = await usersCollection.findOneAndUpdate(
+            { username },
+            { $set: { admin: true } }, // Setze den Benutzer auf "admin"
+            { returnOriginal: false }
+        );
+        if (!user) {
+            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+        }
+        res.status(200).json({ message: `Benutzer ${username} erfolgreich zum Admin ernannt` });
+    } catch (error) {
+        console.error('Fehler beim Hinzufügen von Admin des Benutzers:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
+app.put('/api/profile/:username/false', async (req, res) => {
+    let encodedUsername = req.params.username;
+    let username = decodeURIComponent(encodedUsername);
+    try {
+        const user = await usersCollection.findOneAndUpdate(
+            { username },
+            { $set: { admin: false } }, // Setze den Benutzer auf "admin"
+            { returnOriginal: false }
+        );
+        if (!user) {
+            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+        }
+        res.status(200).json({ message: `Benutzer ${username} erfolgreich Admin entfernt` });
+    } catch (error) {
+        console.error('Fehler beim Entfernen von Admin des Benutzers:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
 // GET '/api/username/posts'
 app.get('/api/:username/posts', async (req, res) => {
     const { username } = req.params;
@@ -220,15 +270,16 @@ app.get('/profile/:postId', (req, res) => {
 });
 
 app.put('/edit-post/:postId', (req, res) => {
-    const { username, postId } = req.params;
-    const { content, codesnippet } = req.body;
+    const { postId } = req.params;
+    const { content, codesnippet, date } = req.body;
 
     const postsCollection = db.collection('posts');
 
+    console.log('Received PUT request to edit post:', postId);
+
     postsCollection.updateOne(
-        { _id: postId },
-        { $set: { content: content } },
-        { $set: { codesnippet: codesnippet} }, // Aktualisierten Inhalt des Posts
+        { _id: new ObjectId(postId) },
+        { $set: { content: content, codesnippet: codesnippet, date: date  } }, // Aktualisierten Inhalt des Posts
         (err, result) => {
             if (err) {
                 console.error('Failed to edit post:', err);
@@ -237,7 +288,7 @@ app.put('/edit-post/:postId', (req, res) => {
             }
             res.status(200).send('Post edited successfully.');
         }
-    );
+    );    
 });
 
 // DELETE '/api/:username/posts'
@@ -635,9 +686,6 @@ app.delete('/api/profile/delete/:username', async (req, res) => {
     }
 });
 
-const { ObjectId } = require('mongodb');
-const objectId = new ObjectId();
-
 
 app.delete('/api/posts/delete/:postId', async (req, res) => {
     try {
@@ -665,6 +713,70 @@ app.delete('/api/posts/delete/:postId', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+// Route zum Speichern eines Likes für einen Beitrag
+app.post('/posts/:postId/like', async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const postsCollection = db.collection('posts');
+
+        const result = await postsCollection.updateOne(
+            { _id: new ObjectId(postId) },
+            { $inc: { likes: 1 } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Beitrag nicht gefunden' });
+        }
+
+        res.json({ message: 'Like gespeichert' });
+    } catch (error) {
+        console.error('Fehler beim Speichern des Likes:', error);
+        res.status(500).json({ message: 'Interner Serverfehler' });
+    }
+});
+
+// Server
+app.get('/posts/:postId', async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const postsCollection = db.collection('posts');
+
+        const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+
+        if (!post) {
+            return res.status(404).json({ message: 'Beitrag nicht gefunden' });
+        }
+
+        res.json({ likes: post.likes });
+    } catch (error) {
+        console.error('Fehler beim Abrufen des Beitrags:', error);
+        res.status(500).json({ message: 'Interner Serverfehler' });
+    }
+});
+
+// Server
+app.post('/posts/:postId/unlike', async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const postsCollection = db.collection('posts');
+
+        const result = await postsCollection.updateOne(
+            { _id: new ObjectId(postId) },
+            { $inc: { likes: -1 } } // Verringere die Anzahl der Likes um 1
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: 'Beitrag nicht gefunden' });
+        }
+
+        res.json({ message: 'Like entfernt' });
+    } catch (error) {
+        console.error('Fehler beim Entfernen des Likes:', error);
+        res.status(500).json({ message: 'Interner Serverfehler' });
+    }
+});
+
 
 // Function to generate random password
 function generateRandomPassword() {
@@ -853,36 +965,34 @@ app.use(passport.session());
 // app.use(passport.initialize());
 // app.use(passport.session());
 
-app.get('/home', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html')); // Laden Sie die index.html-Datei
+// ERRORS
+let errorList = [];
+
+// API-Endpunkt zum Empfangen von Fehlermeldungen
+app.post('/api/admin/error', (req, res) => {
+    const { message } = req.body;
+    if (message) {
+        // Speichere die Fehlermeldung in der Liste
+        errorList.push({ message, timestamp: new Date() });
+        console.log('Fehlermeldung empfangen:', message);
+        res.status(200).json({ success: true });
+    } else {
+        res.status(400).json({ success: false, error: 'Message is required' });
+    }
 });
 
-app.get('/settings', (req, res) => {
-    res.sendFile(__dirname + '/settings.html');
+app.get('/api/admin/errors', (req, res) => {
+    res.json(errorList);
 });
 
-app.get('/profile', (req, res) => {
-    res.sendFile(__dirname + '/profile.html');
-});
+// -----------------------
 
-app.get('/login', (req, res) => {
-    res.sendFile(__dirname + '/login.html');
-});
+const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'intro', 'admin'];
 
-app.get('/signup', (req, res) => {
-    res.sendFile(__dirname + '/signup.html');
-});
-
-app.get('/intro', (req, res) => {
-    res.sendFile(__dirname + '/intro.html');
-});
-
-app.get('/admin', (req, res) => {
-    res.sendFile(__dirname + '/admin.html');
-});
-
-app.get('/explore', (req, res) => {
-    res.sendFile(__dirname + '/explore.html');
+pages.forEach(page => {
+    app.get(`/${page}`, (req, res) => {
+        res.sendFile(path.join(__dirname, 'html', `${page}.html`));
+    });
 });
 
 app.listen(PORT, () => {

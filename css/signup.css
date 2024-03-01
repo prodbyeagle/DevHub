@@ -1,0 +1,78 @@
+body {
+    @font-face {
+      font-family: 'Font';
+      src:  url('SF-Pro.woff2') format('woff2'),
+    }
+    font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* Neumorphism styles for Dark Mode */
+body.dark-mode {
+background-color: #222;
+color: #eee;
+transition: all 0.3s ease;
+}
+
+/* Neumorphism styles for the form */
+.neumorphism-form {
+    background-color: #f0f0f0;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-mode .neumorphism-form {
+    background-color: #222;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
+
+/* Neumorphism styles for the input fields */
+.neumorphism-input {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .neumorphism-input {
+    border-color: #555;
+    background-color: #333;
+    color: #eee;
+}
+
+/* Neumorphism styles for the submit button */
+.neumorphism-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+.neumorphism-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .neumorphism-button {
+    background-color: #222;
+    color: #eee;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .neumorphism-button:hover {
+    background-color: #333;
+}
+::-webkit-scrollbar {
+width: 12px;
+background-color: transparent;
+transition: all 0.3s ease;
+}

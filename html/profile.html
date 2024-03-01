@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='/SF-Pro.woff2' rel='stylesheet' type='font-face/css'>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <title>Profil</title>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8 profile-container neumorphism-form">
+        <div class="profile-card" id="profile-card">
+            <div class="profile-picture">
+                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%;">
+            </div>
+            <div class="profile-info">
+                <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
+                <p class="text-gray-600" id="profile-description">Loading...</p>
+            </div>
+            <div class="follower-section">
+                <h2>Follower</h2>
+                <p id="follower-count">0</p>
+            </div>
+            <div class="following-section">
+                <h2>Following</h2>
+                <p id="following-names"></p>
+            </div>
+        </div>
+
+        <div class="change-bio">
+            <button onclick="showOverlay()" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Update Bio</button>
+        </div>
+
+        <div class="file-upload">
+            <input type="file" id="profile-picture-upload" accept="image/*" style="display: none;">
+            <label for="profile-picture-upload" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Upload Profile Picture</label>
+        </div>
+
+    </div>
+
+    <div class="overlay hidden" id="overlay">
+        <div class="overlay-content neumorphism-form">
+            <h2 class="text-2xl font-semibold mb-4">Change Bio</h2>
+            <textarea class="w-full p-2 border border-gray-300 rounded-md mb-4 neumorphism-input"
+                style="resize: none; white-space: nowrap; font-family: Font, SF Pro Medium, 'Open Sans', sans-serif;" id="bio-input" placeholder="Type your Bio here." rows="4" cols="32" maxlength="32"></textarea>
+            <div class="flex justify-between items-center mb-2">
+                <p id="char-count"></p>
+                <button type="button" class="neumorphism-button" onclick="saveBio()">Save</button>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" class="neumorphism-button bg-gray-300 text-gray-700 ml-2"
+                    onclick="closeOverlay()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <div id="user-posts" class="mt-8" style="font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+        </div>
+    </div>
+
+    <div class="flex justify-center items-center fixed inset-x-0 bottom-0 mb-8">
+        <div class="container mx-auto">
+            <a href="/home" class="neumorphism-button text-blue-600">Home</a>
+        </div>
+    </div>
+</body>
+<button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+</button>
+<script src="/js/profile.js"></script>
+</body>
+</html>

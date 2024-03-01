@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <div class="title-container">
+        <h1 class="text-3xl font-bold mb-8">Dev Hub</h1>
+    </div>
+    <title>Dev Hub</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body class="dark-mode"> <!-- Standardmäßig Dark-Mode aktiviert -->
+
+    <div class="container mx-auto">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2 class="text-lg font-semibold mb-4">Welcome, <span id="username"></span>!</h2>
+            <h2></h2>
+            <ul>
+                <li><a id="search-btn" class="search-btn">Search User</a></li>
+                <li><a href="/explore">Explore</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/settings">Settings</a></li>
+                <li id="loginLink"><a href="/login">Login</a></li>
+                <li id="signupLink"><a href="/signup">Sign-Up</a></li>
+                <li id="signoutLink"><a href="#" id="signoutBtn">Sign Out</a></li>
+                <h2 id="devHeader" class="text-lg font-semibold mb-4">DEV</h2>
+                <li id="adminLink"><a href="/admin">Admin</a></li>
+                <li id="introLink"><a href="/intro">Intro</a></li>
+                <li id="postsLink"><a href="/api/posts">Posts API</a></li>
+                <li id="usernameLink"><a href="/api/username">Users API</a></li>
+                <h2 class="text-lg font-semibold mb-4">Followers</h2>
+                <ul id="follower-list"></ul>
+            </ul>
+        </div>
+
+<!-- Content -->
+<div class="content-container">
+    <form id="postForm" class="mb-8">
+        <div class="mb-4">
+            <label for="postDescription" class="block text-sm font-medium text-gray-400">Description</label>
+            <textarea id="postDescription" name="postDescription" rows="1" cols="50" maxlength="500" placeholder="Describe your code!" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white" style="resize: none;"></textarea>
+        </div>
+        <div class="mb-4">
+            <label for="postContent" class="block text-sm font-medium text-gray-400">Code Snippet</label>
+            <textarea id="postContent" name="postContent" rows="3" cols="50" maxlength="3000" placeholder="Paste your code in!" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white" style="resize: none; max-width: 100%;"></textarea>
+        </div>                                                 
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Send</button>
+    </form>
+
+    <div id="latestPosts"></div>
+    <div id="loadingCircle" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2">
+        <div class="border border-t-4 border-gray-200 rounded-full w-12 h-12 animate-spin"></div>
+    </div>
+</div>
+
+<div class="search-overlay" id="searchOverlay">
+        <div class="search-bar mb-4 neumorphism-input">
+            <input type="text" id="searchInput" placeholder="Search for a username..." class="search-input">
+            <button id="searchButton" class="neumorphism-button text-blue-600 search-button">Search</button>
+            <button id="closeButton" class="neumorphism-button text-red-600 close-button">Close</button> <!-- Close-Button hinzugefügt -->
+        </div>
+        <div id="searchResults" class="neumorphism-input"></div>
+</div>
+<div class="overlay"></div> <!-- Overlay für Hintergrundverdunkelung -->
+
+<button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+</button>
+<script src="/js/home.js"></script>
+</body>
+</html>
