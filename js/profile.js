@@ -84,11 +84,13 @@ function showNormalContent() {
     
             const threeDotButton = document.createElement('button');
             threeDotButton.classList.add('neumorphism-button', 'text-red-600');
-            threeDotButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4z" />
-                </svg>
-            `;
+            
+            const menuIcon = document.createElement('img');
+            menuIcon.setAttribute('src', 'https://img.icons8.com/ios-filled/24/000000/menu--v6.png');
+            menuIcon.setAttribute('alt', 'menu-icon');
+            
+            threeDotButton.appendChild(menuIcon);
+            
             threeDotButton.setAttribute('id', 'menu-btn_' + post._id);
     
             const threeDotMenuContent = document.createElement('div');
@@ -111,25 +113,34 @@ function showNormalContent() {
             });
     
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete Post';
             deleteButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
             deleteButton.dataset.postId = post._id;
             deleteButton.addEventListener('click', function() {
                 const postId = this.dataset.postId;
                 deletePost(postId);
             });
-    
+            const deleteIcon = document.createElement('img');
+            deleteIcon.setAttribute('src', 'https://img.icons8.com/sf-regular-filled/24/000000/delete-forever.png');
+            deleteIcon.setAttribute('alt', 'delete-icon');
+            deleteButton.insertBefore(deleteIcon, deleteButton.firstChild);
+
             const pinButton = document.createElement('button');
-            pinButton.textContent = 'Pin Post';
             pinButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
             pinButton.dataset.postId = post._id;
             pinButton.setAttribute('onclick', `pinPost('${post._id}')`);
-    
+            const pinIcon = document.createElement('img');
+            pinIcon.setAttribute('src', 'https://img.icons8.com/sf-regular-filled/24/000000/pin3.png');
+            pinIcon.setAttribute('alt', 'pin-icon');
+            pinButton.insertBefore(pinIcon, pinButton.firstChild);
+            
             const editButton = document.createElement('button');
-            editButton.textContent = 'Edit Post';
             editButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
             editButton.dataset.postId = post._id;
             editButton.setAttribute('onclick', `showEditForm('${post._id}')`);
+            const editIcon = document.createElement('img');
+            editIcon.setAttribute('src', 'https://img.icons8.com/sf-regular-filled/24/000000/pencil-tip.png');
+            editIcon.setAttribute('alt', 'edit-icon');
+            editButton.insertBefore(editIcon, editButton.firstChild);
     
             threeDotMenuContent.appendChild(deleteButton);
             threeDotMenuContent.appendChild(pinButton);
@@ -640,8 +651,13 @@ if (!contentElement || !codeSnippetElement) {
 
 const menuButton = document.getElementById('menu-btn');
 const menuContent = document.getElementById('ham-burger-menu');
-menuButton.style.display = 'none';
-menuContent.style.display = 'none';
+if (menuContent) {
+    // Führen Sie hier den Code aus, der auf menuContent zugreift
+    menuButton.style.display = 'none';
+    menuContent.style.display = 'none';
+} else {
+    console.error('Menu content element not found.');
+}
 
 const editContentInput = document.createElement('textarea');
 editContentInput.classList.add('w-full', 'p-2', 'border', 'border-grey-300', 'rounded-md', 'mb-4', 'neumorphism-input');
