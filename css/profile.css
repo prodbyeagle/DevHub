@@ -161,6 +161,56 @@ box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.
 transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
 }
 
+.post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.post {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    color: #333;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+    overflow: hidden;
+    }
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.overlay-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
 .post:hover {
 transform: scale(1.02); /* Vergrößern des Posts beim Hover */
 box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
@@ -306,5 +356,94 @@ input:checked + .slider:before {
     transform: translateX(-50%);
 }
 .action-buttons a {
+    margin: 0 10px;
+}
+
+/* Hintergrundbild für die Profilkarte */
+.profile-card {
+    position: relative;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #333;
+}
+
+/* Dunkler Modus für die Profilkarte */
+body.dark-mode .profile-card {
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten für Dark Mode */
+}
+
+/* Dunkler Modus für den verschwommenen Hintergrund */
+body.dark-mode .profile-card::before {
+    background-image: url(''); /* Dunkles Hintergrundbild für den Dark Mode */
+}
+
+/* Profilbild-Stile */
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: -60px auto 20px auto;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dunkler Modus für das Profilbild */
+body.dark-mode .profile-picture {
+    border: 5px solid #333; /* Dunkler Rand */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten */
+}
+
+/* Profilinformationen */
+.profile-info {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative; /* Relative Positionierung für den Text */
+}
+
+/* Dunkler Modus für Profilinformationen */
+body.dark-mode .profile-info {
+    color: #eee; /* Hellere Textfarbe */
+}
+
+/* Neumorphismus-Stil für den Text */
+.profile-info h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    position: relative; /* Relative Positionierung für Textschatten */
+    z-index: 1; /* Text über dem verschwommenen Hintergrund */
+}
+
+/* Dunkler Modus für den Titel */
+body.dark-mode .profile-info h1 {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
+}
+
+/* Beschreibung */
+.profile-info p {
+    color: #777;
+    font-size: 16px;
+    position: relative; /* Relative Positionierung für Textschatten */
+    z-index: 1; /* Text über dem verschwommenen Hintergrund */
+}
+
+/* Dunkler Modus für die Beschreibung */
+body.dark-mode .profile-info p {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
+}
+
+/* Follower- und Folgende-Sektion */
+.follower-following-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.follower-section, .following-section {
+    text-align: center;
     margin: 0 10px;
 }

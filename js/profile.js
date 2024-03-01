@@ -58,25 +58,23 @@ function showNormalContent() {
         posts.forEach(post => {
             const postElement = document.createElement('div');
             postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4', 'relative');
-    
+        
             const usernameElement = document.createElement('h3');
             usernameElement.textContent = `@${post.username} (${post.date})`;
-    
+        
             const contentElement = document.createElement('p');
-            contentElement.textContent = post.content;
+            contentElement.textContent = truncateText(post.content, 100); // Nutzen Sie die truncateText Funktion, um den Text auf 100 Zeichen zu kürzen
             contentElement.setAttribute('id', 'content_' + post._id);
-    
+        
             const codeSnippetElement = document.createElement('pre');
-            const codeSnippetText = post.codesnippet;
+            codeSnippetElement.textContent = truncateText(post.codesnippet, 100); // Nutzen Sie die truncateText Funktion, um den Text auf 100 Zeichen zu kürzen
             codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
             codeSnippetElement.style.maxWidth = '100%';
             codeSnippetElement.setAttribute('id', 'codesnippet_' + post._id);
-    
-            if (codeSnippetText.length > 200) {
-                const formattedCodeSnippet = codeSnippetText.replace(/(.{200})/g, "$1\n");
+        
+            if (post.codesnippet.length > 100) {
+                const formattedCodeSnippet = post.codesnippet.substring(0, 100) + '...'; // Nur die ersten 100 Zeichen des Codeausschnitts anzeigen
                 codeSnippetElement.textContent = formattedCodeSnippet;
-            } else {
-                codeSnippetElement.textContent = codeSnippetText;
             }
     
             const threeDotMenu = document.createElement('div');
@@ -84,13 +82,13 @@ function showNormalContent() {
     
             const threeDotButton = document.createElement('button');
             threeDotButton.classList.add('neumorphism-button', 'text-red-600');
-            
+    
             const menuIcon = document.createElement('img');
             menuIcon.setAttribute('src', 'https://img.icons8.com/ios-filled/24/000000/menu--v6.png');
             menuIcon.setAttribute('alt', 'menu-icon');
-            
+    
             threeDotButton.appendChild(menuIcon);
-            
+    
             threeDotButton.setAttribute('id', 'menu-btn_' + post._id);
     
             const threeDotMenuContent = document.createElement('div');
@@ -123,7 +121,7 @@ function showNormalContent() {
             deleteIcon.setAttribute('src', 'https://img.icons8.com/sf-regular-filled/24/000000/delete-forever.png');
             deleteIcon.setAttribute('alt', 'delete-icon');
             deleteButton.insertBefore(deleteIcon, deleteButton.firstChild);
-
+    
             const pinButton = document.createElement('button');
             pinButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
             pinButton.dataset.postId = post._id;
@@ -132,7 +130,7 @@ function showNormalContent() {
             pinIcon.setAttribute('src', 'https://img.icons8.com/sf-regular-filled/24/000000/pin3.png');
             pinIcon.setAttribute('alt', 'pin-icon');
             pinButton.insertBefore(pinIcon, pinButton.firstChild);
-            
+    
             const editButton = document.createElement('button');
             editButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
             editButton.dataset.postId = post._id;
@@ -149,6 +147,17 @@ function showNormalContent() {
             threeDotMenu.appendChild(threeDotButton);
             threeDotMenu.appendChild(threeDotMenuContent);
     
+            // Add click event to show overlay
+            postElement.addEventListener('click', function() {
+                const overlayContent = document.getElementById('overlay-content');
+                overlayContent.innerHTML = `
+                    <h3>@${post.username} (${post.date})</h3>
+                    <p>${post.content}</p>
+                    <pre class="bg-gray-800 text-white p-4 rounded text-xs">${post.codesnippet}</pre>
+                `;
+                document.getElementById('post-overlay').classList.remove('hidden');
+            });
+    
             postElement.appendChild(usernameElement);
             postElement.appendChild(contentElement);
             postElement.appendChild(codeSnippetElement);
@@ -156,7 +165,6 @@ function showNormalContent() {
             postsContainer.appendChild(postElement);
         });
     }
-
     applyHoverEffectToPosts();
 
     function applyHoverEffect(postElement) {
@@ -730,4 +738,12 @@ alert('Post edited successfully.');
 .catch(error => {
 console.error('Error editing post:', error);
 });
+}
+
+function truncateText(text, maxLength) {
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    } else {
+        return text;
+    }
 }

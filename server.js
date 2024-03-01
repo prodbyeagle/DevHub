@@ -881,89 +881,90 @@ app.use(passport.session());
 
 //GITHUB
 
-// const { v4: uuidv4 } = require('uuid');
-// const GitHubStrategy = require('passport-github2').Strategy;
-// 
-// passport.use(new GitHubStrategy({
-//     clientID: process.env.GITHUB_CLIENT_ID,
-//     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-//     callbackURL: process.env.GITHUB_CALLBACK_URL,
-// }, async (accessToken, refreshToken, profile, done) => {
-//     console.log(profile);
-//     const collection = db.collection('users');
-//     
-//     try {
-//         const userEmail = profile.emails ? profile.emails[0].value : null;
-//         const userPhoto = profile.photos ? profile.photos[0].value : null;
-// 
-//         const existingUser = await collection.findOne({ email: userEmail });
-// 
-//         if (existingUser) {
-//             return done(null, existingUser);
-//         } else {
-//             const randomPassword = uuidv4(); // Generate a random password
-//             const newUser = {
-//                 username: profile.username || profile.displayName,
-//                 email: userEmail,
-//                 password: randomPassword,
-//                 pb: userPhoto,
-//                 bio: "Hello, I'm New here!",
-//                 admin: false,
-//                 githubLogin: true,
-//                 banned: false,
-//                 followers: [],
-//             };
-// 
-//             await collection.insertOne(newUser);
-//             return done(null, newUser);
-//         }
-//     } catch (error) {
-//         console.error('Error processing GitHub authentication:', error);
-//         return done(error, null);
-//     }
-// }));
-// 
-// // POST route for GitHub authentication
-// app.post('/auth/github/callback', 
-//     passport.authenticate('github', { failureRedirect: '/login' }),
-//     (req, res) => {
-//         res.status(200).json({ 
-//             username: req.user.username, 
-//             password: req.user.password,
-//         });
-//     }
-// );
-// 
-// app.get('/auth/github/callback',
-//     passport.authenticate('github', { failureRedirect: '/login' }),
-//     (req, res) => {
-// 
-//         if (req.user && req.user.username && req.user.password) {
-// 
-//             // Redirect to the home page with user data as URL parameter
-//             const user = {
-//                 identifier: req.user.username,
-//                 password: req.user.password
-//             };
-//             res.redirect('/login?user=' + encodeURIComponent(JSON.stringify(user)));
-//         } else {
-//             console.error('Error: User username or password not found.');
-//             res.redirect('/login'); // Redirect to login page or handle error accordingly
-//         }
-//     }
-// );
-// 
-// passport.serializeUser((user, done) => {
-//     done(null, user);
-// });
-// 
-// passport.deserializeUser((user, done) => {
-//     done(null, user);
-// });
-// 
-// app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+const { v4: uuidv4 } = require('uuid');
+const GitHubStrategy = require('passport-github2').Strategy;
+
+passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.GITHUB_CALLBACK_URL,
+    scope: [ 'user:email' ],
+}, async (accessToken, refreshToken, profile, done) => {
+    console.log(profile);
+    const collection = db.collection('users');
+    
+    try {
+        const userEmail = profile.emails ? profile.emails[0].value : null;
+        const userPhoto = profile.photos ? profile.photos[0].value : null;
+
+        const existingUser = await collection.findOne({ email: userEmail });
+
+        if (existingUser) {
+            return done(null, existingUser);
+        } else {
+            const randomPassword = uuidv4(); // Generate a random password
+            const newUser = {
+                username: profile.username || profile.displayName,
+                email: userEmail,
+                password: randomPassword,
+                pb: userPhoto,
+                bio: "Hello, I'm New here!",
+                admin: false,
+                githubLogin: true,
+                banned: false,
+                followers: [],
+            };
+
+            await collection.insertOne(newUser);
+            return done(null, newUser);
+        }
+    } catch (error) {
+        console.error('Error processing GitHub authentication:', error);
+        return done(error, null);
+    }
+}));
+
+// POST route for GitHub authentication
+app.post('/auth/github/callback', 
+    passport.authenticate('github', { failureRedirect: '/login' }),
+    (req, res) => {
+        res.status(200).json({ 
+            username: req.user.username, 
+            password: req.user.password,
+        });
+    }
+);
+
+app.get('/auth/github/callback',
+    passport.authenticate('github', { failureRedirect: '/login' }),
+    (req, res) => {
+
+        if (req.user && req.user.username && req.user.password) {
+
+            // Redirect to the home page with user data as URL parameter
+            const user = {
+                identifier: req.user.username,
+                password: req.user.password
+            };
+            res.redirect('/login?user=' + encodeURIComponent(JSON.stringify(user)));
+        } else {
+            console.error('Error: User username or password not found.');
+            res.redirect('/login'); // Redirect to login page or handle error accordingly
+        }
+    }
+);
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
+app.get('/auth/github', passport.authenticate('github'));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // ERRORS
 let errorList = [];

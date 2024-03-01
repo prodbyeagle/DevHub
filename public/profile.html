@@ -280,18 +280,109 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+
+        /* Hintergrundbild für die Profilkarte */
+.profile-card {
+    position: relative;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #333;
+}
+
+/* Dunkler Modus für die Profilkarte */
+body.dark-mode .profile-card {
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten für Dark Mode */
+}
+
+/* Dunkler Modus für den verschwommenen Hintergrund */
+body.dark-mode .profile-card::before {
+    background-image: url(''); /* Dunkles Hintergrundbild für den Dark Mode */
+}
+
+/* Profilbild-Stile */
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: -60px auto 20px auto;
+    border: 5px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dunkler Modus für das Profilbild */
+body.dark-mode .profile-picture {
+    border: 5px solid #333; /* Dunkler Rand */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten */
+}
+
+/* Profilinformationen */
+.profile-info {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative; /* Relative Positionierung für den Text */
+}
+
+/* Dunkler Modus für Profilinformationen */
+body.dark-mode .profile-info {
+    color: #eee; /* Hellere Textfarbe */
+}
+
+/* Neumorphismus-Stil für den Text */
+.profile-info h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    position: relative; /* Relative Positionierung für Textschatten */
+    z-index: 1; /* Text über dem verschwommenen Hintergrund */
+}
+
+/* Dunkler Modus für den Titel */
+body.dark-mode .profile-info h1 {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
+}
+
+/* Beschreibung */
+.profile-info p {
+    color: #777;
+    font-size: 16px;
+    position: relative; /* Relative Positionierung für Textschatten */
+    z-index: 1; /* Text über dem verschwommenen Hintergrund */
+}
+
+/* Dunkler Modus für die Beschreibung */
+body.dark-mode .profile-info p {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
+}
+
+/* Follower- und Folgende-Sektion */
+.follower-following-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.follower-section, .following-section {
+    text-align: center;
+    margin: 0 10px;
+}
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto py-8 profile-container neumorphism-form">
         <div class="profile-card" id="profile-card">
             <div class="profile-picture">
-                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%;">
+                <img id="profile-picture" src="" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="profile-info">
                 <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
                 <p class="text-gray-600" id="profile-description">Loading...</p>
             </div>
+            <button id="follow-button" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Follow</button>
+
             <div class="follower-section">
                 <h2>Follower</h2>
                 <p id="follower-count">0</p>
@@ -301,8 +392,6 @@
                 <p id="following-names"></p>
             </div>
         </div>
-        <button id="follow-button" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Follow</button>
-    </div>
     <div class="content-container">
         <div id="user-posts" class="mt-8" style="font-family: Font, SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
         </div>
