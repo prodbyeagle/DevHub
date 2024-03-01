@@ -381,7 +381,6 @@ async function getPosts() {
                     likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
                     isLiked = true;
                     localStorage.setItem(`liked_${postId}`, true);
-                    toast.success('Added Post to Favorites');
                 }
                 const updatedLikesCount = await getLikes(postId);
                 updateLikesElement(updatedLikesCount);
@@ -407,12 +406,24 @@ async function getPosts() {
                     localStorage.removeItem(`favorite_${postId}`);
                     isFavorite = false;
                     favoriteButton.classList.add('pop');
+                    Toastify({
+                        text: 'Deleted Post from Favorites!',
+                        duration: 3000,
+                        close: true,
+                        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+                    }).showToast();
                 } else {
                     // Andernfalls markieren Sie ihn als Favorit
                     favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-rounded/24/FAB005/bookmark.png" alt="add-to-favorites"/>`;
                     localStorage.setItem(`favorite_${postId}`, true);
                     isFavorite = true;
                     favoriteButton.classList.add('pop');
+                    Toastify({
+                        text: 'Added Post to Favorites!',
+                        duration: 3000,
+                        close: true,
+                        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+                    }).showToast();
                 }
                 // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
                 setTimeout(() => {
