@@ -987,7 +987,7 @@ app.get('/api/admin/errors', (req, res) => {
 
 // -----------------------
 
-const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'intro', 'admin'];
+const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'preferences', 'admin'];
 
 pages.forEach(page => {
     app.get(`/${page}`, (req, res) => {

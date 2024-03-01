@@ -33,13 +33,13 @@ async function fetchAdminUserData() {
     if (isAdmin) {
         document.getElementById("adminLink").style.display = "block";
         document.getElementById("usernameLink").style.display = "block";
-        document.getElementById("introLink").style.display = "block";
+        document.getElementById("preferencesLink").style.display = "block";
         document.getElementById("postsLink").style.display = "block";
         devHeader.style.display = "block";
     } else {
         document.getElementById("adminLink").style.display = "none";
         document.getElementById("usernameLink").style.display = "none";
-        document.getElementById("introLink").style.display = "none";
+        document.getElementById("preferencesLink").style.display = "none";
         document.getElementById("postsLink").style.display = "none";
         devHeader.style.display = "none";
     }
@@ -289,16 +289,15 @@ async function createPost(event) {
     }
 }
 
-const postsPerPage = 10; // Anzahl der Posts pro Seite
-let currentPage = 1; // Aktuelle Seite
-let loading = false; // Flag, um zu verhindern, dass mehrere Anfragen gleichzeitig gesendet werden
+const postsPerPage = 10;
+let currentPage = 1;
+let loading = false;
 
 async function getPosts() {
     try {
-        if (loading) return; // Verhindere mehrere gleichzeitige Anfragen
+        if (loading) return;
         loading = true;
 
-        // Anzeige des Ladekreises, wenn die Ladezeit länger als 3 Sekunden dauert
         const loadingTimeout = setTimeout(() => {
             const loadingCircle = document.getElementById('loadingCircle');
             loadingCircle.classList.remove('hidden'); // Ladekreis anzeigen
@@ -321,7 +320,6 @@ async function getPosts() {
             const dateElement = document.createElement('p');
             dateElement.textContent = post.date;
 
-            // Benutzername und Datum hinzufügen
             const usernameElement = document.createElement('h3');
             if (post.imageUrl) {
                 const profileImageElement = document.createElement('img');
@@ -340,19 +338,16 @@ async function getPosts() {
             const contentElement = document.createElement('p');
             contentElement.textContent = post.content;
 
-            // Code-Snippet hinzufügen
             const codeSnippetElement = document.createElement('pre');
             const codeSnippetText = post.codesnippet;
             codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
-            codeSnippetElement.style.whiteSpace = 'pre-wrap'; // Text in Zeilen umbrechen
-            codeSnippetElement.style.maxWidth = '100%'; // Maximalbreite setzen
+            codeSnippetElement.style.whiteSpace = 'pre-wrap';
+            codeSnippetElement.style.maxWidth = '100%';
 
             if (codeSnippetText.length > 200) {
-                    // Wenn das Codesnippet länger als 50 Zeichen ist, fügen Sie Zeilenumbrüche ein
                     const formattedCodeSnippet = codeSnippetText.replace(/(.{200})/g, "$1\n");
                     codeSnippetElement.textContent = formattedCodeSnippet;
                 } else {
-                    // Wenn das Codesnippet weniger als oder genau 50 Zeichen hat, fügen Sie es einfach hinzu
                     codeSnippetElement.textContent = codeSnippetText;
                 }
 
@@ -362,6 +357,11 @@ async function getPosts() {
             
             const likesButton = document.createElement('button');
             likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+
+            // Favoriten-Button
+            const favoriteButton = document.createElement('button');
+            favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/color/48/add-to-favorites.png" alt="favorite-icon"/>`;
+            // Hier müssten Sie die Funktionalität für den Favoriten-Button hinzufügen
 
             const postId = post._id;
             let isLiked = localStorage.getItem(`liked_${postId}`);
@@ -373,53 +373,81 @@ async function getPosts() {
             likesButton.addEventListener('click', async function() {
                 if (isLiked) {
                     await removeLike(postId);
-                
                     likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
-                
                     isLiked = false;
                     localStorage.removeItem(`liked_${postId}`);
                 } else {
                     await saveLike(postId);
-                
                     likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-
                     isLiked = true;
                     localStorage.setItem(`liked_${postId}`, true);
+                    toast.success('Added Post to Favorites');
                 }
-            
                 const updatedLikesCount = await getLikes(postId);
                 updateLikesElement(updatedLikesCount);
+            
+                // Füge die Pop-Animation-Klasse hinzu
+                likesButton.classList.add('pop');
+            
+                // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
+                setTimeout(() => {
+                    likesButton.classList.remove('pop');
+                }, 300);
             });
 
-            // AUCH EINE POP ANIMATION CA: https://uiverse.io/waleedlh10/modern-moth-61
+            let isFavorite = localStorage.getItem(`favorite_${postId}`);
+            if (isFavorite) {
+                favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="add-to-favorites"/>`;
+            }
+
+            favoriteButton.addEventListener('click', function() {
+                if (isFavorite) {
+                    // Wenn der Beitrag bereits als Favorit markiert ist, entfernen Sie ihn aus den Favoriten
+                    favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="add-to-favorites"/>`;
+                    localStorage.removeItem(`favorite_${postId}`);
+                    isFavorite = false;
+                    favoriteButton.classList.add('pop');
+                } else {
+                    // Andernfalls markieren Sie ihn als Favorit
+                    favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-rounded/24/FAB005/bookmark.png" alt="add-to-favorites"/>`;
+                    localStorage.setItem(`favorite_${postId}`, true);
+                    isFavorite = true;
+                    favoriteButton.classList.add('pop');
+                }
+                // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
+                setTimeout(() => {
+                    likesButton.classList.remove('pop');
+                    favoriteButton.classList.remove('pop');
+                }, 300);
+            });
             
-            
-            // Erstellen des Elements für die Anzeige der Likes
             const likesElement = document.createElement('p');
-            likesElement.textContent = `Likes: ${post.likes ? post.likes : 0}`; // Änderung: 'post.likes' statt 'post.likes.length'
+            likesElement.textContent = `Likes: ${post.likes ? post.likes : 0}`;
             likesElement.setAttribute('id', 'likesCount');
+
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.classList.add('d-flex', 'align-items-center');
+            buttonsContainer.appendChild(likesElement);
+            buttonsContainer.appendChild(likesButton);
+            buttonsContainer.appendChild(favoriteButton);
             
+            // Änderungen am Layout
             postElement.appendChild(usernameElement);
-            postElement.appendChild(likesButton)
             postElement.appendChild(contentElement);
             postElement.appendChild(codeSnippetElement);
-            postElement.appendChild(likesElement); // Änderung: Likes-Element richtig hinzufügen
-
-            postsContainer.appendChild(postElement); // Füge den Post zum Container hinzu
+            postElement.appendChild(buttonsContainer); // Likes- und Favoriten-Buttons hinzufügen
+            postsContainer.appendChild(postElement);
         });
 
-        // Inkrementiere die Seitenzahl für die nächste Anfrage, falls vorhanden
         currentPage++;
         
-        // Überprüfe, ob es noch mehr Seiten gibt
         if (currentPage > totalPages) {
-            window.removeEventListener('scroll', lazyLoadHandler); // Entferne das Scroll-Event, wenn keine weiteren Seiten vorhanden sind
+            window.removeEventListener('scroll', lazyLoadHandler);
         }
 
-        // Ladekreis ausblenden, nachdem die Posts geladen wurden
         clearTimeout(loadingTimeout);
         const loadingCircle = document.getElementById('loadingCircle');
-        loadingCircle.classList.add('hidden'); // Ladekreis ausblenden
+        loadingCircle.classList.add('hidden');
         loading = false;
     } catch (error) {
         console.error('Error fetching posts:', error);

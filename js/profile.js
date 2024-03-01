@@ -50,100 +50,101 @@ function showNormalContent() {
         messageElement.textContent = '😭 No Posts! ...you can make an posts on your /home page';
         postsContainer.appendChild(messageElement);
     }
+
+    function renderPosts(posts) {
+        const postsContainer = document.getElementById('user-posts');
+        postsContainer.innerHTML = ''; // Clear previous posts
     
-function renderPosts(posts) {
-const postsContainer = document.getElementById('user-posts');
-postsContainer.innerHTML = ''; // Clear previous posts
-
-posts.forEach(post => {
-    const postElement = document.createElement('div');
-    postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4', 'relative');
-
-    const usernameElement = document.createElement('h3');
-    usernameElement.textContent = `@${post.username} (${post.date})`;
-
-    const contentElement = document.createElement('p');
-    contentElement.textContent = post.content;
-    contentElement.setAttribute('id', 'content_' + post._id);
-
-    const codeSnippetElement = document.createElement('pre');
-    const codeSnippetText = post.codesnippet;
-    codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
-    codeSnippetElement.style.maxWidth = '100%';
-    codeSnippetElement.setAttribute('id', 'codesnippet_' + post._id);
-
-    if (codeSnippetText.length > 200) {
-        const formattedCodeSnippet = codeSnippetText.replace(/(.{200})/g, "$1\n");
-        codeSnippetElement.textContent = formattedCodeSnippet;
-    } else {
-        codeSnippetElement.textContent = codeSnippetText;
+        posts.forEach(post => {
+            const postElement = document.createElement('div');
+            postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4', 'relative');
+    
+            const usernameElement = document.createElement('h3');
+            usernameElement.textContent = `@${post.username} (${post.date})`;
+    
+            const contentElement = document.createElement('p');
+            contentElement.textContent = post.content;
+            contentElement.setAttribute('id', 'content_' + post._id);
+    
+            const codeSnippetElement = document.createElement('pre');
+            const codeSnippetText = post.codesnippet;
+            codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
+            codeSnippetElement.style.maxWidth = '100%';
+            codeSnippetElement.setAttribute('id', 'codesnippet_' + post._id);
+    
+            if (codeSnippetText.length > 200) {
+                const formattedCodeSnippet = codeSnippetText.replace(/(.{200})/g, "$1\n");
+                codeSnippetElement.textContent = formattedCodeSnippet;
+            } else {
+                codeSnippetElement.textContent = codeSnippetText;
+            }
+    
+            const threeDotMenu = document.createElement('div');
+            threeDotMenu.classList.add('absolute', 'top-0', 'right-0');
+    
+            const threeDotButton = document.createElement('button');
+            threeDotButton.classList.add('neumorphism-button', 'text-red-600');
+            threeDotButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+            `;
+            threeDotButton.setAttribute('id', 'menu-btn_' + post._id);
+    
+            const threeDotMenuContent = document.createElement('div');
+            threeDotMenuContent.classList.add('hidden', 'origin-top-left', 'absolute', 'left-0', 'mt-2', 'rounded-md', 'shadow-lg', 'bg-white', 'ring-1', 'ring-black', 'ring-opacity-5', 'flex', 'flex-col', 'text-sm');
+            threeDotMenuContent.setAttribute('id', 'ham-burger-menu_' + post._id);
+    
+            threeDotButton.onclick = function(e) {
+                e.stopPropagation(); // Prevent click event from bubbling up to document
+                const menuId = 'ham-burger-menu_' + post._id;
+                const menu = document.getElementById(menuId);
+                menu.classList.toggle('hidden');
+            };
+    
+            document.addEventListener('click', function(e) {
+                const menuId = 'ham-burger-menu_' + post._id;
+                const menu = document.getElementById(menuId);
+                if (!threeDotMenu.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+    
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete Post';
+            deleteButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
+            deleteButton.dataset.postId = post._id;
+            deleteButton.addEventListener('click', function() {
+                const postId = this.dataset.postId;
+                deletePost(postId);
+            });
+    
+            const pinButton = document.createElement('button');
+            pinButton.textContent = 'Pin Post';
+            pinButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
+            pinButton.dataset.postId = post._id;
+            pinButton.setAttribute('onclick', `pinPost('${post._id}')`);
+    
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit Post';
+            editButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
+            editButton.dataset.postId = post._id;
+            editButton.setAttribute('onclick', `showEditForm('${post._id}')`);
+    
+            threeDotMenuContent.appendChild(deleteButton);
+            threeDotMenuContent.appendChild(pinButton);
+            threeDotMenuContent.appendChild(editButton);
+    
+            threeDotMenu.appendChild(threeDotButton);
+            threeDotMenu.appendChild(threeDotMenuContent);
+    
+            postElement.appendChild(usernameElement);
+            postElement.appendChild(contentElement);
+            postElement.appendChild(codeSnippetElement);
+            postElement.appendChild(threeDotMenu);
+            postsContainer.appendChild(postElement);
+        });
     }
-
-    const threeDotMenu = document.createElement('div');
-    threeDotMenu.classList.add('absolute', 'top-0', 'right-0');
-
-    const threeDotButton = document.createElement('button');
-    threeDotButton.classList.add('neumorphism-button', 'text-red-600');
-    threeDotButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M10 12a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100-4 2 2 0 000 4z" />
-        </svg>
-    `;
-    threeDotButton.setAttribute('id', 'menu-btn');
-
-    const threeDotMenuContent = document.createElement('div');
-    threeDotMenuContent.classList.add('hidden', 'origin-top-left', 'absolute', 'left-0', 'mt-2', 'rounded-md', 'shadow-lg', 'bg-white', 'ring-1', 'ring-black', 'ring-opacity-5', 'flex', 'flex-col', 'text-sm');
-    threeDotMenuContent.setAttribute('id', 'ham-burger-menu');
-
-    threeDotButton.onclick = function() {
-        const menuId = 'ham-burger-menu';
-        const menu = document.getElementById(menuId);
-        menu.classList.toggle('hidden');
-    };
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete Post';
-    deleteButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
-    deleteButton.dataset.postId = post._id;
-    deleteButton.onclick = function() {
-        const postId = this.dataset.postId;
-        deletePost(postId);
-    };
-
-    const pinButton = document.createElement('button');
-    pinButton.textContent = 'Pin Post';
-    pinButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
-    pinButton.dataset.postId = post._id;
-    pinButton.onclick = function() {
-        const postId = this.dataset.postId;
-        pinPost(postId);
-    };
-
-    const editButton = document.createElement('button');
-    editButton.textContent = 'Edit Post';
-    editButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
-    editButton.dataset.postId = post._id;
-    editButton.onclick = function() {
-        const postId = this.dataset.postId;
-        const contentElement = document.getElementById(`content_${postId}`);
-        const codeSnippetElement = document.getElementById(`codesnippet_${postId}`);
-        showEditForm(postId);
-    };
-
-    threeDotMenuContent.appendChild(deleteButton);
-    threeDotMenuContent.appendChild(pinButton);
-    threeDotMenuContent.appendChild(editButton);
-
-    threeDotMenu.appendChild(threeDotButton);
-    threeDotMenu.appendChild(threeDotMenuContent);
-
-    postElement.appendChild(usernameElement);
-    postElement.appendChild(contentElement);
-    postElement.appendChild(codeSnippetElement);
-    postElement.appendChild(threeDotMenu);
-    postsContainer.appendChild(postElement);
-});
-}
 
     applyHoverEffectToPosts();
 
@@ -527,9 +528,7 @@ try {
 }
 
 function deletePost(postId) {
-document.getElementById('user-posts').addEventListener('click', async (event) => {
     try {
-
         if (!postId) {
             throw new Error('Post ID is undefined');
         }
@@ -540,29 +539,28 @@ document.getElementById('user-posts').addEventListener('click', async (event) =>
         // Wenn der Benutzer die Aktion bestätigt hat
         if (confirmed) {
             // Senden der Anfrage zum Löschen des Posts
-            const response = await fetch(`/api/posts/delete/${postId}`, {
+            fetch(`/api/posts/delete/${postId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 }
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete post');
+                }
+                // Post erfolgreich gelöscht
+                console.log(`Post with ID ${postId} successfully deleted`);
+                // Seite neu laden
+                window.location.reload();
+            }).catch(error => {
+                console.error('Error deleting post:', error);
+                // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete post');
-            }
-
-            // Post erfolgreich gelöscht
-            console.log(`Post with ID ${postId} successfully deleted`);
-
-            // Seite neu laden
-            window.location.reload();
         }
-
     } catch (error) {
         console.error('Error deleting post:', error);
         // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
-});
 }
 
 function pinPost(postId) {

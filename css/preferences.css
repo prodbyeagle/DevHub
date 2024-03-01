@@ -16,8 +16,8 @@ body.dark-mode {
     transition: all 0.3s ease;
 }
 
-/* Neumorphism styles for the intro form */
-.intro-form {
+/* Neumorphism styles for the preferences form */
+.preferences-form {
     background-color: #f0f0f0;
     border-radius: 16px;
     padding: 2rem;
@@ -96,13 +96,13 @@ body.dark-mode .language-button:hover {
     background-color: #333;
 }
 
-body.dark-mode .intro-form {
+body.dark-mode .preferences-form {
     background-color: #222;
     box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
-/* Neumorphism styles for the input fields inside the intro form */
-.intro-form .input {
+/* Neumorphism styles for the input fields inside the preferences form */
+.preferences-form .input {
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 0.5rem;
@@ -111,14 +111,14 @@ body.dark-mode .intro-form {
     width: 100%;
 }
 
-body.dark-mode .intro-form .input {
+body.dark-mode .preferences-form .input {
     border-color: #555;
     background-color: #333;
     color: #eee;
 }
 
-/* Neumorphism styles for the submit button inside the intro form */
-.intro-form .submit-button {
+/* Neumorphism styles for the submit button inside the preferences form */
+.preferences-form .submit-button {
     background-color: #007bff;
     color: #fff;
     padding: 0.5rem 1rem;
@@ -131,18 +131,18 @@ body.dark-mode .intro-form .input {
     margin-top: 1rem;
 }
 
-.intro-form .submit-button:hover {
+.preferences-form .submit-button:hover {
     background-color: #0056b3;
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-mode .intro-form .submit-button {
+body.dark-mode .preferences-form .submit-button {
     background-color: #222;
     color: #eee;
     box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
-body.dark-mode .intro-form .submit-button:hover {
+body.dark-mode .preferences-form .submit-button:hover {
     background-color: #333;
 }
 

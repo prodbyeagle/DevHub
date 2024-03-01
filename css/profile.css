@@ -291,3 +291,20 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(26px);
 }
+
+.profile-container {
+    margin-bottom: 30px; /* Add margin at the bottom of the profile container */
+}
+.content-container {
+    padding: 0 20px; /* Add padding to the content container */
+}
+
+.action-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.action-buttons a {
+    margin: 0 10px;
+}

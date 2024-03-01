@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href='/SF-Pro.woff2' rel='stylesheet' type='font-face/css'>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="/css/profile.css">
-    <title>Profil</title>
+    <title>Profile</title>
 </head>
+
 <body class="bg-gray-100">
     <div class="container mx-auto py-8 profile-container neumorphism-form">
         <div class="profile-card" id="profile-card">
@@ -20,6 +20,15 @@
                 <h1 class="text-3xl font-bold mb-2" id="profile-username">@<span id="profile-username">Loading...</span></h1>
                 <p class="text-gray-600" id="profile-description">Loading...</p>
             </div>
+            <div class="change-bio">
+                <button onclick="showOverlay()" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Change Bio</button>
+            </div>
+
+            <div class="file-upload">
+                <input type="file" id="profile-picture-upload" accept="image/jpeg, image/png" style="display: none;">
+                <label for="profile-picture-upload" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Change Profile Pic</label>
+            </div>
+
             <div class="follower-section">
                 <h2>Follower</h2>
                 <p id="follower-count">0</p>
@@ -29,16 +38,6 @@
                 <p id="following-names"></p>
             </div>
         </div>
-
-        <div class="change-bio">
-            <button onclick="showOverlay()" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Update Bio</button>
-        </div>
-
-        <div class="file-upload">
-            <input type="file" id="profile-picture-upload" accept="image/*" style="display: none;">
-            <label for="profile-picture-upload" class="neumorphism-button mt-4" style="margin-bottom: 15px;">Upload Profile Picture</label>
-        </div>
-
     </div>
 
     <div class="overlay hidden" id="overlay">
@@ -62,17 +61,18 @@
         </div>
     </div>
 
-    <div class="flex justify-center items-center fixed inset-x-0 bottom-0 mb-8">
-        <div class="container mx-auto">
-            <a href="/home" class="neumorphism-button text-blue-600">Home</a>
-        </div>
+    <div class="action-buttons">
+        <a href="/home" class="neumorphism-button text-blue-600">Home</a>
     </div>
+
+    <button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script src="/js/profile.js"></script>
+
 </body>
-<button class="scroll-to-top" onclick="scrollToTop()" title="Go to top">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-    </svg>
-</button>
-<script src="/js/profile.js"></script>
-</body>
+
 </html>

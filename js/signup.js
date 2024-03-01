@@ -57,7 +57,7 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
 
         if (response.status === 201) {
             localStorage.setItem('user', JSON.stringify({ identifier, password }));
-            window.location.href = '/intro';
+            window.location.href = '/preferences';
         } else {
             alert('Sign up failed! Please try again.');
         }

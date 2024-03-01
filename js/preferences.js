@@ -29,10 +29,10 @@ function showNormalContent() {
 
 
     // Funktion zum Erfassen der ausgewählten Sprachen und Senden an den Server
-    const introForm = document.getElementById('introForm');
-    introForm.addEventListener('submit', (event) => {
+    const preferencesForm = document.getElementById('preferencesForm');
+    preferencesForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        const formData = new FormData(introForm);
+        const formData = new FormData(preferencesForm);
         const selectedLanguages = Array.from(document.querySelectorAll('.language-button.selected')).map(btn => btn.getAttribute('data-language'));
         
         // POST-Anfrage an den Server senden
@@ -61,7 +61,7 @@ function showNormalContent() {
         })
         .then(data => {
             console.log(data.message);
-            introForm.style.display = 'none'; // Intro-Formular ausblenden
+            preferencesForm.style.display = 'none'; // preferences-Formular ausblenden
             document.querySelector('h1').style.display = 'none'; // Willkommensnachricht ausblenden
         
             // Alle .language-button ausblenden
