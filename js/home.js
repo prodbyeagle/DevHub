@@ -26,10 +26,6 @@ async function fetchAdminUserData() {
     const currentUser = JSON.parse(localStorage.getItem('user'));
     const isAdmin = userData.users.find(user => user.username === currentUser.identifier && user.admin);
 
-    console.log('User Data:', userData);
-    console.log('Current User:', currentUser);
-    console.log('Is Admin:', isAdmin);
-
     if (isAdmin) {
         document.getElementById("adminLink").style.display = "block";
         document.getElementById("usernameLink").style.display = "block";
@@ -48,7 +44,7 @@ async function fetchAdminUserData() {
     // Überprüfen Sie die Benutzersperrstatus
     const userData = JSON.parse(localStorage.getItem('user'));
     if (!userData || !userData.identifier) {
-        console.error('User identifier not found in local storage');
+        sendErrorToAdminPanel('User identifier not found in local storage');
     } else {
         const username = userData.identifier;
         checkUserBanStatus(username);
@@ -66,7 +62,7 @@ async function fetchAdminUserData() {
                 document.body.classList.add('content-container');
             }
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            sendErrorToAdminPanel('Error fetching user data:', error);
         }
     }
     
@@ -94,7 +90,7 @@ async function fetchAdminUserData() {
                     // Benutzer gefunden, verwende den Benutzernamen für die Begrüßung
                     document.getElementById('username').textContent = matchedUser.username;
                 } else {
-                    console.error('User with specified email not found');
+                    sendErrorToAdminPanel('User with specified email not found');
                 }
             } else {
                 // Der Identifier ist kein eine E-Mail-Adresse, daher direkt verwenden
@@ -105,7 +101,7 @@ async function fetchAdminUserData() {
             window.location.href = '/login';
         }
     } catch (error) {
-        console.error('Error fetching user data:', error);
+        sendErrorToAdminPanel('Error fetching user data:', error);
     }
 }
 
@@ -203,7 +199,7 @@ async function autocomplete() {
             searchResultsDiv.innerHTML = "<div>❌ No results found</div>"; // Zeige Meldung an, wenn keine Ergebnisse gefunden wurden
         }
     } else {
-        console.error('❌ Error fetching search results');
+        sendErrorToAdminPanel('❌ Error fetching search results');
     }
 }
 
@@ -285,7 +281,7 @@ async function createPost(event) {
             window.location.href = '/login';
         }
     } catch (error) {
-        console.error('Error creating post:', error);
+        sendErrorToAdminPanel('Error creating post:', error);
     }
 }
 
@@ -311,7 +307,7 @@ async function getPosts() {
         // Verarbeiten und Anzeigen der Posts
         const postsContainer = document.getElementById('latestPosts');
 
-        responseData.posts.forEach(post => {
+        responseData.posts.forEach(async post => {
             const postElement = document.createElement('div');
             postElement.classList.add('post', 'p-4', 'rounded', 'shadow', 'mb-4');
 
@@ -358,43 +354,39 @@ async function getPosts() {
             const likesButton = document.createElement('button');
             likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
 
-            // Favoriten-Button
-            const favoriteButton = document.createElement('button');
-            favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/color/48/add-to-favorites.png" alt="favorite-icon"/>`;
-            // Hier müssten Sie die Funktionalität für den Favoriten-Button hinzufügen
+            // Badges abrufen und anzeigen
+            const badgeResponse = await fetch(`/api/${username}/badges`);
+            const badgeData = await badgeResponse.json();
+            const badges = badgeData.badges;
+                        
+            // Überprüfen, ob der Benutzer Badges hat
+            if (badges.length > 0) {
+                // Nur das letzte Badge des Benutzers verwenden
+                const lastBadge = badges[badges.length - 1];
+                const badgeIcon = document.createElement('img');
+                badgeIcon.src = lastBadge.image;
+                badgeIcon.alt = 'badge-icon';
+                badgeIcon.width = 15;
+                badgeIcon.height = 15;
+                badgeIcon.style.float = 'right'; // Das Badge rechts ausrichten
+                usernameElement.appendChild(badgeIcon);
+            }
 
-            const postId = post._id;
-            let isLiked = localStorage.getItem(`liked_${postId}`);
+            let isLiked = localStorage.getItem(`liked_${post._id}`);
 
             if (isLiked) {
                 likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
             }
 
-            likesButton.addEventListener('click', async function() {
-                if (isLiked) {
-                    await removeLike(postId);
-                    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
-                    isLiked = false;
-                    localStorage.removeItem(`liked_${postId}`);
-                } else {
-                    await saveLike(postId);
-                    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-                    isLiked = true;
-                    localStorage.setItem(`liked_${postId}`, true);
-                }
-                const updatedLikesCount = await getLikes(postId);
-                updateLikesElement(updatedLikesCount);
-            
-                // Füge die Pop-Animation-Klasse hinzu
-                likesButton.classList.add('pop');
-            
-                // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
-                setTimeout(() => {
-                    likesButton.classList.remove('pop');
-                }, 300);
-            });
+            likesButton.setAttribute('onclick', `toggleLike('${post._id}')`);
+            likesButton.setAttribute('id', `likesButton_` + post._id);
 
-            let isFavorite = localStorage.getItem(`favorite_${postId}`);
+            // Favoriten-Button
+            const favoriteButton = document.createElement('button');
+            favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="favorite-icon"/>`;
+            // Hier müssten Sie die Funktionalität für den Favoriten-Button hinzufügen
+
+            let isFavorite = localStorage.getItem(`favorite_${post._id}`);
             if (isFavorite) {
                 favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="add-to-favorites"/>`;
             }
@@ -403,7 +395,7 @@ async function getPosts() {
                 if (isFavorite) {
                     // Wenn der Beitrag bereits als Favorit markiert ist, entfernen Sie ihn aus den Favoriten
                     favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="add-to-favorites"/>`;
-                    localStorage.removeItem(`favorite_${postId}`);
+                    localStorage.removeItem(`favorite_${post._id}`);
                     isFavorite = false;
                     favoriteButton.classList.add('pop');
                     Toastify({
@@ -415,7 +407,7 @@ async function getPosts() {
                 } else {
                     // Andernfalls markieren Sie ihn als Favorit
                     favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-rounded/24/FAB005/bookmark.png" alt="add-to-favorites"/>`;
-                    localStorage.setItem(`favorite_${postId}`, true);
+                    localStorage.setItem(`favorite_${post._id}`, true);
                     isFavorite = true;
                     favoriteButton.classList.add('pop');
                     Toastify({
@@ -434,7 +426,7 @@ async function getPosts() {
             
             const likesElement = document.createElement('p');
             likesElement.textContent = `Likes: ${post.likes ? post.likes : 0}`;
-            likesElement.setAttribute('id', 'likesCount');
+            likesElement.setAttribute('id', 'likesCount_' + post._id);
 
             const buttonsContainer = document.createElement('div');
             buttonsContainer.classList.add('d-flex', 'align-items-center');
@@ -461,7 +453,7 @@ async function getPosts() {
         loadingCircle.classList.add('hidden');
         loading = false;
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        sendErrorToAdminPanel('Error fetching posts:', error);
         loading = false;
     }
 }
@@ -677,15 +669,64 @@ async function displayFollowersWithPictures() {
                 followerList.appendChild(otherButton);
             }
         } catch (error) {
-            console.error('Fehler:', error);
+            sendErrorToAdminPanel('Fehler:', error);
         }
     } else {
-        console.error('Benutzername nicht gefunden.');
+        sendErrorToAdminPanel('Benutzername nicht gefunden.');
     }
 }
 
 // Rufe die Funktion zum Anzeigen der Follower mit Profilbildern auf
 displayFollowersWithPictures();
+
+//TODO: LIKES VERBESSERN (jeder post einzeln)
+
+
+
+async function toggleLike(postId) {
+    const likesButton = document.getElementById(`likesButton_${postId}`);
+    if (!likesButton) return; // Wenn der Button nicht gefunden wird, brechen Sie ab
+
+    let isLiked = localStorage.getItem(`liked_${postId}`) === 'true';
+
+
+    try {
+        if (isLiked) {
+            await removeLike(postId);
+            likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+            isLiked = false;
+            localStorage.removeItem(`liked_${postId}`);
+        } else {
+            await saveLike(postId);
+            likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+            isLiked = true;
+            localStorage.setItem(`liked_${postId}`, true);
+        }
+
+        const updatedLikesCount = await getLikes(postId);
+        updateLikesElement(postId, updatedLikesCount);
+
+        // Füge die Pop-Animation-Klasse hinzu
+        likesButton.classList.add('pop');
+
+        // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
+        setTimeout(() => {
+            likesButton.classList.remove('pop');
+        }, 300);
+    } catch (error) {
+        sendErrorToAdminPanel('Fehler:', error);
+    }
+}
+
+// Fügen Sie den Event-Listener für den Like-Button hinzu
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('like-button')) {
+        const postId = event.target.dataset.postId;
+        if (postId) {
+            toggleLike(postId);
+        }
+    }
+});
 
 async function saveLike(postId) {
     try {
@@ -700,7 +741,7 @@ async function saveLike(postId) {
         const data = await response.json();
         console.log(data.message); // Erfolgsmeldung vom Server
     } catch (error) {
-        console.error('Fehler:', error);
+        sendErrorToAdminPanel('Fehler:', error);
     }
 }
 
@@ -717,7 +758,7 @@ async function removeLike(postId) {
         const data = await response.json();
         console.log(data.message); // Erfolgsmeldung vom Server
     } catch (error) {
-        console.error('Fehler:', error);
+        sendErrorToAdminPanel('Fehler:', error);
     }
 }
 
@@ -731,13 +772,151 @@ async function getLikes(postId) {
         const data = await response.json();
         return data.likes;
     } catch (error) {
-        console.error('Fehler:', error);
+        sendErrorToAdminPanel('Fehler:', error);
         return 0; // Standardwert, falls ein Fehler auftritt
     }
 }
 
-function updateLikesElement(updatedLikesCount) {
-    console.log(updatedLikesCount)
-    const likesElement = document.getElementById('likesCount');
-    likesElement.textContent = `Likes: ${updatedLikesCount}`;
+function updateLikesElement(postId, updatedLikesCount) {
+    const likesElement = document.getElementById(`likesCount_${postId}`);
+    if (likesElement) {
+        likesElement.textContent = `Likes: ${updatedLikesCount}`;
+    }
 }
+
+// IEFHIEFH
+
+// Event-Listener für den Button "Generate Posts" hinzufügen
+document.getElementById('generatePostsBtn').addEventListener('click', createGenPosts);
+
+// Funktion zum Generieren einer zufälligen Anzahl von Beiträgen
+async function createGenPosts(event) {
+    event.preventDefault(); // Verhindert das Standardformularverhalten
+
+    const numberOfPosts = parseInt(prompt('How many posts do you want to create? (1 - 500)'));
+
+    // Überprüfen, ob die eingegebene Anzahl gültig ist
+    if (isNaN(numberOfPosts) || numberOfPosts < 1 || numberOfPosts > 500) {
+        alert('Please enter a valid number between 1 and 500.');
+        return;
+    }
+
+    try {
+        // Schleife zum Erstellen der angegebenen Anzahl von Beiträgen
+        for (let i = 0; i < numberOfPosts; i++) {
+            // Generiere einen zufälligen Inhalt und eine zufällige Beschreibung für den Beitrag
+            const postContent = generateRandomContent();
+            const postDescription = generateRandomDescription();
+
+            // POST-Anfrage zum Erstellen des Beitrags
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    codesnippet: postContent, 
+                    username: username, 
+                    content: postDescription, 
+                    likes: 0,
+                    replies: [],
+                    pinned: false,
+                })
+            });
+
+            // Überprüfen, ob die POST-Anfrage erfolgreich war
+            if (!response.ok) {
+                throw new Error('Failed to create post');
+            }
+
+            console.log(`Post ${i + 1} created successfully.`);
+        }
+
+        // Hier können Sie eine Erfolgsmeldung anzeigen oder andere Aktionen ausführen
+        alert(`${numberOfPosts} posts created successfully.`);
+    } catch (error) {
+        sendErrorToAdminPanel('Error creating posts:', error);
+        // Hier können Sie eine Fehlermeldung anzeigen oder andere Fehlerbehandlungen durchführen
+        alert('An error occurred while creating posts.');
+    }
+}
+
+
+// Funktion zum Generieren eines zufälligen Inhalts für den Beitrag
+function generateRandomContent() {
+    const contentOptions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    ];
+    const randomIndex = Math.floor(Math.random() * contentOptions.length);
+    return contentOptions[randomIndex];
+}
+
+// Funktion zum Generieren einer zufälligen Beschreibung für den Beitrag
+function generateRandomDescription() {
+    const descriptionOptions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+    ];
+    const randomIndex = Math.floor(Math.random() * descriptionOptions.length);
+    return descriptionOptions[randomIndex];
+}
+
+async function fetchAllUserBadges() {
+    try {
+        // API-Anfrage, um alle Benutzer abzurufen
+        const response = await fetch(`/api/username`);
+        const data = await response.json();
+
+        // Überprüfen, ob die Antwort erfolgreich war
+        if (response.ok) {
+            // Iteriere über jeden Benutzer und rufe seine Badges ab
+            for (const user of data.users) {
+                const username = user.username;
+                // API-Anfrage, um die Badges für den aktuellen Benutzer abzurufen
+                const badgeResponse = await fetch(`/api/${username}/badges`);
+                const badgeData = await badgeResponse.json();
+                const badges = badgeData.badges;
+                console.log(`Badges für Benutzer ${username}:`);
+                
+                // Überprüfen, ob der Benutzer Badges hat
+                if (badges.length > 0) {
+                    // Nur das letzte Badge des Benutzers verwenden
+                    const lastBadge = badges[badges.length - 1];
+                    const badgeElement = document.createElement('img');
+                    badgeElement.src = lastBadge.image;
+                    badgeElement.alt = lastBadge.name;
+                    badgeElement.style.width = '10px';
+                    badgeElement.style.height = '10px';
+                    badgeElement.style.float = 'right';
+                    
+                    // Benutzername mit dem Badge anzeigen
+                    console.log(`Benutzer ${username} hat das folgende Badge:`);
+                    console.log(lastBadge);
+                    console.log('------');
+                    
+                    // Hier fügen Sie das Badge-Element zum Benutzername-Element hinzu
+                    const usernameElement = document.createElement('span');
+                    usernameElement.textContent = `@${username}`;
+                    usernameElement.appendChild(badgeElement);
+                
+                } else {
+                    console.log(`Benutzer ${username} hat keine Badges.`);
+                }
+            }
+        } else {
+            console.error('Fehler beim Abrufen der Benutzer und Badges:', data.error);
+        }
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Benutzer und Badges:', error);
+    }
+}
+
+// Aufruf der Funktion zum Abrufen aller Benutzer und ihrer Badges
+fetchAllUserBadges();

@@ -1,0 +1,350 @@
+body {
+    font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* Neumorphism styles for Dark Mode */
+body.dark-mode {
+    background-color: #222;
+    color: #eee;
+    transition: all 0.3s ease;
+}
+
+/* Neumorphism styles for the container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Neumorphism styles for the buttons */
+.neumorphism-button {
+    background-color: #007bff; /* Standard-Hintergrundfarbe */
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: 2px solid transparent; /* Standard-Rand */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Übergang für Randfarbe */
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+    margin-top: 10px;
+}
+
+/* Roter Rand für den "Add" Button */
+.neumorphism-button[type="submit"] {
+    border-color: rgb(4, 240, 106); /* Grüne Randfarbe */
+}
+
+/* Grüner Rand für den "Close" Button */
+.neumorphism-button[type="button"] {
+    border-color: rgb(215, 41, 48); /* Rote Randfarbe */
+}
+
+/* Randfarbe für Hover-Effekt */
+.neumorphism-button[type="submit"]:hover,
+.neumorphism-button[type="button"]:hover {
+    border-color: transparent; /* Randfarbe beim Hover-Effekt transparent machen */
+}
+
+.neumorphism-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .neumorphism-button {
+    background-color: #222;
+    color: #eee;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .neumorphism-button:hover {
+    background-color: #333;
+}
+
+.banned-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease; /* Hinzugefügt: Übergang für Opazität */
+}
+
+.neumorphism-form {
+    background-color: #f0f0f0;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Dark Mode styles for the overlay */
+body.dark-mode .banned-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .neumorphism-form {
+    background-color: #222;
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
+
+/* Hinzugefügt: Zeige das Overlay mit einer Animation */
+.overlay-show {
+    display: flex;
+    opacity: 1; /* Zeige das Overlay */
+}
+
+/* Hinzugefügt: Verstecke das Overlay mit einer Animation */
+.overlay-hide {
+    opacity: 0; /* Verstecke das Overlay */
+}
+
+/* Neumorphism styles for the input fields */
+.neumorphism-input {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    width: 100%;
+}
+
+body.dark-mode .neumorphism-input {
+    border-color: #555;
+    background-color: #333;
+    color: #eee;
+}
+
+/* Neumorphism styles for the text area */
+.neumorphism-input textarea {
+    resize: none;
+}
+
+/* Neumorphism styles for the close button */
+#close-overlay-button {
+    margin-top: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Styling für Fehlermeldungen */
+.error-message {
+    color: #ff0000;
+    margin-top: 5px;
+    font-size: 0.8rem;
+}
+
+/* Verbesserungen für die Barrierefreiheit */
+.neumorphism-form button:hover,
+.neumorphism-form input:hover,
+.neumorphism-form textarea:hover {
+    outline: none;
+    box-shadow: 0 0 0 2px #007bff;
+}
+
+/* CSS für verbesserte Darstellung der Badges */
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexibles Rasterlayout */
+    grid-gap: 20px; /* Abstand zwischen den Badges */
+}
+
+.badge {
+    position: relative; /* Positionierung für das Pseudo-Element */
+    border: 2px solid #000; /* Schwarzer Rand um jedes Badge */
+    border-radius: 10px; /* Abgerundete Ecken für das Badge */
+    padding: 10px; /* Innenabstand für das Badge */
+    overflow: hidden; /* Verhindert das Überlaufen von Inhalten */
+    background-color: #f0f0f0; /* Hintergrundfarbe für das Badge */
+    color: #333; /* Textfarbe für das Badge */
+    font-family: 'SF Pro Medium', 'Helvetica Neue', sans-serif; /* Schriftart für das Badge */
+    transition: all 0.3s ease; /* Übergang für alle Eigenschaften */
+}
+
+.badge img {
+    max-width: 100%;
+    border-radius: 5px; /* Abgerundete Ecken für das Bild im Badge */
+    margin-bottom: 10px;
+}
+
+.badge h2 {
+    margin-top: 0;
+    font-size: 18px; /* Größe für den Titel des Badges */
+}
+
+.badge p {
+    margin-bottom: 0;
+}
+
+/* Leuchteffekt für das Badge */
+.badge::before {
+    content: ''; /* Pseudo-Element erstellen */
+    position: absolute; /* Absolute Positionierung relativ zum Elternelement */
+    top: 50%; /* Zentrierung vertikal */
+    left: 50%; /* Zentrierung horizontal */
+    width: 200%; /* Doppelte Breite */
+    height: 200%; /* Doppelte Höhe */
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 80%); /* Radialer Verlauf für den Leuchteffekt */
+    transition: transform 0.4s ease; /* Übergang für eine sanfte Animation */
+    border-radius: 50%; /* Kreisform */
+    z-index: -1; /* Hinter das Elternelement legen */
+    pointer-events: none; /* Das Pseudo-Element soll nicht klickbar sein */
+    transform: translate(-50%, -50%) scale(0); /* Anfangszustand: Unsichtbar und skaliert */
+}
+
+.badge:hover::before {
+    transform: translate(-50%, -50%) scale(3); /* Vergrößert den Leuchteffekt bei Hover */
+}
+
+/* Dark Mode-Stile für die Badges */
+body.dark-mode .badge {
+    border-color: #ffffff41; /* Ändert die Randfarbe im Dark Mode */
+    background-color: #222; /* Hintergrundfarbe im Dark Mode */
+    color: #eee; /* Textfarbe im Dark Mode */
+}
+
+body.dark-mode .badge::before {
+    background: radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 80%); /* Ändert die Hintergrundfarbe des Leuchteffekts im Dark Mode */
+}
+
+/* Dropdown-Menü-Stil */
+.dropdown-menu {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px 0;
+    animation: fade-in 0.5s ease;
+    border: 1px solid #ccc; /* Strich zwischen den Optionen */
+    margin-top: 8px; /* Abstand vom Badge */
+}
+
+/* Stil für Dark Mode des Dropdown-Menüs */
+body.dark-mode .dropdown-menu {
+    background-color: #333;
+    color: white;
+}
+
+/* Stil für die Optionen im Dropdown-Menü */
+.dropdown-menu div {
+    padding: 8px 20px; /* Innenabstand der Optionen */
+    cursor: pointer;
+    border-bottom: 1px solid #ccc; /* Strich zwischen den Optionen */
+}
+
+/* Stil für die Optionen im Dropdown-Menü beim Hover */
+.dropdown-menu div:hover {
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #999; /* Strich zwischen den Optionen */
+}
+
+/* Stil für Dark Mode des Dropdown-Menüs */
+body.dark-mode .dropdown-menu {
+    background-color: #333;
+    color: white;
+    border: 1px solid #666; /* Strich zwischen den Optionen */
+}
+
+/* Stil für die Optionen im Dropdown-Menü im Dark Mode */
+body.dark-mode .dropdown-menu div {
+    border-bottom: 1px solid #666; /* Strich zwischen den Optionen */
+}
+
+/* Stil für die Optionen im Dropdown-Menü beim Hover im Dark Mode */
+body.dark-mode .dropdown-menu div:hover {
+    background-color: #444;
+    border-bottom: 1px solid #999; /* Strich zwischen den Optionen */
+}
+
+/* Badges und Container-Stil */
+.badge-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Animation */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Hintergrund verdunkeln */
+    display: flex;
+    justify-content: center; /* Zentrieren des Inhalts horizontal */
+    align-items: center; /* Zentrieren des Inhalts vertikal */
+    z-index: 1000; /* Stellen Sie sicher, dass das Overlay über anderen Inhalten liegt */
+}
+
+/* Stil für den Overlay-Inhalt */
+.overlay-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%; /* Maximale Breite des Inhalts */
+    max-height: 80%; /* Maximale Höhe des Inhalts */
+    overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
+}
+
+/* Stil für den Schließen-Button */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+body.dark-mode .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Hintergrund verdunkeln */
+    display: flex;
+    justify-content: center; /* Zentrieren des Inhalts horizontal */
+    align-items: center; /* Zentrieren des Inhalts vertikal */
+    z-index: 1000; /* Stellen Sie sicher, dass das Overlay über anderen Inhalten liegt */
+}
+
+/* Stil für den Overlay-Inhalt */
+body.dark-mode .overlay-content {
+    background-color: #333; /* Dunkler Hintergrund für Dark Mode */
+    color: white; /* Weiße Schrift für Dark Mode */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%; /* Maximale Breite des Inhalts */
+    max-height: 80%; /* Maximale Höhe des Inhalts */
+    overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
+}
+
+/* Stil für den Schließen-Button */
+body.dark-mode .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: white; /* Weiße Schrift für Dark Mode */
+}

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,25 +12,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="/css/admin.css">
 </head>
+
 <body class="bg-gray-100 dark-mode">
     <div class="container mx-auto py-8">
         <h1 class="text-3xl font-bold text-center mb-8 panel">Admin Dashboard</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Error Log and Users Section -->
-            <div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="col-span-2">
                 <div class="neumorphism-form panel">
                     <h2 class="text-xl font-bold mb-4">Error Log</h2>
-                    <h3 class="text-xl font-bold mb-4">not done</h3>
-                    <ul id="errorLog" class="overflow-auto max-h-48"></ul>
+                    <ul id="errorLog" class="overflow-auto max-h-72"></ul>
                 </div>
                 <div class="neumorphism-form mt-8 panel">
                     <h2 class="text-xl font-bold mb-4">User List</h2>
                     <input type="text" class="neumorphism-input mb-2" id="searchInput" placeholder="Search users...">
-                    <div id="userList" class="overflow-auto max-h-48"></div>
+                    <div id="userList" class="overflow-auto max-h-72"></div>
                     <p id="noUserFoundMessage" class="text-red-500 mt-2 hidden">❌ No user found!</p>
                 </div>
             </div>
-            <!-- Statistics and Graphs Section -->
             <div class="panel">
                 <div class="neumorphism-form">
                     <h2 class="text-xl font-bold mb-4">Statistics</h2>
@@ -44,7 +42,7 @@
                             <p id="totalPosts">0</p>
                         </div>
                         <div>
-                            <p class="font-bold">Banned Users (last 24 hours):</p>
+                            <p class="font-bold">Banned Users:</p>
                             <p id="bannedUsers">0</p>
                         </div>
                         <div>
@@ -58,7 +56,7 @@
                         <div class="neumorphism-form relative w-full">
                             <div id="chartContainer" class="w-full h-80 flex items-center justify-center relative">
                                 <h2 class="text-xl font-bold mb-4">Loading Graph</h2>
-                                <h3 class="text-l font-bold mb-4"> (this can take longer...)</h3>
+                                <h3 class="text-l font-bold mb-4"> (This can take longer...)</h3>
                                 <div id="loadingSpinner" class="absolute inset-0 flex items-center justify-center hidden">
                                     <div class="flex items-center justify-center gap-2">
                                         <div class="w-4 h-4 rounded-full bg-blue-500 animate-bounce"></div>
@@ -72,8 +70,13 @@
                 </div>
             </div>
         </div>
+        <div class="action-buttons mt-8 flex justify-center gap-4">
+            <a href="/home" class="neumorphism-button text-blue-600">Home</a>
+            <button class="neumorphism-button text-blue-600" id="deletePostsButton">Delete Posts Collection</button>
+            <!-- <button class="neumorphism-button text-blue-600" id="fakeErrorButton">Fake Error auslösen</button> -->
+        </div>
     </div>
+    <script src="/js/admin.js"></script>
 </body>
-<script src="/js/admin.js"></script>
-</body>
+
 </html>

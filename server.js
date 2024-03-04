@@ -61,7 +61,7 @@ async function run() {
         postsCollection = db.collection('posts');
         console.log("Connected to MongoDB successfully!");
     } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
+        sendErrorToAdminPanel("Error connecting to MongoDB:", error);
     }
 }
 
@@ -93,7 +93,7 @@ app.get('/u/:username', async (req, res) => {
         // Sende die HTML-Seite mit den Benutzerdaten
         res.sendFile(path.join(__dirname, 'public', 'profile.html'));
     } catch (error) {
-        console.error('Fehler beim Laden des Benutzerprofils:', error);
+        sendErrorToAdminPanel('Fehler beim Laden des Benutzerprofils:', error);
         // Bei Fehlern sende eine entsprechende Fehlermeldung oder zeige eine Fehlerseite an
         res.status(500).send('Interner Serverfehler');
     }
@@ -110,7 +110,7 @@ app.get('/api/profile/:username', async (req, res) => {
         }
         res.json(user); // Sende die Benutzerdaten als JSON zurück
     } catch (error) {
-        console.error('Fehler beim Abrufen der Benutzerdaten:', error);
+        sendErrorToAdminPanel('Fehler beim Abrufen der Benutzerdaten:', error);
         res.status(500).json({ error: 'Interner Serverfehler' });
     }
 });
@@ -123,7 +123,7 @@ app.post('/profile/:username/pin-post/:postId', (req, res) => {
         { $set: { pinned: true } },
         (err, result) => {
             if (err) {
-                console.error('Failed to pin post:', err);
+                sendErrorToAdminPanel('Failed to pin post:', err);
                 res.status(500).send('Failed to pin post');
                 return;
             }
@@ -146,7 +146,7 @@ app.put('/api/profile/:username/ban', async (req, res) => {
         }
         res.status(200).json({ message: `Benutzer ${username} erfolgreich gebannt` });
     } catch (error) {
-        console.error('Fehler beim Bannen des Benutzers:', error);
+        sendErrorToAdminPanel('Fehler beim Bannen des Benutzers:', error);
         res.status(500).json({ error: 'Interner Serverfehler' });
     }
 });
@@ -165,7 +165,7 @@ app.put('/api/profile/:username/unban', async (req, res) => {
         }
         res.status(200).json({ message: `Ban für Benutzer ${username} erfolgreich aufgehoben` });
     } catch (error) {
-        console.error('Fehler beim Aufheben des Bans des Benutzers:', error);
+        sendErrorToAdminPanel('Fehler beim Aufheben des Bans des Benutzers:', error);
         res.status(500).json({ error: 'Interner Serverfehler' });
     }
 });
@@ -184,7 +184,7 @@ app.put('/api/profile/:username/true', async (req, res) => {
         }
         res.status(200).json({ message: `Benutzer ${username} erfolgreich zum Admin ernannt` });
     } catch (error) {
-        console.error('Fehler beim Hinzufügen von Admin des Benutzers:', error);
+        sendErrorToAdminPanel('Fehler beim Hinzufügen von Admin des Benutzers:', error);
         res.status(500).json({ error: 'Interner Serverfehler' });
     }
 });
@@ -203,7 +203,7 @@ app.put('/api/profile/:username/false', async (req, res) => {
         }
         res.status(200).json({ message: `Benutzer ${username} erfolgreich Admin entfernt` });
     } catch (error) {
-        console.error('Fehler beim Entfernen von Admin des Benutzers:', error);
+        sendErrorToAdminPanel('Fehler beim Entfernen von Admin des Benutzers:', error);
         res.status(500).json({ error: 'Interner Serverfehler' });
     }
 });
@@ -228,7 +228,7 @@ app.get('/api/:username/posts', async (req, res) => {
 
         res.status(200).json(postsWithFormattedData);
     } catch (error) {
-        console.error("Fehler beim Abrufen der Beiträge:", error);
+        sendErrorToAdminPanel("Fehler beim Abrufen der Beiträge:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -243,7 +243,7 @@ app.post('/profile/:username/pin-post/:postId', (req, res) => {
         { $set: { pinned: true } },
         (err, result) => {
             if (err) {
-                console.error('Failed to pin post:', err);
+                sendErrorToAdminPanel('Failed to pin post:', err);
                 res.status(500).send('Failed to pin post');
                 return;
             }
@@ -257,7 +257,7 @@ app.get('/profile/:postId', (req, res) => {
 
     postsCollection.findOne({ _id: postId }, (err, post) => {
         if (err) {
-            console.error('Failed to fetch post:', err);
+            sendErrorToAdminPanel('Failed to fetch post:', err);
             res.status(500).send('Failed to fetch post');
             return;
         }
@@ -282,7 +282,7 @@ app.put('/edit-post/:postId', (req, res) => {
         { $set: { content: content, codesnippet: codesnippet, date: date  } }, // Aktualisierten Inhalt des Posts
         (err, result) => {
             if (err) {
-                console.error('Failed to edit post:', err);
+                sendErrorToAdminPanel('Failed to edit post:', err);
                 res.status(500).send('Failed to edit post');
                 return;
             }
@@ -300,7 +300,7 @@ app.delete('/api/:username/posts', async (req, res) => {
 
         res.status(200).json({ message: 'All user posts deleted successfully' });
     } catch (error) {
-        console.error("Fehler beim Löschen der Beiträge:", error);
+        sendErrorToAdminPanel("Fehler beim Löschen der Beiträge:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -339,10 +339,12 @@ app.get('/api/posts', async (req, res) => {
             posts: postsWithFormattedData
         });
     } catch (error) {
-        console.error("Fehler beim Abrufen der Beiträge:", error);
+        sendErrorToAdminPanel("Fehler beim Abrufen der Beiträge:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
 
 app.post('/api/posts', async (req, res) => {
     const { content, identifier, codesnippet } = req.body; // Inhalte, Benutzername und Codeschnipsel aus der Anfrage extrahieren
@@ -376,7 +378,6 @@ app.post('/api/posts', async (req, res) => {
     }
 });
 
-
 app.post('/login', async (req, res) => {
     const { identifier, password } = req.body; // "identifier" kann E-Mail oder Benutzername sein
 
@@ -396,7 +397,7 @@ app.post('/login', async (req, res) => {
         }
     } catch (error) {
         // Fehler beim Login
-        console.error('Error during Login:', error);
+        sendErrorToAdminPanel('Error during Login:', error);
         return res.status(500).send('Internal Server Error');
     }
 });
@@ -412,10 +413,24 @@ app.post('/signup', async (req, res) => {
         }        
 
         // Neuen Benutzer erstellen
-        await usersCollection.insertOne({ email, password, username, bio: "Hello, Im New Here!", follower: 0, followers: [], admin: false, googlelogin: false, githubLogin: false, banned: false, pb });
+        await usersCollection.insertOne({ 
+            email,
+            password,
+            username,
+            bio: "Hello, Im New Here!",
+            follower: 0,
+            followers: [],
+            badges: [],
+            admin: false,
+            googlelogin: false,
+            githubLogin: false,
+            banned: false,
+            pb,
+        });
+
         res.status(201).send('User created successfully');
     } catch (error) {
-        console.error('Error during sign up:', error);
+        sendErrorToAdminPanel('Error during sign up:', error);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -439,7 +454,7 @@ app.post('/api/update', async (req, res) => {
 
         res.status(200).json({ message: 'Benutzervorlieben erfolgreich aktualisiert', user: updatedUser.value });
     } catch (err) {
-        console.error('Fehler beim Aktualisieren der Benutzervorlieben:', err);
+        sendErrorToAdminPanel('Fehler beim Aktualisieren der Benutzervorlieben:', err);
         res.status(500).json({ message: 'Interner Serverfehler' });
     }
 });
@@ -464,8 +479,20 @@ app.post('/admin', async (req, res) => {
             return res.status(200).json({ message: false }); // JSON-Objekt zurückgeben
         }
     } catch (err) {
-        console.error('Fehler beim Überprüfen des Benutzers:', err);
+        sendErrorToAdminPanel('Fehler beim Überprüfen des Benutzers:', err);
         res.status(500).json({ message: 'Interner Serverfehler' });
+    }
+});
+
+// Route zum Löschen der Posts-Sammlung
+app.delete('/admin/delete-posts', async (req, res) => {
+    try {
+        const collection = db.collection('posts');
+        await collection.deleteMany({});
+        res.status(200).json({ message: 'Posts collection deleted successfully' });
+    } catch (error) {
+        sendErrorToAdminPanel('Error deleting posts collection:', error);
+        res.status(500).json({ message: 'Failed to delete posts collection' });
     }
 });
 
@@ -481,7 +508,8 @@ app.get('/api/username', async (req, res) => {
             pb: user.pb,
             bio: user.bio,
             admin: user.admin,
-            banned: user.banned
+            banned: user.banned,
+            badges: user.badges,
         }));
         
         // JSON-Antwort mit Benutzerdaten senden
@@ -565,7 +593,7 @@ app.post('/api/update/follower', async (req, res) => {
             return res.status(200).json({ message: 'User followed successfully' });
         }
     } catch (error) {
-        console.error("Fehler beim Ändern des Follow-Status:", error);
+        sendErrorToAdminPanel("Fehler beim Ändern des Follow-Status:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -592,7 +620,7 @@ app.post('/api/profile/change/passwort', async (req, res) => {
 
         return res.status(200).json({ message: 'Password changed successfully' });
     } catch (error) {
-        console.error("Error processing request:", error);
+        sendErrorToAdminPanel("Error processing request:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -619,7 +647,7 @@ app.post('/api/profile/change/email', async (req, res) => {
 
         return res.status(200).json({ message: 'Email changed successfully' });
     } catch (error) {
-        console.error("Error processing request:", error);
+        sendErrorToAdminPanel("Error processing request:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -654,7 +682,7 @@ app.post('/api/profile/change/username', async (req, res) => {
         console.log('Username changed successfully');
         return res.status(200).json({ message: 'Username changed successfully' });
     } catch (error) {
-        console.error("Error processing request:", error);
+        sendErrorToAdminPanel("Error processing request:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -664,7 +692,7 @@ app.delete('/api/profile/delete/:username', async (req, res) => {
         // Überprüfen, ob der Benutzername in der Anfrage vorhanden ist
         const username = req.params.username;
         if (!username) {
-            console.error('Error deleting account: Username not provided');
+            sendErrorToAdminPanel('Error deleting account: Username not provided');
             return res.status(400).send('Username not provided');
         }
 
@@ -681,7 +709,7 @@ app.delete('/api/profile/delete/:username', async (req, res) => {
         console.log(`Account successfully deleted for username: ${username}`);
         res.status(200).send('Account successfully deleted');
     } catch (error) {
-        console.error('Error deleting account:', error);
+        sendErrorToAdminPanel('Error deleting account:', error);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -692,7 +720,7 @@ app.delete('/api/posts/delete/:postId', async (req, res) => {
         // Überprüfen, ob die postId in der Anfrage vorhanden ist
         const postId = req.params.postId;
         if (!postId) {
-            console.error('Error deleting post: Post ID not provided');
+            sendErrorToAdminPanel('Error deleting post: Post ID not provided');
             return res.status(400).send('Post ID not provided');
         }
 
@@ -709,7 +737,7 @@ app.delete('/api/posts/delete/:postId', async (req, res) => {
         console.log(`Post successfully deleted with ID: ${postId}`);
         res.status(200).send('Post successfully deleted');
     } catch (error) {
-        console.error('Error deleting post:', error);
+        sendErrorToAdminPanel('Error deleting post:', error);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -731,7 +759,7 @@ app.post('/posts/:postId/like', async (req, res) => {
 
         res.json({ message: 'Like gespeichert' });
     } catch (error) {
-        console.error('Fehler beim Speichern des Likes:', error);
+        sendErrorToAdminPanel('Fehler beim Speichern des Likes:', error);
         res.status(500).json({ message: 'Interner Serverfehler' });
     }
 });
@@ -750,7 +778,7 @@ app.get('/posts/:postId', async (req, res) => {
 
         res.json({ likes: post.likes });
     } catch (error) {
-        console.error('Fehler beim Abrufen des Beitrags:', error);
+        sendErrorToAdminPanel('Fehler beim Abrufen des Beitrags:', error);
         res.status(500).json({ message: 'Interner Serverfehler' });
     }
 });
@@ -772,7 +800,7 @@ app.post('/posts/:postId/unlike', async (req, res) => {
 
         res.json({ message: 'Like entfernt' });
     } catch (error) {
-        console.error('Fehler beim Entfernen des Likes:', error);
+        sendErrorToAdminPanel('Fehler beim Entfernen des Likes:', error);
         res.status(500).json({ message: 'Interner Serverfehler' });
     }
 });
@@ -824,16 +852,18 @@ passport.use(new GoogleStrategy({
                 bio: "Hello, I'm New here!",
                 admin: false,
                 googlelogin: true,
+                githubLogin: false,
                 banned: false,
                 follower: 0, 
                 followers: [],
+                badges: [],
             };
 
             await collection.insertOne(newUser);
             return done(null, newUser);
         }
     } catch (error) {
-        console.error('Error processing Google authentication:', error);
+        sendErrorToAdminPanel('Error processing Google authentication:', error);
         return done(error, null);
     }
 }));
@@ -862,7 +892,7 @@ app.get('/auth/google/callback',
             };
             res.redirect('/login?user=' + encodeURIComponent(JSON.stringify(user)));
         } else {
-            console.error('Error: User username or password not found.');
+            sendErrorToAdminPanel('Error: User username or password not found.');
             res.redirect('/login'); // Weiterleitung zur Login-Seite oder Fehlerbehandlung entsprechend
         }
     }
@@ -880,6 +910,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //GITHUB
+
+//TODO: Wenn der Username gleich ist wie der Username von GitHub soll der Account genommen werden (wenn der Username schon vergeben ist zu einem Anderen User soll einfach eine Random Zahl Dahinter gepackt werden z.b prodbyeagle435)
 
 const { v4: uuidv4 } = require('uuid');
 const GitHubStrategy = require('passport-github2').Strategy;
@@ -910,16 +942,18 @@ passport.use(new GitHubStrategy({
                 pb: userPhoto,
                 bio: "Hello, I'm New here!",
                 admin: false,
+                googlelogin: false,
                 githubLogin: true,
                 banned: false,
                 followers: [],
+                badges: [],
             };
 
             await collection.insertOne(newUser);
             return done(null, newUser);
         }
     } catch (error) {
-        console.error('Error processing GitHub authentication:', error);
+        sendErrorToAdminPanel('Error processing GitHub authentication:', error);
         return done(error, null);
     }
 }));
@@ -948,7 +982,7 @@ app.get('/auth/github/callback',
             };
             res.redirect('/login?user=' + encodeURIComponent(JSON.stringify(user)));
         } else {
-            console.error('Error: User username or password not found.');
+            sendErrorToAdminPanel('Error: User username or password not found.');
             res.redirect('/login'); // Redirect to login page or handle error accordingly
         }
     }
@@ -966,29 +1000,173 @@ app.get('/auth/github', passport.authenticate('github'));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ERRORS
+//ERROR
+
+// Fehlerliste mit eindeutigen IDs
 let errorList = [];
+let errorIdCounter = 1;
 
 // API-Endpunkt zum Empfangen von Fehlermeldungen
 app.post('/api/admin/error', (req, res) => {
-    const { message } = req.body;
-    if (message) {
-        // Speichere die Fehlermeldung in der Liste
-        errorList.push({ message, timestamp: new Date() });
-        console.log('Fehlermeldung empfangen:', message);
-        res.status(200).json({ success: true });
-    } else {
-        res.status(400).json({ success: false, error: 'Message is required' });
+    try {
+        const { message } = req.body;
+        
+        if (!message) {
+            throw new Error('Message is required');
+        }
+
+        // Prüfen, ob ein Fehler mit dem gleichen Text bereits vorhanden ist
+        const existingError = errorList.find(error => error.message === message);
+
+        if (existingError) {
+            existingError.count++; // Erhöhe den Zähler des vorhandenen Fehlers
+            console.log('Error message stacked:', message);
+        } else {
+            // Generiere eine eindeutige ID für den Fehler
+            const errorId = generateErrorId();
+
+            // Füge den neuen Fehler zur Liste hinzu
+            errorList.push({ id: errorId, message, count: 1, timestamp: new Date() });
+            console.log('New error message received:', message);
+        }
+
+        res.status(201).json({ success: true });
+    } catch (error) {
+        sendErrorToAdminPanel('Error receiving error message:', error.message);
+        res.status(400).json({ success: false, error: error.message });
     }
 });
 
-app.get('/api/admin/errors', (req, res) => {
-    res.json(errorList);
+// Funktion zur Generierung einer eindeutigen ID
+function generateErrorId() {
+    return errorIdCounter++;
+}
+
+// API-Endpunkt zum Löschen eines einzelnen Fehlers basierend auf der Fehler-ID
+app.delete('/api/admin/errors/:errorId', (req, res) => {
+    try {
+        const errorId = req.params.errorId;
+        
+        // Überprüfe, ob die Fehler-ID gültig ist
+        if (!errorId || isNaN(errorId)) {
+            throw new Error('Invalid Error ID');
+        }
+        
+        // Finde den Index des Fehlers in der Fehlerliste
+        const index = errorList.findIndex(error => error.id == errorId);
+
+        // Wenn der Fehler gefunden wurde, entferne ihn aus der Liste
+        if (index !== -1) {
+            errorList.splice(index, 1);
+            res.status(200).json({ success: true });
+        } else {
+            // Wenn der Fehler nicht gefunden wurde, sende einen Fehler zurück
+            res.status(404).json({ success: false, error: 'Error not found' });
+        }
+    } catch (error) {
+        sendErrorToAdminPanel('Error deleting error:', error.message);
+        res.status(400).json({ success: false, error: error.message });
+    }
 });
+
+// API-Endpunkt zum Abrufen der Fehlerliste
+app.get('/api/admin/errors', (req, res) => {
+    try {
+        res.json(errorList);
+    } catch (error) {
+        sendErrorToAdminPanel('Error retrieving error log:', error.message);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+// Beispiel: Route zum Abrufen aller Badges
+app.get('/api/admin/badges', async (req, res) => {
+    try {
+        const badgesCollection = db.collection('badges');
+        const badges = await badgesCollection.find({}).toArray();
+        res.json(badges);
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Badges:', error);
+        res.status(500).json({ error: 'Fehler beim Abrufen der Badges' });
+    }
+});
+
+// Route zum Abrufen der Badges für einen bestimmten Benutzer
+app.get('/api/:username/badges', async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        // Überprüfen, ob der Benutzer existiert
+        const user = await db.collection('users').findOne({ username: username });
+        if (!user) {
+            return res.status(404).json({ error: 'Benutzer nicht gefunden' });
+        }
+
+        // Badges für den Benutzer abrufen
+        const userBadges = user.badges;
+        res.json({ badges: userBadges });
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Badges:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
+// API-Route zum Hinzufügen eines neuen Badges
+app.post('/api/admin/badges', async (req, res) => {
+    try {
+        const { name, image, description } = req.body;
+
+        // Validierung der Eingabedaten
+        if (!name || !image || !description) {
+            return res.status(400).json({ error: 'Alle Felder sind erforderlich' });
+        }
+
+        const badgesCollection = db.collection('badges');
+        await badgesCollection.insertOne({ name, image, description });
+
+        res.json({ message: 'Badge erfolgreich hinzugefügt', /* insertedId: result.insertedId */ });
+    } catch (error) {
+        console.error('Fehler beim Hinzufügen des Badges:', error);
+        res.status(500).json({ error: 'Fehler beim Hinzufügen des Badges' });
+    }
+});
+
+app.post('/api/admin/assign-badge', async (req, res) => {
+    const { badgeName, badgeImage, badgeDescription, username } = req.body;
+    try {
+        // Überprüfe, ob der Benutzer in der Datenbank existiert
+        const userExists = await db.collection('users').findOne({ username: username });
+        if (!userExists) {
+            throw new Error('Benutzer nicht gefunden');
+        }
+
+        // Wenn der Benutzer existiert, aktualisiere seine Badges mit allen Informationen
+        const result = await db.collection('users').findOneAndUpdate(
+            { username: username },
+            { 
+                $push: { 
+                    badges: { 
+                        name: badgeName,
+                        image: badgeImage,
+                        description: badgeDescription
+                    } 
+                } 
+            },
+            { returnOriginal: false }
+        );
+
+        res.json(result.value); // Antwort kann je nach Anwendungsfall variieren
+    } catch (error) {
+        console.error('Fehler beim Zuweisen des Badges zum Benutzer:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 // -----------------------
 
-const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'preferences', 'admin'];
+const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'preferences', 'admin', 'badges'];
+const adminpages = ['badges'];
 
 pages.forEach(page => {
     app.get(`/${page}`, (req, res) => {
@@ -996,7 +1174,13 @@ pages.forEach(page => {
     });
 });
 
+adminpages.forEach(page => {
+    app.get(`/admin/${page}`, (req, res) => {
+        res.sendFile(path.join(__dirname, 'html', `${page}.html`));
+    });
+});
+
 app.listen(PORT, () => {
-    run().catch(error => console.error('Fehler beim Starten des Servers:', error));
+    run().catch(error => sendErrorToAdminPanel('Fehler beim Starten des Servers:', error));
     console.log('Link: http://localhost:' + PORT + '/home');
 });

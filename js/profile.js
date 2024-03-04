@@ -1,6 +1,6 @@
 const userData = JSON.parse(localStorage.getItem('user'));
 if (!userData || !userData.identifier) {
-    console.error('User identifier not found in local storage');
+    sendErrorToAdminPanel('User identifier not found in local storage');
 } else {
     const username = userData.identifier;
     checkUserBanStatus(username);
@@ -18,7 +18,7 @@ async function checkUserBanStatus(username) {
             document.body.classList.add('dark-mode');
         }
     } catch (error) {
-        console.error('Error fetching user data:', error);
+        sendErrorToAdminPanel('Error fetching user data:', error);
     }
 }
 
@@ -38,7 +38,7 @@ function showNormalContent() {
                 renderPosts(postsData);
             }
         } catch (error) {
-            console.error('Error fetching user posts:', error);
+            sendErrorToAdminPanel('Error fetching user posts:', error);
         }
     }
     
@@ -82,33 +82,20 @@ function showNormalContent() {
     
             const threeDotButton = document.createElement('button');
             threeDotButton.classList.add('neumorphism-button', 'text-red-600');
-    
+
             const menuIcon = document.createElement('img');
             menuIcon.setAttribute('src', 'https://img.icons8.com/ios-filled/24/000000/menu--v6.png');
             menuIcon.setAttribute('alt', 'menu-icon');
     
             threeDotButton.appendChild(menuIcon);
     
-            threeDotButton.setAttribute('id', 'menu-btn_' + post._id);
+            threeDotButton.setAttribute('id', 'ham-burger-menu-btn');
+            threeDotButton.setAttribute('onclick', `togglePostMenu('${post._id}')`);
+            threeDotMenu.setAttribute('id', 'ham-burger-menu-' + post._id);
     
             const threeDotMenuContent = document.createElement('div');
             threeDotMenuContent.classList.add('hidden', 'origin-top-left', 'absolute', 'left-0', 'mt-2', 'rounded-md', 'shadow-lg', 'bg-white', 'ring-1', 'ring-black', 'ring-opacity-5', 'flex', 'flex-col', 'text-sm');
-            threeDotMenuContent.setAttribute('id', 'ham-burger-menu_' + post._id);
-    
-            threeDotButton.onclick = function(e) {
-                e.stopPropagation(); // Prevent click event from bubbling up to document
-                const menuId = 'ham-burger-menu_' + post._id;
-                const menu = document.getElementById(menuId);
-                menu.classList.toggle('hidden');
-            };
-    
-            document.addEventListener('click', function(e) {
-                const menuId = 'ham-burger-menu_' + post._id;
-                const menu = document.getElementById(menuId);
-                if (!threeDotMenu.contains(e.target)) {
-                    menu.classList.add('hidden');
-                }
-            });
+            threeDotMenuContent.setAttribute('id', 'ham-burger-menu-content-' + post._id);
     
             const deleteButton = document.createElement('button');
             deleteButton.classList.add('neumorphism-button', 'text-red-600', 'py-2', 'px-4', 'hover:bg-gray-100', 'hover:text-gray-900');
@@ -193,7 +180,7 @@ function showNormalContent() {
             fetchAndDisplayFollowerCount(currentUsername);
             displayPinnedPosts;
         } else {
-            console.error('User data not found in localStorage.');
+            sendErrorToAdminPanel('User data not found in localStorage.');
         }
     });
 
@@ -214,7 +201,7 @@ function showNormalContent() {
 try {
     const userDataString = localStorage.getItem('user');
     if (!userDataString) {
-        console.error('User data not found in localStorage.');
+        sendErrorToAdminPanel('User data not found in localStorage.');
         return;
     }
 
@@ -234,7 +221,7 @@ try {
     }
 
     if (!currentUser) {
-        console.error('User not found in the database.');
+        sendErrorToAdminPanel('User not found in the database.');
         return;
     }
 
@@ -251,7 +238,7 @@ try {
         profileDescriptionElement.innerText = "❌ Bio not available";
     }
 } catch (error) {
-    console.error("Error fetching user data:", error);
+    sendErrorToAdminPanel("Error fetching user data:", error);
 }
 };
 
@@ -281,7 +268,7 @@ try {
             // Benutzerdaten aus dem Local Storage abrufen
             const userData = JSON.parse(localStorage.getItem('user'));
             if (!userData) {
-                console.error('User data not found in localStorage.');
+                sendErrorToAdminPanel('User data not found in localStorage.');
                 return;
             }
     
@@ -304,7 +291,7 @@ try {
             // Overlay schließen
             closeOverlay();
         } catch (error) {
-            console.error('Error saving bio:', error);
+            sendErrorToAdminPanel('Error saving bio:', error);
             // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
         }
     }
@@ -374,7 +361,7 @@ try {
         uploadImage(file);
     }
 } catch (error) {
-    console.error('Error uploading profile picture:', error);
+    sendErrorToAdminPanel('Error uploading profile picture:', error);
     // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
 }
 });
@@ -507,7 +494,7 @@ try {
 
     // Überprüfen, ob die API-Antwort gültige Daten enthält
     if (!data || !data.follower) {
-        console.error('Ungültige API-Antwort:', data);
+        sendErrorToAdminPanel('Ungültige API-Antwort:', data);
         return;
     }
 
@@ -542,7 +529,7 @@ try {
     const followerCountElement = document.getElementById('follower-count');
     followerCountElement.textContent = followerCount;
 } catch (error) {
-    console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
+    sendErrorToAdminPanel('Fehler beim Abrufen der Anzahl der Follower:', error);
 }
 }
 
@@ -572,12 +559,12 @@ function deletePost(postId) {
                 // Seite neu laden
                 window.location.reload();
             }).catch(error => {
-                console.error('Error deleting post:', error);
+                sendErrorToAdminPanel('Error deleting post:', error);
                 // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
             });
         }
     } catch (error) {
-        console.error('Error deleting post:', error);
+        sendErrorToAdminPanel('Error deleting post:', error);
         // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
 }
@@ -605,7 +592,7 @@ fetch(`/profile/${username}/pin-post/${postId}`, requestOptions)
         alert('Post pinned successfully.');
     })
     .catch(error => {
-        console.error('Error:', error);
+        sendErrorToAdminPanel('Error:', error);
     });
 }
 
@@ -631,20 +618,49 @@ try {
         }
     });
 } catch (error) {
-    console.error('Error:', error);
+    sendErrorToAdminPanel('Error:', error);
 }
 }
+
+function togglePostMenu(postId) {
+    const menu = document.getElementById(`ham-burger-menu-content-${postId}`);
+
+    if (!menu) {
+        console.log(`Menu nicht gefunden`)
+    };
+
+    menu.classList.toggle('hidden');
+}
+
+// Fügen Sie den Event-Listener für das Burger-Menü hinzu
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('ham-burger-menu-btn')) {
+        const postId = event.target.dataset.postId;
+        if (postId) {
+            togglePostMenu(postId);
+        }
+    } else {
+        // Menü schließen, wenn außerhalb des Menübereichs geklickt wird
+        const menus = document.querySelectorAll('.ham-burger-menu');
+        menus.forEach(menu => {
+            if (!menu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    }
+});
+
 
 function showEditForm(postId) {
 const postsContainer = document.getElementById('user-posts');
 if (!postsContainer) {
-    console.error('Posts container element not found.');
+    sendErrorToAdminPanel('Posts container element not found.');
     return;
 }
 
 const postElement = postsContainer.querySelector(`[data-post-id="${postId}"]`);
 if (!postElement) {
-    console.error(`Post element with ID ${postId} not found.`);
+    sendErrorToAdminPanel(`Post element with ID ${postId} not found.`);
     return;
 }
 
@@ -653,18 +669,15 @@ const codeSnippetElement = document.getElementById(`codesnippet_${postId}`);
 
 
 if (!contentElement || !codeSnippetElement) {
-    console.error('Content or Code snippet element not found within post element.');
+    sendErrorToAdminPanel('Content or Code snippet element not found within post element.');
     return;
 }
 
-const menuButton = document.getElementById('menu-btn');
-const menuContent = document.getElementById('ham-burger-menu');
+const menuContent = document.getElementById(`ham-burger-menu-${postId}`);
 if (menuContent) {
-    // Führen Sie hier den Code aus, der auf menuContent zugreift
-    menuButton.style.display = 'none';
     menuContent.style.display = 'none';
 } else {
-    console.error('Menu content element not found.');
+    sendErrorToAdminPanel('Menu content element not found.');
 }
 
 const editContentInput = document.createElement('textarea');
@@ -736,7 +749,7 @@ if (!response.ok) {
 alert('Post edited successfully.');
 })
 .catch(error => {
-console.error('Error editing post:', error);
+sendErrorToAdminPanel('Error editing post:', error);
 });
 }
 
@@ -747,3 +760,6 @@ function truncateText(text, maxLength) {
         return text;
     }
 }
+
+
+//TODO: POSTS ANZEIGE VERBESSERN (on click ganzen post)

@@ -163,3 +163,13 @@ margin-bottom: 1rem; /* Added margin between panels */
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.action-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.action-buttons a {
+    margin: 0 10px;
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Hub: Badges</title>
+    <link rel="stylesheet" href="/css/badges.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Badges</h1>
+        <div id="badges-container" class="badges-grid"></div>
+        <button id="add-badge-button" class="neumorphism-button">Add Badge</button>
+        <button id="assign-badge-button" class="neumorphism-button">Assign Badge</button>
+    </div>
+
+    <div id="add-badge-overlay" class="banned-overlay">
+        <div id="add-badge-form" class="neumorphism-form">
+            <h2>Add Badge</h2>
+            <form id="badge-form">
+                <label for="badge-name">Name:</label>
+                <input type="text" id="badge-name" name="name" class="neumorphism-input" rows="1" cols="1" maxlength="32" style="resize: none;" required>
+                <label for="badge-image">Picture:</label>
+                <input type="file" id="badge-image" name="image" class="neumorphism-input" accept="image/*" required>
+                <label for="badge-description">Description:</label>
+                <textarea id="badge-description" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required></textarea>
+                <div class="button-group">
+                    <button type="submit" class="neumorphism-button">Add</button>
+                    <button type="button" id="close-overlay-button" class="neumorphism-button">Close</button>
+                </div>
+            </form>
+            <div id="error-message" class="error-message"></div>
+        </div>
+    </div>
+
+    <div id="assign-badge-overlay" class="banned-overlay">
+        <div id="assign-badge-form-container" class="neumorphism-form">
+            <h2>Assign Badge</h2>
+            <form id="assign-badge-form">
+                <label for="badge-name">Badge Name:</label>
+                <input type="text" id="badgename" name="badgeName" class="neumorphism-input" required>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" class="neumorphism-input" required>
+                <div class="button-group">
+                    <button type="submit" class="neumorphism-button">Assign</button>
+                    <button type="button" id="close-assign-overlay-button" class="neumorphism-button">Close</button>
+                </div>
+            </form>
+            <div id="assign-error-message" class="error-message"></div>
+        </div>
+    </div>
+    
+    <script src="/js/badges.js"></script>
+
+</body>
+
+</html>

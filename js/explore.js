@@ -9,7 +9,7 @@ async function fetchProfilePicture(username) {
         // Hier können Sie das Profilbild verwenden, z.B. anzeigen oder weiterverarbeiten
         console.log('Profilbild für Benutzer', username + ':', profilePicture);
     } catch (error) {
-        console.error('Error fetching profile picture:', error);
+        sendErrorToAdminPanel('Error fetching profile picture:', error);
     }
 }
 
@@ -63,7 +63,7 @@ async function fetchAndDisplayPosts() {
         // Prüfen, ob der Benutzer gesperrt ist
         const userData = JSON.parse(localStorage.getItem('user'));
         if (!userData || !userData.identifier) {
-            console.error('User identifier not found in local storage');
+            sendErrorToAdminPanel('User identifier not found in local storage');
             return;
         }
 
@@ -80,7 +80,7 @@ async function fetchAndDisplayPosts() {
             showNormalContent();
         }
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        sendErrorToAdminPanel('Error fetching posts:', error);
     }
 }
 

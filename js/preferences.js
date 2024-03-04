@@ -1,6 +1,6 @@
 const userData = JSON.parse(localStorage.getItem('user'));
 if (!userData || !userData.identifier) {
-    console.error('User identifier not found in local storage');
+    sendErrorToAdminPanel('User identifier not found in local storage');
 } else {
     const username = userData.identifier;
     checkUserBanStatus(username);
@@ -18,7 +18,7 @@ async function checkUserBanStatus(username) {
             document.body.classList.add('dark-mode');
         }
     } catch (error) {
-        console.error('Error fetching user data:', error);
+        sendErrorToAdminPanel('Error fetching user data:', error);
     }
 }
 
@@ -84,7 +84,7 @@ function showNormalContent() {
             }, 3000); // Weiterleitung nach 3 Sekunden
         })
         .catch(error => {
-            console.error('There was a problem with your fetch operation:', error);
+            sendErrorToAdminPanel('There was a problem with your fetch operation:', error);
         });
     });
     
