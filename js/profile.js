@@ -1,6 +1,6 @@
 const userData = JSON.parse(localStorage.getItem('user'));
 if (!userData || !userData.identifier) {
-    sendErrorToAdminPanel('User identifier not found in local storage');
+    console.error('User identifier not found in local storage');
 } else {
     const username = userData.identifier;
     checkUserBanStatus(username);
@@ -18,7 +18,7 @@ async function checkUserBanStatus(username) {
             document.body.classList.add('dark-mode');
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error fetching user data:', error);
+        console.error('Error fetching user data:', error);
     }
 }
 
@@ -38,7 +38,7 @@ function showNormalContent() {
                 renderPosts(postsData);
             }
         } catch (error) {
-            sendErrorToAdminPanel('Error fetching user posts:', error);
+            console.error('Error fetching user posts:', error);
         }
     }
     
@@ -180,7 +180,7 @@ function showNormalContent() {
             fetchAndDisplayFollowerCount(currentUsername);
             displayPinnedPosts;
         } else {
-            sendErrorToAdminPanel('User data not found in localStorage.');
+            console.error('User data not found in localStorage.');
         }
     });
 
@@ -201,7 +201,7 @@ function showNormalContent() {
 try {
     const userDataString = localStorage.getItem('user');
     if (!userDataString) {
-        sendErrorToAdminPanel('User data not found in localStorage.');
+        console.error('User data not found in localStorage.');
         return;
     }
 
@@ -221,7 +221,7 @@ try {
     }
 
     if (!currentUser) {
-        sendErrorToAdminPanel('User not found in the database.');
+        console.error('User not found in the database.');
         return;
     }
 
@@ -238,7 +238,7 @@ try {
         profileDescriptionElement.innerText = "❌ Bio not available";
     }
 } catch (error) {
-    sendErrorToAdminPanel("Error fetching user data:", error);
+    console.error("Error fetching user data:", error);
 }
 };
 
@@ -268,7 +268,7 @@ try {
             // Benutzerdaten aus dem Local Storage abrufen
             const userData = JSON.parse(localStorage.getItem('user'));
             if (!userData) {
-                sendErrorToAdminPanel('User data not found in localStorage.');
+                console.error('User data not found in localStorage.');
                 return;
             }
     
@@ -291,7 +291,7 @@ try {
             // Overlay schließen
             closeOverlay();
         } catch (error) {
-            sendErrorToAdminPanel('Error saving bio:', error);
+            console.error('Error saving bio:', error);
             // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
         }
     }
@@ -361,7 +361,7 @@ try {
         uploadImage(file);
     }
 } catch (error) {
-    sendErrorToAdminPanel('Error uploading profile picture:', error);
+    console.error('Error uploading profile picture:', error);
     // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
 }
 });
@@ -494,7 +494,7 @@ try {
 
     // Überprüfen, ob die API-Antwort gültige Daten enthält
     if (!data || !data.follower) {
-        sendErrorToAdminPanel('Ungültige API-Antwort:', data);
+        console.error('Ungültige API-Antwort:', data);
         return;
     }
 
@@ -529,7 +529,7 @@ try {
     const followerCountElement = document.getElementById('follower-count');
     followerCountElement.textContent = followerCount;
 } catch (error) {
-    sendErrorToAdminPanel('Fehler beim Abrufen der Anzahl der Follower:', error);
+    console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
 }
 }
 
@@ -559,12 +559,12 @@ function deletePost(postId) {
                 // Seite neu laden
                 window.location.reload();
             }).catch(error => {
-                sendErrorToAdminPanel('Error deleting post:', error);
+                console.error('Error deleting post:', error);
                 // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
             });
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error deleting post:', error);
+        console.error('Error deleting post:', error);
         // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
 }
@@ -592,7 +592,7 @@ fetch(`/profile/${username}/pin-post/${postId}`, requestOptions)
         alert('Post pinned successfully.');
     })
     .catch(error => {
-        sendErrorToAdminPanel('Error:', error);
+        console.error('Error:', error);
     });
 }
 
@@ -618,7 +618,7 @@ try {
         }
     });
 } catch (error) {
-    sendErrorToAdminPanel('Error:', error);
+    console.error('Error:', error);
 }
 }
 
@@ -654,13 +654,13 @@ document.addEventListener('click', function(event) {
 function showEditForm(postId) {
 const postsContainer = document.getElementById('user-posts');
 if (!postsContainer) {
-    sendErrorToAdminPanel('Posts container element not found.');
+    console.error('Posts container element not found.');
     return;
 }
 
 const postElement = postsContainer.querySelector(`[data-post-id="${postId}"]`);
 if (!postElement) {
-    sendErrorToAdminPanel(`Post element with ID ${postId} not found.`);
+    console.error(`Post element with ID ${postId} not found.`);
     return;
 }
 
@@ -669,7 +669,7 @@ const codeSnippetElement = document.getElementById(`codesnippet_${postId}`);
 
 
 if (!contentElement || !codeSnippetElement) {
-    sendErrorToAdminPanel('Content or Code snippet element not found within post element.');
+    console.error('Content or Code snippet element not found within post element.');
     return;
 }
 
@@ -677,7 +677,7 @@ const menuContent = document.getElementById(`ham-burger-menu-${postId}`);
 if (menuContent) {
     menuContent.style.display = 'none';
 } else {
-    sendErrorToAdminPanel('Menu content element not found.');
+    console.error('Menu content element not found.');
 }
 
 const editContentInput = document.createElement('textarea');
@@ -749,7 +749,7 @@ if (!response.ok) {
 alert('Post edited successfully.');
 })
 .catch(error => {
-sendErrorToAdminPanel('Error editing post:', error);
+console.error('Error editing post:', error);
 });
 }
 

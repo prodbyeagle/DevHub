@@ -1,9 +1,15 @@
 body {
     @font-face {
-      font-family: 'Font';
-      src:  url('SF-Pro.woff2') format('woff2'),
+        font-family: 'SF Pro Display Bold';
+        src: url('assets/SF-Pro-Display-Bold.ttf') format('truetype'),
+             url('assets/SF-Pro-Display-Bold.otf') format('opentype'),
+             url('assets/SF-Pro-Display-Bold.woff') format('woff'),
+             url('assets/SF-Pro-Display-Bold.woff2') format('woff2');
+        font-weight: bold;
+        font-style: normal;
     }
-    font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+
+    font-family: 'SF Pro Display Bold', sans-serif;
     background-color: #f0f0f0;
     color: #333;
     transition: all 0.3s ease;

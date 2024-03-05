@@ -409,7 +409,7 @@ body.dark-mode .profile-info p {
     <script>
     const userData = JSON.parse(localStorage.getItem('user'));
     if (!userData || !userData.identifier) {
-        sendErrorToAdminPanel('User identifier not found in local storage');
+        console.error('User identifier not found in local storage');
     } else {
         const username = userData.identifier;
         checkUserBanStatus(username);
@@ -427,7 +427,7 @@ body.dark-mode .profile-info p {
                 document.body.classList.add('dark-mode');
             }
         } catch (error) {
-            sendErrorToAdminPanel('Error fetching user data:', error);
+            console.error('Error fetching user data:', error);
         }
     }
     
@@ -449,7 +449,7 @@ body.dark-mode .profile-info p {
                     renderPosts(postsData);
                 }
             } catch (error) {
-                sendErrorToAdminPanel('Error fetching user posts:', error);
+                console.error('Error fetching user posts:', error);
             }
         }
         
@@ -539,7 +539,7 @@ body.dark-mode .profile-info p {
                 fetchUserPosts(username);
                 fetchAndDisplayFollowerCount(username);
             } else {
-                sendErrorToAdminPanel('Username not found in URL.');
+                console.error('Username not found in URL.');
             }
         });
 
@@ -563,7 +563,7 @@ body.dark-mode .profile-info p {
         const username = currentPath.split('/').pop().replace(/ /g, '_');
 
         if (!username) {
-            sendErrorToAdminPanel('Username not found in URL.');
+            console.error('Username not found in URL.');
             return;
         }
 
@@ -584,7 +584,7 @@ body.dark-mode .profile-info p {
             profileDescriptionElement.innerText = "❌ Bio not available";
         }
     } catch (error) {
-        sendErrorToAdminPanel("Error fetching user data:", error);
+        console.error("Error fetching user data:", error);
     }
 };
 
@@ -630,7 +630,7 @@ async function fetchAndDisplayFollowerCount(username) {
 
         // Überprüfen, ob die API-Antwort gültige Daten enthält
         if (!data || !data.follower) {
-            sendErrorToAdminPanel('Ungültige API-Antwort:', data);
+            console.error('Ungültige API-Antwort:', data);
             return;
         }
 
@@ -665,7 +665,7 @@ async function fetchAndDisplayFollowerCount(username) {
         const followerCountElement = document.getElementById('follower-count');
         followerCountElement.textContent = followerCount;
     } catch (error) {
-        sendErrorToAdminPanel('Fehler beim Abrufen der Anzahl der Follower:', error);
+        console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
     }
 }
 
@@ -735,7 +735,7 @@ async function toggleFollow() {
         followerCountElement.textContent = followerCount;
 
     } catch (error) {
-        sendErrorToAdminPanel('Fehler beim Ändern des Follow-Status:', error);
+        console.error('Fehler beim Ändern des Follow-Status:', error);
     }
 }
 const followStatus = localStorage.getItem('followStatus');
@@ -777,7 +777,7 @@ async function togglePinStatus(postId) {
         const data = await response.json();
         return data.pinned; // Rückgabe des aktualisierten Anpinnstatus
     } catch (error) {
-        sendErrorToAdminPanel('Fehler beim Umschalten des Anpinnstatus:', error);
+        console.error('Fehler beim Umschalten des Anpinnstatus:', error);
         return null;
     }
 }

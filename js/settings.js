@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         const savedUser = localStorage.getItem('user');
         if (!savedUser) {
-            sendErrorToAdminPanel('User not found in local storage');
+            console.error('User not found in local storage');
             return;
         }
         const { identifier, password, email } = JSON.parse(savedUser);
@@ -28,17 +28,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 document.getElementById('email').setAttribute('data-real-email', matchedUser.email);
             }
         } else {
-            sendErrorToAdminPanel('User data does not match stored user');
+            console.error('User data does not match stored user');
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error fetching user data:', error);
+        console.error('Error fetching user data:', error);
     }
 });
 
 // Überprüfen Sie die Benutzersperrstatus
 const userData = JSON.parse(localStorage.getItem('user'));
 if (!userData || !userData.identifier) {
-    sendErrorToAdminPanel('User identifier not found in local storage');
+    console.error('User identifier not found in local storage');
 } else {
     const username = userData.identifier;
     checkUserBanStatus(username);
@@ -54,7 +54,7 @@ async function checkUserBanStatus(username) {
         } else {
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error fetching user data:', error);
+        console.error('Error fetching user data:', error);
     }
 }
 
@@ -144,7 +144,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
         // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
         const savedUser = localStorage.getItem('user');
         if (!savedUser) {
-            sendErrorToAdminPanel('User not found in local storage');
+            console.error('User not found in local storage');
             return;
         }
 
@@ -182,7 +182,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
             }).showToast();
             document.getElementById('changePasswordOverlay').classList.add('hidden');
         } else {
-            sendErrorToAdminPanel('Failed to change password:', response.statusText);
+            console.error('Failed to change password:', response.statusText);
             // Hier kannst du eine Fehlermeldung anzeigen
             Toastify({
                 text: 'Failed to change password: ' + response.statusText,
@@ -192,7 +192,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
             }).showToast();
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error changing password:', error);
+        console.error('Error changing password:', error);
         // Hier kannst du eine Fehlermeldung anzeigen
         Toastify({
             text: 'Error changing password: ' + error,
@@ -225,7 +225,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
 //         // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
 //         const savedUser = localStorage.getItem('user');
 //         if (!savedUser) {
-//             sendErrorToAdminPanel('User not found in local storage');
+//             console.error('User not found in local storage');
 //             return;
 //         }
 // 
@@ -234,13 +234,13 @@ changePasswordForm.addEventListener('submit', async (event) => {
 // 
 //         // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
 //         if (!newUsername) {
-//             sendErrorToAdminPanel('New username cannot be empty');
+//             console.error('New username cannot be empty');
 //             return;
 //         }
 // 
 //         // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
 //         if (newUsername !== confirmUsername) {
-//             sendErrorToAdminPanel('New username and confirm username do not match');
+//             console.error('New username and confirm username do not match');
 //             return;
 //         }
 // 
@@ -274,7 +274,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
 //             }).showToast();
 //             document.getElementById('changeUsernameOverlay').classList.add('hidden');
 //         } else {
-//             sendErrorToAdminPanel('Failed to change username:', response.statusText);
+//             console.error('Failed to change username:', response.statusText);
 //             // Hier kannst du eine Fehlermeldung anzeigen
 //             Toastify({
 //                 text: 'Failed to change username: ' + response.statusText,
@@ -284,7 +284,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
 //             }).showToast();
 //         }
 //     } catch (error) {
-//         sendErrorToAdminPanel('Error changing username:', error);
+//         console.error('Error changing username:', error);
 //         // Hier kannst du eine Fehlermeldung anzeigen
 //         Toastify({
 //             text: 'Error changing username: ' + error,
@@ -318,7 +318,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
 //         // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
 //         const savedUser = localStorage.getItem('user');
 //         if (!savedUser) {
-//             sendErrorToAdminPanel('User not found in local storage');
+//             console.error('User not found in local storage');
 //             return;
 //         }
 // 
@@ -327,13 +327,13 @@ changePasswordForm.addEventListener('submit', async (event) => {
 // 
 //         // Überprüfen, ob das neue E-Mail-Feld nicht leer ist
 //         if (!newEmail) {
-//             sendErrorToAdminPanel('New email cannot be empty');
+//             console.error('New email cannot be empty');
 //             return;
 //         }
 // 
 //         // Überprüfen, ob die neue E-Mail-Adresse mit der Bestätigung übereinstimmt
 //         if (newEmail !== confirmEmail) {
-//             sendErrorToAdminPanel('New email and confirm email do not match');
+//             console.error('New email and confirm email do not match');
 //             return;
 //         }
 // 
@@ -364,7 +364,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
 //             }).showToast();
 //             document.getElementById('changeEmailOverlay').classList.add('hidden');
 //         } else {
-//             sendErrorToAdminPanel('Failed to change email:', response.statusText);
+//             console.error('Failed to change email:', response.statusText);
 //             // Hier kannst du eine Fehlermeldung anzeigen
 //             Toastify({
 //                 text: 'Failed to change email: ' + response.statusText,
@@ -374,7 +374,7 @@ changePasswordForm.addEventListener('submit', async (event) => {
 //             }).showToast();
 //         }
 //     } catch (error) {
-//         sendErrorToAdminPanel('Error changing email:', error);
+//         console.error('Error changing email:', error);
 //         // Hier kannst du eine Fehlermeldung anzeigen
 //         Toastify({
 //             text: 'Error changing email: ' + error,
@@ -420,7 +420,7 @@ document.getElementById('deleteAccountBtn').addEventListener('click', async () =
 
         window.location.href = '/login';
     } catch (error) {
-        sendErrorToAdminPanel('Error deleting account:', error);
+        console.error('Error deleting account:', error);
         // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
 });

@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).showToast();
             }
         } catch (error) {
-            sendErrorToAdminPanel('Error logging in:', error);
+            console.error('Error logging in:', error);
             // Fehlermeldung anzeigen, wenn ein Fehler beim Einloggen aufgetreten ist
             Toastify({
                 text: 'An error occurred while logging in. Please try again later.',
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             }
         } catch (error) {
-            sendErrorToAdminPanel('Error loading saved user:', error);
+            console.error('Error loading saved user:', error);
         }
     };
 

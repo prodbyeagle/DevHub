@@ -31,12 +31,14 @@ async function fetchAdminUserData() {
         document.getElementById("usernameLink").style.display = "block";
         document.getElementById("preferencesLink").style.display = "block";
         document.getElementById("postsLink").style.display = "block";
+        document.getElementById("badgesLink").style.display = "block";
         devHeader.style.display = "block";
     } else {
         document.getElementById("adminLink").style.display = "none";
         document.getElementById("usernameLink").style.display = "none";
         document.getElementById("preferencesLink").style.display = "none";
         document.getElementById("postsLink").style.display = "none";
+        document.getElementById("badgesLink").style.display = "none";
         devHeader.style.display = "none";
     }
 }
@@ -44,7 +46,7 @@ async function fetchAdminUserData() {
     // Überprüfen Sie die Benutzersperrstatus
     const userData = JSON.parse(localStorage.getItem('user'));
     if (!userData || !userData.identifier) {
-        sendErrorToAdminPanel('User identifier not found in local storage');
+        console.error('User identifier not found in local storage');
     } else {
         const username = userData.identifier;
         checkUserBanStatus(username);
@@ -62,7 +64,7 @@ async function fetchAdminUserData() {
                 document.body.classList.add('content-container');
             }
         } catch (error) {
-            sendErrorToAdminPanel('Error fetching user data:', error);
+            console.error('Error fetching user data:', error);
         }
     }
     
@@ -90,7 +92,7 @@ async function fetchAdminUserData() {
                     // Benutzer gefunden, verwende den Benutzernamen für die Begrüßung
                     document.getElementById('username').textContent = matchedUser.username;
                 } else {
-                    sendErrorToAdminPanel('User with specified email not found');
+                    console.error('User with specified email not found');
                 }
             } else {
                 // Der Identifier ist kein eine E-Mail-Adresse, daher direkt verwenden
@@ -101,7 +103,7 @@ async function fetchAdminUserData() {
             window.location.href = '/login';
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error fetching user data:', error);
+        console.error('Error fetching user data:', error);
     }
 }
 
@@ -199,7 +201,7 @@ async function autocomplete() {
             searchResultsDiv.innerHTML = "<div>❌ No results found</div>"; // Zeige Meldung an, wenn keine Ergebnisse gefunden wurden
         }
     } else {
-        sendErrorToAdminPanel('❌ Error fetching search results');
+        console.error('❌ Error fetching search results');
     }
 }
 
@@ -281,7 +283,7 @@ async function createPost(event) {
             window.location.href = '/login';
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error creating post:', error);
+        console.error('Error creating post:', error);
     }
 }
 
@@ -453,7 +455,7 @@ async function getPosts() {
         loadingCircle.classList.add('hidden');
         loading = false;
     } catch (error) {
-        sendErrorToAdminPanel('Error fetching posts:', error);
+        console.error('Error fetching posts:', error);
         loading = false;
     }
 }
@@ -669,10 +671,10 @@ async function displayFollowersWithPictures() {
                 followerList.appendChild(otherButton);
             }
         } catch (error) {
-            sendErrorToAdminPanel('Fehler:', error);
+            console.error('Fehler:', error);
         }
     } else {
-        sendErrorToAdminPanel('Benutzername nicht gefunden.');
+        console.error('Benutzername nicht gefunden.');
     }
 }
 
@@ -714,7 +716,7 @@ async function toggleLike(postId) {
             likesButton.classList.remove('pop');
         }, 300);
     } catch (error) {
-        sendErrorToAdminPanel('Fehler:', error);
+        console.error('Fehler:', error);
     }
 }
 
@@ -741,7 +743,7 @@ async function saveLike(postId) {
         const data = await response.json();
         console.log(data.message); // Erfolgsmeldung vom Server
     } catch (error) {
-        sendErrorToAdminPanel('Fehler:', error);
+        console.error('Fehler:', error);
     }
 }
 
@@ -758,7 +760,7 @@ async function removeLike(postId) {
         const data = await response.json();
         console.log(data.message); // Erfolgsmeldung vom Server
     } catch (error) {
-        sendErrorToAdminPanel('Fehler:', error);
+        console.error('Fehler:', error);
     }
 }
 
@@ -772,7 +774,7 @@ async function getLikes(postId) {
         const data = await response.json();
         return data.likes;
     } catch (error) {
-        sendErrorToAdminPanel('Fehler:', error);
+        console.error('Fehler:', error);
         return 0; // Standardwert, falls ein Fehler auftritt
     }
 }
@@ -835,7 +837,7 @@ async function createGenPosts(event) {
         // Hier können Sie eine Erfolgsmeldung anzeigen oder andere Aktionen ausführen
         alert(`${numberOfPosts} posts created successfully.`);
     } catch (error) {
-        sendErrorToAdminPanel('Error creating posts:', error);
+        console.error('Error creating posts:', error);
         // Hier können Sie eine Fehlermeldung anzeigen oder andere Fehlerbehandlungen durchführen
         alert('An error occurred while creating posts.');
     }

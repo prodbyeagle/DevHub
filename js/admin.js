@@ -11,18 +11,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Interval für das Abrufen von Fehlerprotokollen festlegen
         setInterval(fetchErrorLogAndUpdate, 2500);
 
-        // sendErrorToAdminPanel umleiten, um es im Fehlerprotokollbereich anzuzeigen
-        const originalConsoleError = sendErrorToAdminPanel;
-        sendErrorToAdminPanel = function(...args) {
+        // console.error umleiten, um es im Fehlerprotokollbereich anzuzeigen
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
             originalConsoleError.apply(console, args);
             const errorMessage = args.join(' '); // Fehlermeldung aus den Argumenten zusammensetzen
-            sendErrorToAdminPanel(errorMessage); // Fehler an das Fehlerprotokoll senden
+            console.error(errorMessage); // Fehler an das Fehlerprotokoll senden
         };
 
         // Fetch-Fehlerprotokoll sofort beim Laden der Seite
         await fetchErrorLogAndUpdate();
     } catch (error) {
-        sendErrorToAdminPanel('There was a problem with your fetch operation:', error);
+        console.error('There was a problem with your fetch operation:', error);
     }
 });
 
@@ -82,7 +82,7 @@ async function updateUserData(userData) {
     if (Array.isArray(data)) {
         const userList = document.getElementById('userList');
         if (!userList) {
-            sendErrorToAdminPanel('userList not found');
+            console.error('userList not found');
             return;
         }
 
@@ -108,8 +108,8 @@ async function updateUserData(userData) {
             userList.appendChild(userDiv);
         });
     } else {
-        sendErrorToAdminPanel('Invalid Response from Server:', data);
-        sendErrorToAdminPanel('Invalid Response from Server: ' + error.message);
+        console.error('Invalid Response from Server:', data);
+        console.error('Invalid Response from Server: ' + error.message);
     }
 }
 
@@ -162,12 +162,12 @@ async function toggleAdmin(username, isAdmin, button) {
             }
             location.reload();
         } else {
-            sendErrorToAdminPanel('Admin paragraph not found');
-            sendErrorToAdminPanel('Admin paragraph not found');
+            console.error('Admin paragraph not found');
+            console.error('Admin paragraph not found');
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error toggling admin status:', error);
-        sendErrorToAdminPanel('Error toggling admin status: ' + error.message);
+        console.error('Error toggling admin status:', error);
+        console.error('Error toggling admin status: ' + error.message);
     }
 }
 
@@ -204,12 +204,12 @@ async function toggleBan(username, isBanned, button) {
             }
             location.reload();
         } else {
-            sendErrorToAdminPanel('Banned paragraph not found');
-            sendErrorToAdminPanel('Banned paragraph not found');
+            console.error('Banned paragraph not found');
+            console.error('Banned paragraph not found');
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error toggling ban status:', error);
-        sendErrorToAdminPanel('Error toggling ban status: ' + error.message);
+        console.error('Error toggling ban status:', error);
+        console.error('Error toggling ban status: ' + error.message);
     }
 
     // Load mode preference value
@@ -245,7 +245,7 @@ async function toggleBan(username, isBanned, button) {
             }
         });
     } else {
-        sendErrorToAdminPanel('Search input not found');
+        console.error('Search input not found');
     }
 
 
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await fetchDataAndRenderChart();
         startChartRefreshTimer();
     } catch (error) {
-        sendErrorToAdminPanel('There was a problem with your fetch operation:', error);
+        console.error('There was a problem with your fetch operation:', error);
     }
 });
 
@@ -313,7 +313,7 @@ async function fetchDataAndRenderChart() {
 
         renderChart(postsLast24Hours);
     } catch (error) {
-        sendErrorToAdminPanel('Error fetching posts data: ' + error.message);
+        console.error('Error fetching posts data: ' + error.message);
     } finally {
     }
 }
@@ -422,7 +422,7 @@ startChartRefreshTimer();
 // 
         // console.log('Fake Error erfolgreich an den Server gesendet.');
     // } catch (error) {
-        // sendErrorToAdminPanel('Beim Senden des Fake Errors ist ein Fehler aufgetreten:', error);
+        // console.error('Beim Senden des Fake Errors ist ein Fehler aufgetreten:', error);
     // }
 // });
 
@@ -439,7 +439,7 @@ startChartRefreshTimer();
             // throw new Error('Failed to delete posts collection');
         // }
     // } catch (error) {
-        // sendErrorToAdminPanel('Error deleting posts collection:', error.message);
+        // console.error('Error deleting posts collection:', error.message);
     // }
 // });
 // 
@@ -479,7 +479,7 @@ startChartRefreshTimer();
                         // try {
                             // await removeErrorFromServer(errorId);
                         // } catch (error) {
-                            // sendErrorToAdminPanel('Error removing error from server:', error);
+                            // console.error('Error removing error from server:', error);
                         // }
                     // }
                 // });
@@ -491,8 +491,8 @@ startChartRefreshTimer();
         // errorLogList.style.overflowY = 'scroll';
         // errorLogList.style.maxHeight = '150px';
     // } catch (fetchError) {
-        // sendErrorToAdminPanel('Error fetching error log:', fetchError);
-        // sendErrorToAdminPanel('Error fetching error log: ' + fetchError.message);
+        // console.error('Error fetching error log:', fetchError);
+        // console.error('Error fetching error log: ' + fetchError.message);
     // }
 // }
 // 
@@ -503,7 +503,7 @@ startChartRefreshTimer();
         // return data;
     // } catch (error) {
         // console.error('Error fetching error log:', error);
-        // sendErrorToAdminPanel('Error fetching error log: ' + error.message);
+        // console.error('Error fetching error log: ' + error.message);
         // return [];
     // }
 // }
@@ -555,7 +555,7 @@ startChartRefreshTimer();
 // updateErrorLog();
 // 
 // Funktion zum Senden einer Fehlermeldung an den Server und Auslösen eines Ereignisses
-// async function sendErrorToAdminPanel(errorMessage) {
+// async function console.error(errorMessage) {
     // try {
         // const response = await fetch('/api/admin/error', {
             // method: 'POST',
@@ -570,7 +570,7 @@ startChartRefreshTimer();
         // console.log('Error message sent to server successfully');
         // triggerErrorLogUpdate(); // Zentralisierte Funktion zum Aktualisieren des Fehlerprotokolls
     // } catch (sendError) {
-        // sendErrorToAdminPanel('Error sending error message to server:', sendError);
+        // console.error('Error sending error message to server:', sendError);
     // }
 // }
 
@@ -593,7 +593,7 @@ startChartRefreshTimer();
         // console.log('Error successfully marked as closed on server');
         // triggerErrorLogUpdate(); // Zentralisierte Funktion zum Aktualisieren des Fehlerprotokolls
     // } catch (error) {
-        // sendErrorToAdminPanel('Error marking error as closed on server:', error);
+        // console.error('Error marking error as closed on server:', error);
         // throw error; // Rethrow the error for further handling if needed
     // }
 // }
@@ -637,7 +637,7 @@ startChartRefreshTimer();
                         // try {
                             // await removeErrorFromServer(errorId);
                         // } catch (error) {
-                            // sendErrorToAdminPanel('Error marking error as closed:', error);
+                            // console.error('Error marking error as closed:', error);
                         // }
                     // }
                 // });
@@ -649,7 +649,7 @@ startChartRefreshTimer();
         // errorLogList.style.overflowY = 'scroll';
         // errorLogList.style.maxHeight = '150px';
     // } catch (fetchError) {
-        // sendErrorToAdminPanel('Error fetching active error log:', fetchError);
+        // console.error('Error fetching active error log:', fetchError);
     // }
 // }
 // 

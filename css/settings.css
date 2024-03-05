@@ -1,5 +1,15 @@
 body {
-    font-family: SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    @font-face {
+        font-family: 'SF Pro Display Bold';
+        src: url('assets/SF-Pro-Display-Bold.ttf') format('truetype'),
+             url('assets/SF-Pro-Display-Bold.otf') format('opentype'),
+             url('assets/SF-Pro-Display-Bold.woff') format('woff'),
+             url('assets/SF-Pro-Display-Bold.woff2') format('woff2');
+        font-weight: bold;
+        font-style: normal;
+    }
+
+    font-family: 'SF Pro Display Bold', sans-serif;
     background-color: #f0f0f0;
     color: #333;
     transition: all 0.3s ease;

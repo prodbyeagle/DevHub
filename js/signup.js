@@ -27,7 +27,7 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
 
     // Überprüfen, ob das Passwort und die Bestätigung übereinstimmen
     if (password !== confirmPassword) {
-        sendErrorToAdminPanel('Password and confirmation do not match');
+        console.error('Password and confirmation do not match');
         return;
     }
 
@@ -62,7 +62,7 @@ document.getElementById('signupForm').addEventListener('submit', async (event) =
             alert('Sign up failed! Please try again.');
         }
     } catch (error) {
-        sendErrorToAdminPanel('Error signing up:', error);
+        console.error('Error signing up:', error);
         alert('An error occurred while signing up. Please try again later.');
     }
 });
