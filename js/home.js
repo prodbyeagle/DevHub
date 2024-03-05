@@ -681,10 +681,6 @@ async function displayFollowersWithPictures() {
 // Rufe die Funktion zum Anzeigen der Follower mit Profilbildern auf
 displayFollowersWithPictures();
 
-//TODO: LIKES VERBESSERN (jeder post einzeln)
-
-
-
 async function toggleLike(postId) {
     const likesButton = document.getElementById(`likesButton_${postId}`);
     if (!likesButton) return; // Wenn der Button nicht gefunden wird, brechen Sie ab

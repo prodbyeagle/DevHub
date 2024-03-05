@@ -91,7 +91,7 @@ function showNormalContent() {
     // Eventlistener für das Klicken auf Sprachenbuttons
     const languageButtons = document.querySelectorAll('.language-button');
     const codingLanguagesInput = document.getElementById('codingLanguages');
-//TODO: coding sprachen auswahl weg
+    
     languageButtons.forEach(button => {
         button.addEventListener('click', () => {
             button.classList.toggle('selected');

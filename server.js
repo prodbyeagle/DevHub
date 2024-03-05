@@ -911,7 +911,7 @@ app.use(passport.session());
 
 //GITHUB
 
-//TODO: Wenn der Username gleich ist wie der Username von GitHub soll der Account genommen werden (wenn der Username schon vergeben ist zu einem Anderen User soll einfach eine Random Zahl Dahinter gepackt werden z.b prodbyeagle435)
+//TODO Wenn der Username gleich ist wie der Username von GitHub soll der Account genommen werden (wenn der Username schon vergeben ist zu einem Anderen User soll einfach eine Random Zahl Dahinter gepackt werden z.b prodbyeagle435)
 
 const { v4: uuidv4 } = require('uuid');
 const GitHubStrategy = require('passport-github2').Strategy;

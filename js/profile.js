@@ -761,5 +761,4 @@ function truncateText(text, maxLength) {
     }
 }
 
-
-//TODO: POSTS ANZEIGE VERBESSERN (on click ganzen post)
+//TODO POSTS ANZEIGE VERBESSERN (on click ganzen post)
