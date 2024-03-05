@@ -227,6 +227,7 @@ async function loadBadges() {
                 editOption.textContent = 'Edit Badge';
                 editOption.addEventListener('click', () => {
                     console.log('Edit Badge:', badge.name);
+                    openOverlay(showEditBadgeOverlay(badge));
                 });
 
                 // Innerhalb der showContextMenu-Funktion, wo du die Optionen für das Dropdown-Menü erstellst
@@ -326,7 +327,7 @@ document.getElementById('assign-badge-form').addEventListener('submit', async (e
             throw new Error('Fehler beim Zuweisen des Badges zum Benutzer');
         }
 
-        alert('Badge wurde dem Benutzer zugewiesen.');
+        location.reload();
     } catch (error) {
         console.error('Fehler beim Zuweisen des Badges zum Benutzer:', error);
         alert('Fehler beim Zuweisen des Badges zum Benutzer.');
@@ -380,6 +381,21 @@ async function fetchAndDisplayBadgeUsers(badgeName) {
     } catch (error) {
         console.error('Fehler beim Laden der Benutzerdaten:', error);
         // Hier könntest du eine Fehlermeldung anzeigen
+    }
+}
+
+async function fetchBadgeUsers(badgeName) {
+    try {
+        const response = await fetch('/api/username');
+        if (!response.ok) {
+            throw new Error('Fehler beim Laden der Benutzerdaten');
+        }
+        const userData = await response.json();
+        const badgeUsers = userData.users.filter(user => user.badges.some(b => b.name === badgeName));
+        return badgeUsers;
+    } catch (error) {
+        console.error('Fehler beim Laden der Benutzerdaten:', error);
+        throw error; // Fehler weitergeben, damit er von außen behandelt werden kann
     }
 }
 
@@ -449,6 +465,7 @@ async function deleteBadge(badgeName) {
             },
             body: JSON.stringify({ users: updatedUsers })
         });
+        location.reload();
 
         if (!updateResponse.ok) {
             throw new Error('Fehler beim Aktualisieren der Benutzerdaten');
@@ -456,10 +473,72 @@ async function deleteBadge(badgeName) {
 
         console.log(`Das Badge "${badgeName}" wurde erfolgreich von den Benutzern entfernt.`);
 
-        // Schritt 5: Seite neu laden, um die Änderungen anzuzeigen
         location.reload();
     } catch (error) {
         console.error('Fehler beim Löschen des Badges:', error);
         // Hier könnten Sie eine Fehlermeldung anzeigen
     }
+}
+
+function showEditBadgeOverlay(badge) {
+    const overlayContent = `
+        <div id="edit-badge-form" class="neumorphism-form">
+            <h2>Edit Badge: ${badge.name}</h2>
+            <form id="edit-badge-form">
+                <label for="edit-badge-name">Name:</label>
+                <input type="text" id="edit-badge-name" placeholder="What's the Name of the Badge?" name="name" class="neumorphism-input" value="${badge.name}" rows="1" cols="1" maxlength="32" style="resize: none;" required>
+                <label for="edit-badge-image">Picture:</label>
+                <input type="file" id="edit-badge-image" name="image" class="neumorphism-input" accept="image/*">
+                <label for="edit-badge-description">Description:</label>
+                <textarea id="edit-badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required>${badge.description}</textarea>
+                <div class="button-group">
+                    <button onclick="handleEditFormSubmit(event, '${badge.name}');" type="submit" class="neumorphism-button">Save Changes</button>
+                    <button type="button" onclick="location.reload();" class="neumorphism-button">Close</button>
+                </div>
+                <p class="small-text" style="font-size: 0.8em; color: gold;">⚠️ You need to reassign the Badges for the Users if the update is NEEDED!</p>
+            </form>
+            <div id="edit-error-message" class="error-message"></div>
+        </div>
+    `;
+
+    return overlayContent;
+}
+
+// Funktion zum Bearbeiten des Badge-Formulars und Senden der Änderungen an den Server
+async function handleEditFormSubmit(event, badgeName) {
+    event.preventDefault(); // Verhindere das Standardverhalten des Formulars (z.B. das Neuladen der Seite)
+    // Badge-Daten aus dem Formular abrufen
+    const name = document.getElementById('edit-badge-name').value;
+    const description = document.getElementById('edit-badge-description').value;
+    const imageFile = document.getElementById('edit-badge-image').files[0]; // Neues Bild aus dem Formular abrufen
+    try {
+        let formData = {};
+        if (name) formData.name = name;
+        if (description) formData.description = description;
+        if (imageFile) {
+            const imageBase64 = await convertImageToBase64(imageFile, 0.9, 50, 50);
+            formData.image = imageBase64;
+        }
+        if (Object.keys(formData).length === 0) {
+            throw new Error('Keine Änderungen vorgenommen');
+        }
+        // Sende die aktualisierten Badge-Daten an den Server
+        const updateResponse = await fetch(`/api/admin/badges/${badgeName}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        if (!updateResponse.ok) {
+            throw new Error('Fehler beim Aktualisieren des Badges');
+        }
+        console.log('Badge erfolgreich aktualisiert');
+        location.reload();
+    } catch (error) {
+        console.error('Fehler beim Speichern der Änderungen:', error);
+        // Hier kannst du eine Fehlermeldung anzeigen oder andere Maßnahmen ergreifen
+    }
+
+    
 }

@@ -1193,6 +1193,38 @@ app.delete('/api/admin/badges/:name', async (req, res) => {
     }
 });
 
+// API-Route zum Aktualisieren eines Badges
+app.put('/api/admin/badges/:name', async (req, res) => {
+    const badgeName = req.params.name;
+    const { name, image, description } = req.body;
+
+    try {
+        const badgesCollection = db.collection('badges');
+        // Suche nach dem zu aktualisierenden Badge
+        const badge = await badgesCollection.findOne({ name: badgeName });
+
+        // Wenn das Badge gefunden wurde, aktualisiere es
+        if (badge) {
+            // Überprüfe, welche Felder aktualisiert werden sollen
+            let updateFields = {};
+            if (name) updateFields.name = name;
+            if (image) updateFields.image = image;
+            if (description) updateFields.description = description;
+
+            await badgesCollection.updateOne(
+                { name: badgeName },
+                { $set: updateFields }
+            );
+            res.status(200).json({ message: `Badge "${badgeName}" erfolgreich aktualisiert` });
+        } else {
+            res.status(404).json({ error: `Badge "${badgeName}" nicht gefunden` });
+        }
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Badges:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
 // -----------------------
 
 const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'preferences', 'admin', 'badges'];
