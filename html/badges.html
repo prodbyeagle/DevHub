@@ -10,9 +10,12 @@
 
     <div class="container">
         <h1>Badges</h1>
-        <div id="badges-container" class="badges-grid"></div>
         <button id="add-badge-button" class="neumorphism-button">Add Badge</button>
-        <button id="assign-badge-button" class="neumorphism-button">Assign Badge</button>
+        <div id="badges-container" class="badges-grid"></div>
+    </div>
+
+    <div class="action-buttons mt-8 flex justify-center gap-4">
+        <a href="/home" class="neumorphism-button text-blue-600">Home</a>
     </div>
 
     <div id="add-badge-overlay" class="banned-overlay">
@@ -20,11 +23,11 @@
             <h2>Add Badge</h2>
             <form id="badge-form">
                 <label for="badge-name">Name:</label>
-                <input type="text" id="badge-name" name="name" class="neumorphism-input" rows="1" cols="1" maxlength="32" style="resize: none;" required>
+                <input type="text" id="badge-name" placeholder="Whats the Name of the Badge?" name="name" class="neumorphism-input" rows="1" cols="1" maxlength="32" style="resize: none;" required>
                 <label for="badge-image">Picture:</label>
                 <input type="file" id="badge-image" name="image" class="neumorphism-input" accept="image/*" required>
                 <label for="badge-description">Description:</label>
-                <textarea id="badge-description" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required></textarea>
+                <textarea id="badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required></textarea>
                 <div class="button-group">
                     <button type="submit" class="neumorphism-button">Add</button>
                     <button type="button" id="close-overlay-button" class="neumorphism-button">Close</button>

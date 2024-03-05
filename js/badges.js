@@ -18,11 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addBadgeOverlay.style.display = 'none';
     });
 
-    // Event-Listener für den Assign Badge Button
-    assignBadgeButton.addEventListener('click', () => {
-        assignBadgeOverlay.style.display = 'flex';
-    });
-
     // Event-Listener für den Close Overlay Button
     closeAssignOverlayButton.addEventListener('click', () => {
         assignBadgeOverlay.style.display = 'none';
@@ -91,6 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+async function fetchUserData() {
+    const response = await fetch('/api/username');
+    if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+    }
+    const userData = await response.json();
+
+    // Überprüfen, ob der Benutzer ein Administrator ist
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const isAdmin = userData.users.find(user => user.username === currentUser.identifier && user.admin);
+    if (!isAdmin) {
+        window.location.href = '/home'; // Weiterleitung zur Startseite, wenn kein Administrator
+    }
+
+    return userData;
+}
+
+fetchUserData();
 
 // Funktion zum Konvertieren des Bilds in Base64 mit bestimmter Qualität und maximaler Größe
 function convertImageToBase64(file, quality, maxWidth, maxHeight) {
@@ -212,15 +226,28 @@ async function loadBadges() {
                 const editOption = document.createElement('div');
                 editOption.textContent = 'Edit Badge';
                 editOption.addEventListener('click', () => {
-                    // Hier die Logik für das Bearbeiten des Badges einfügen
                     console.log('Edit Badge:', badge.name);
                 });
+
+                // Innerhalb der showContextMenu-Funktion, wo du die Optionen für das Dropdown-Menü erstellst
+                const assignOption = document.createElement('div');
+                assignOption.textContent = 'Assign Badge';
+                assignOption.addEventListener('click', () => {
+                    console.log('Assign Badge:', badge.name);
+                    const assignBadgeOverlay = document.getElementById('assign-badge-overlay');
+                    assignBadgeOverlay.style.display = 'flex';
+                    document.getElementById('badgename').value = badge.name;
+                });
                 
+                // Optionen für das Dropdown-Menü erstellen
                 const deleteOption = document.createElement('div');
                 deleteOption.textContent = 'Delete Badge';
                 deleteOption.addEventListener('click', () => {
-                    // Hier die Logik für das Löschen des Badges einfügen
-                    console.log('Delete Badge:', badge.name);
+                    // Bestätigungsdialog anzeigen
+                    const confirmed = confirm(`Do you really want to DELETE the Badge "${badge.name}" ?`);
+                    if (confirmed) {
+                        deleteBadge(badge.name);
+                    }
                 });
                 
                 const showUsersOption = document.createElement('div');
@@ -232,6 +259,7 @@ async function loadBadges() {
                 
                 // Optionen zum Dropdown-Menü hinzufügen
                 contextMenu.appendChild(editOption);
+                contextMenu.appendChild(assignOption);
                 contextMenu.appendChild(deleteOption);
                 contextMenu.appendChild(showUsersOption);
                 
@@ -311,27 +339,20 @@ function openOverlay(content) {
     const overlay = document.createElement('div');
     overlay.classList.add('overlay');
 
-    // Erstelle den Overlay-Inhalt
     const overlayContent = document.createElement('div');
     overlayContent.classList.add('overlay-content');
     overlayContent.innerHTML = content;
-
-    // Füge den Overlay-Inhalt zum Overlay hinzu
     overlay.appendChild(overlayContent);
-
-    // Füge das Overlay zum Dokument hinzu
     document.body.appendChild(overlay);
 
-    // Füge einen Event-Listener hinzu, um das Overlay zu schließen, wenn auf den Schließen-Button geklickt wird
     const closeButton = document.createElement('span');
     closeButton.classList.add('close-button');
-    closeButton.innerHTML = '&times;'; // Schließen-Symbol (X)
+    closeButton.innerHTML = '&times;';
     closeButton.addEventListener('click', function() {
         closeOverlay(overlay);
     });
     overlayContent.appendChild(closeButton);
 
-    // Funktion zum Schließen des Overlays
     function closeOverlay(overlay) {
         overlay.remove();
     }
@@ -342,20 +363,15 @@ const showUsersOptionContent = `
     <h2>Show All Badge Users</h2>
 `;
 
-async function fetchAndDisplayBadgeUsers(badgeName, overlay) {
+async function fetchAndDisplayBadgeUsers(badgeName) {
     try {
-        console.log('Fetching user data...');
         const response = await fetch('/api/username');
         if (!response.ok) {
             throw new Error('Fehler beim Laden der Benutzerdaten');
         }
-        console.log('User data loaded successfully.');
         const userData = await response.json();
-        console.log('Received user data:', userData);
         const badgeUsers = userData.users.filter(user => user.badges.some(b => b.name === badgeName));
-        console.log('Users with badge:', badgeUsers);
         if (badgeUsers.length > 0) {
-            console.log('Displaying badge users:', badgeUsers);
             const overlay = document.querySelector('.overlay-content');
             displayBadgeUsers(badgeUsers, overlay);
         } else {
@@ -375,32 +391,75 @@ function displayBadgeUsers(users, overlay) {
         return;
     }
 
-    // Liste der Benutzer erstellen
-    const userList = document.createElement('ul');
-    users.forEach(user => {
-        const listItem = document.createElement('li');
-        listItem.textContent = user.username;
-        userList.appendChild(listItem);
-    });
-
-    // Das Overlay-Inhalt-Element erstellen und zur Reihenfolge ändern
+    // Das Overlay-Inhalt-Element erstellen
     const overlayContent = document.createElement('div');
     overlayContent.classList.add('overlay-content');
-    overlayContent.appendChild(userList);
 
-    // Das Schließen-Button-Element erstellen
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Schließen';
-    closeButton.classList.add('neumorphism-button');
-    closeButton.addEventListener('click', function() {
-        overlayContent.classList.remove('overlay-content');
-        overlay.classList.remove('overlay');
-        overlay.remove();
-    });
-
-    // Das Schließen-Button zum Overlay-Inhalt hinzufügen
-    overlayContent.appendChild(closeButton);
+    // Wenn Benutzer vorhanden sind, füge sie der Benutzerliste hinzu
+    if (users.length > 0) {
+        const userList = document.createElement('ul');
+        users.forEach(user => {
+            const listItem = document.createElement('li');
+            listItem.textContent = user.username;
+            userList.appendChild(listItem);
+        });
+        overlayContent.appendChild(userList);
+    } else {
+        // Wenn keine Benutzer vorhanden sind, füge einen Platzhalter hinzu
+        const placeholderItem = document.createElement('p');
+        placeholderItem.textContent = 'Keine Benutzer mit diesem Badge gefunden.';
+        overlayContent.appendChild(placeholderItem);
+    }
 
     // Das Overlay-Inhalt-Element zum Overlay hinzufügen
     overlay.appendChild(overlayContent);
+}
+
+async function deleteBadge(badgeName) {
+    try {
+        // Schritt 1: Badge aus der Datenbank löschen
+        const deleteResponse = await fetch(`/api/admin/badges/${badgeName}`, {
+            method: 'DELETE'
+        });
+        
+        if (!deleteResponse.ok) {
+            throw new Error('Fehler beim Löschen des Badges');
+        }
+        
+        console.log(`Das Badge "${badgeName}" wurde erfolgreich gelöscht.`);
+
+        // Schritt 2: Benutzerdaten abrufen
+        const response = await fetch('/api/username');
+        if (!response.ok) {
+            throw new Error('Fehler beim Laden der Benutzerdaten');
+        }
+        const userData = await response.json();
+
+        // Schritt 3: Badge aus der Liste der Badges jedes Benutzers entfernen
+        const updatedUsers = userData.users.map(user => {
+            const updatedBadges = user.badges.filter(badge => badge.name !== badgeName);
+            return { ...user, badges: updatedBadges };
+        });
+
+        // Schritt 4: Aktualisierte Benutzerdaten an den Server senden
+        const updateResponse = await fetch('/api/username', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ users: updatedUsers })
+        });
+
+        if (!updateResponse.ok) {
+            throw new Error('Fehler beim Aktualisieren der Benutzerdaten');
+        }
+
+        console.log(`Das Badge "${badgeName}" wurde erfolgreich von den Benutzern entfernt.`);
+
+        // Schritt 5: Seite neu laden, um die Änderungen anzuzeigen
+        location.reload();
+    } catch (error) {
+        console.error('Fehler beim Löschen des Badges:', error);
+        // Hier könnten Sie eine Fehlermeldung anzeigen
+    }
 }
