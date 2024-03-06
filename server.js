@@ -1286,11 +1286,11 @@ app.get('/api/badges/active', async (req, res) => {
 
 // Route zum Hinzufügen eines neuen Blog-Beitrags
 app.post('/api/blogs', async (req, res) => {
-    const { title, content, author, date, reactions } = req.body;
+    const { title, content, author, date, reactions, image } = req.body;
   
     // Blog-Beitrag zur Datenbank hinzufügen
     try {
-      const newPost = { title, content, author, date, reactions }; // Feld "reactions" hinzugefügt
+      const newPost = { title, content, author, date, reactions, image }; // Feld "reactions" hinzugefügt
       const result = await blogCollection.insertOne(newPost);
       console.log(`Blog-Beitrag mit ID ${result.insertedId} hinzugefügt`);
       res.status(201).json(newPost);

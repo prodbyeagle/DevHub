@@ -104,35 +104,64 @@ async function renderBlogPosts() {
     return;
   }
   
-  // Blog-Beiträge auf der Seite rendern
   blogPosts.reverse().forEach(post => {
+    const postId = post._id; // Hier die postId aus den Blog-Beitragsdaten erhalten
+    
     const postElement = document.createElement("article");
     postElement.classList.add("blog-post");
     postElement.innerHTML = `
       <h2>${post.title}</h2>
-      <p>${post.content}</p>
+      <p>${makeLinksClickable(post.content)}</p>
+      <div class="post-image-container"></div>
       <p>Author: ${post.author}</p>
       <p class="post-date" data-date-time="${post.date}">${formatDateTime(post.date)}</p>
     `;
-
+  
     // Reaktionspanel für den Blog-Beitrag erstellen
     const reactionPanel = document.createElement('div');
     reactionPanel.classList.add('reaction-panel');
-
+  
     // Reaktionen oder Reaktionsmöglichkeiten für den Blog-Beitrag anzeigen
-    displayReactionsOrOptions(post.reactions, reactionPanel, post._id);
-
-    if (post.images) {
-      post.images.forEach(image => {
-        const imgElement = document.createElement("img");
-        imgElement.src = image;
-        postElement.appendChild(imgElement);
+    displayReactionsOrOptions(reactionPanel, postId); // Hier postId übergeben
+  
+    // Bild hinzufügen, wenn vorhanden
+    if (post.image) {
+      const imgElement = document.createElement("img");
+      imgElement.src = post.image;
+      imgElement.style.maxWidth = '100px';
+      imgElement.style.maxHeight = '100px';
+      imgElement.style.marginBottom = '10px'; 
+      imgElement.style.borderRadius = '10px';
+      imgElement.addEventListener('click', () => {
+        displayImageOverlay(post.image);
       });
+  
+      // Das Bild in den Container einfügen
+      const imageContainer = postElement.querySelector('.post-image-container');
+      imageContainer.appendChild(imgElement);
     }
-
+  
     postElement.appendChild(reactionPanel); // Reaktionspanel zum Blogbeitrag hinzufügen
     blogPostsContainer.appendChild(postElement);
   });
+}
+
+// Funktion zum Anzeigen eines Overlays mit dem vergrößerten Bild
+function displayImageOverlay(imageSrc) {
+  const overlay = document.createElement('div');
+  overlay.classList.add('overlay');
+
+  const enlargedImage = document.createElement('img');
+  enlargedImage.src = imageSrc;
+  enlargedImage.style.borderRadius = '10px'; // Abrundung des Bildes
+
+  overlay.appendChild(enlargedImage);
+
+  overlay.addEventListener('click', () => {
+    overlay.remove(); // Overlay schließen, wenn darauf geklickt wird
+  });
+
+  document.body.appendChild(overlay);
 }
 
   // Funktion zum Aktualisieren der Datumstexte auf der Seite
@@ -147,47 +176,134 @@ async function renderBlogPosts() {
     });
   }
 
-    // Funktion zum Hinzufügen eines neuen Blog-Beitrags
-    async function addBlogPost(event) {
-      event.preventDefault();
-  
-      const title = document.getElementById('title').value;
-      const content = document.getElementById('content').value;
-      const userDataString = localStorage.getItem('user');
-      const usernameData = JSON.parse(userDataString); // String in ein JavaScript-Objekt umwandeln
-      const author = usernameData.identifier;
-  
-      const newBlogPost = {
-        title: title,
-        content: content,
-        author: author,
-        date: new Date().toISOString(),
-        reactions: []
-      };
-  
-      try {
-        const response = await fetch('/api/blogs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newBlogPost)
-        });
-  
-        if (!response.ok) {
-          throw new Error('Fehler beim Hinzufügen des Blog-Beitrags');
-        }
-  
-        // Aktualisiere die Seite, um den neuen Blog-Beitrag anzuzeigen
-        location.reload();
-      } catch (error) {
-        console.error('Fehler:', error);
-      }
+// Funktion zum Hinzufügen eines neuen Blog-Beitrags
+async function addBlogPost(event) {
+  event.preventDefault();
+
+  const title = document.getElementById('title').value;
+  const content = document.getElementById('content').value;
+  const userDataString = localStorage.getItem('user');
+  const usernameData = JSON.parse(userDataString);
+  const author = usernameData.identifier;
+
+  let base64Image = null; // Default-Wert für das Bild
+
+  // Überprüfen, ob ein Bild ausgewählt wurde
+  const imageFile = document.getElementById('image').files[0];
+  if (imageFile) {
+    base64Image = await convertImageToBase64(imageFile, 0.8, 1280, 720);
+  }
+
+  const newBlogPost = {
+    title: title,
+    content: content,
+    author: author,
+    date: new Date().toISOString(),
+    reactions: [],
+    image: base64Image,
+  };
+
+  try {
+    const response = await fetch('/api/blogs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newBlogPost)
+    });
+
+    if (!response.ok) {
+      throw new Error('Fehler beim Hinzufügen des Blog-Beitrags');
     }
+
+    // Aktualisiere die Seite, um den neuen Blog-Beitrag anzuzeigen
+    location.reload();
+  } catch (error) {
+    console.error('Fehler:', error);
+  }
+}
 
     setInterval(updateDateTexts, 1000);
 
 });
+
+function makeLinksClickable(content) {
+  const linkPattern = /(https?:\/\/[^\s]+)/g;
+  return content.replace(linkPattern, '<a href="$1" target="_blank">$1</a>');
+}
+
+async function displayReactionsOrOptions(container, postId) {
+  const fixedEmojis = ['😀', '😍', '👍', '👎', '💩', '😡', '😭', '😱', '😂'];
+
+  try {
+      const response = await fetch(`/api/blogs/${postId}/reactions`);
+      if (!response.ok) {
+          throw new Error('Fehler beim Abrufen der Reaktionen');
+      }
+
+      const { reactions } = await response.json();
+
+      if (reactions) {
+          const reactionCounts = {};
+          reactions.forEach(reaction => {
+              const emoji = reaction.emoji;
+              if (!reactionCounts[emoji]) {
+                  reactionCounts[emoji] = 1;
+              } else {
+                  reactionCounts[emoji]++;
+              }
+          });
+
+          fixedEmojis.forEach(emoji => {
+              const countSpan = document.createElement('span');
+              countSpan.textContent = reactionCounts[emoji] || 0;
+
+              const emojiElement = document.createElement('span');
+              emojiElement.textContent = emoji;
+              emojiElement.classList.add('emoji');
+              emojiElement.appendChild(countSpan);
+
+              if (reactions.some(item => item.emoji === emoji)) {
+                  emojiElement.classList.add('reacted');
+              }
+
+              emojiElement.addEventListener('click', async () => {
+                  try {
+                      const userIdentifier = JSON.parse(localStorage.getItem('user')).identifier;
+                      const userReactions = JSON.parse(localStorage.getItem(`reactions_${postId}_${userIdentifier}`)) || {};
+
+                      if (!userReactions[emoji]) {
+                          // Benutzerreaktion hinzufügen
+                          const reactionAdded = await addReactionToPost(postId, emoji, userIdentifier);
+                          if (reactionAdded) {
+                              userReactions[emoji] = 1;
+                              countSpan.textContent = parseInt(countSpan.textContent) + 1;
+                              emojiElement.classList.add('reacted');
+                          }
+                      } else {
+                          // Benutzerreaktion entfernen
+                          const reactionRemoved = await removeReactionFromPost(postId, emoji, userIdentifier);
+                          if (reactionRemoved) {
+                              delete userReactions[emoji];
+                              countSpan.textContent = parseInt(countSpan.textContent) - 1;
+                              emojiElement.classList.remove('reacted');
+                          }
+                      }
+
+                      // Aktualisiere die Benutzerreaktionen im Local Storage
+                      localStorage.setItem(`reactions_${postId}_${userIdentifier}`, JSON.stringify(userReactions));
+                  } catch (error) {
+                      console.error('Fehler:', error);
+                  }
+              });
+
+              container.appendChild(emojiElement);
+          });
+      }
+  } catch (error) {
+      console.error('Fehler:', error);
+  }
+}
 
 async function addReactionToPost(postId, reaction, userIdentifier) {
   try {
@@ -196,7 +312,7 @@ async function addReactionToPost(postId, reaction, userIdentifier) {
           headers: {
               'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ reaction: reaction, userIdentifier: userIdentifier }) // Benutzername hinzufügen
+          body: JSON.stringify({ reaction: reaction, userIdentifier: userIdentifier })
       });
       if (!response.ok) {
           throw new Error('Fehler beim Hinzufügen der Reaktion');
@@ -209,8 +325,6 @@ async function addReactionToPost(postId, reaction, userIdentifier) {
   }
 }
 
-//FIXME: Reactions statt LocalStorage in Der DB laden und Fetchen
-
 async function removeReactionFromPost(postId, reaction, userIdentifier) {
   try {
       const response = await fetch(`/api/blogs/${postId}/reactions/remove`, {
@@ -218,7 +332,7 @@ async function removeReactionFromPost(postId, reaction, userIdentifier) {
           headers: {
               'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ reaction: reaction, userIdentifier: userIdentifier }) // Benutzername hinzufügen
+          body: JSON.stringify({ reaction: reaction, userIdentifier: userIdentifier })
       });
       if (!response.ok) {
           throw new Error('Fehler beim Entfernen der Reaktion');
@@ -231,8 +345,7 @@ async function removeReactionFromPost(postId, reaction, userIdentifier) {
   }
 }
 
-// Funktion zum Abrufen von Reaktionen für einen Blogbeitrag
-async function getReactionsForPost(postId) {
+async function getReactionCountsForPost(postId) {
   try {
       const response = await fetch(`/api/blogs/${postId}/reactions`);
       if (!response.ok) {
@@ -240,62 +353,25 @@ async function getReactionsForPost(postId) {
       }
 
       const { reactions } = await response.json();
-      return reactions;
-  } catch (error) {
-      console.error('Fehler:', error);
-      return [];
-  }
-}
 
-function displayReactionsOrOptions(reactions, container, postId) {
-  const fixedEmojis = ['😀', '😍', '👍', '👎', '💩', '😡', '😭', '😱', '😂'];
-
-  const userIdentifier = JSON.parse(localStorage.getItem('user')).identifier;
-
-  if (reactions) {
-    const userReactions = JSON.parse(localStorage.getItem(`reactions_${postId}_${userIdentifier}`)) || {}; // Reaktionen des aktuellen Benutzers aus dem Local Storage lesen
-
-    fixedEmojis.forEach(emoji => {
-      const countSpan = document.createElement('span');
-      countSpan.textContent = userReactions[emoji] || 0;
-
-      const emojiElement = document.createElement('span');
-      emojiElement.textContent = emoji;
-      emojiElement.classList.add('emoji');
-      emojiElement.appendChild(countSpan);
-
-      if (reactions.some(item => item.emoji === emoji && item.username === userIdentifier)) {
-        emojiElement.classList.add('reacted');
-      }
-
-      emojiElement.addEventListener('click', async () => {
-        if (!userReactions[emoji]) {
-          // Wenn der Benutzer noch keine Reaktion auf dieses Emoji abgegeben hat
-          const reactionAdded = await addReactionToPost(postId, emoji, userIdentifier); // Übergeben Sie den Benutzernamen
-          if (reactionAdded) {
-            userReactions[emoji] = 1; // Reaktion des Benutzers speichern
-            countSpan.textContent = 1;
-            emojiElement.classList.add('reacted');
+      // Zähler für jeden Emoji initialisieren
+      const reactionCounts = {};
+      reactions.forEach(reaction => {
+          const emoji = reaction.emoji;
+          if (!reactionCounts[emoji]) {
+              reactionCounts[emoji] = 1;
+          } else {
+              reactionCounts[emoji]++;
           }
-        } else {
-          // Wenn der Benutzer bereits eine Reaktion auf dieses Emoji abgegeben hat, entfernen Sie die Reaktion
-          const reactionRemoved = await removeReactionFromPost(postId, emoji, userIdentifier);
-          if (reactionRemoved) {
-            delete userReactions[emoji]; // Reaktion des Benutzers löschen
-            countSpan.textContent = 0;
-            emojiElement.classList.remove('reacted');
-          }
-        }
-
-        // Aktualisiere die Reaktionen im Local Storage
-        localStorage.setItem(`reactions_${postId}_${userIdentifier}`, JSON.stringify(userReactions));
       });
 
-      container.appendChild(emojiElement);
-    });
+      return reactionCounts;
+  } catch (error) {
+      console.error('Fehler:', error);
+      return {};
   }
 }
-// Funktion zum Abrufen von Benutzerreaktionen aus der Datenbank
+
 async function getUserReactions(postId, userIdentifier) {
   try {
     const response = await fetch(`/api/blogs/${postId}/userReactions/${userIdentifier}`);
@@ -311,7 +387,6 @@ async function getUserReactions(postId, userIdentifier) {
   }
 }
 
-// Funktion zum Aktualisieren der Benutzerreaktionen in der Datenbank
 async function updateUserReactions(postId, userIdentifier, userReactions) {
   try {
     const response = await fetch(`/api/blogs/${postId}/userReactions/${userIdentifier}`, {
@@ -328,3 +403,41 @@ async function updateUserReactions(postId, userIdentifier, userReactions) {
     console.error('Fehler:', error);
   }
 }
+
+// BILDER
+
+// Funktion zum Konvertieren des Bilds in Base64 mit bestimmter Qualität und maximaler Größe
+function convertImageToBase64(file, quality, maxWidth, maxHeight) {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+              let width = img.width;
+              let height = img.height;
+
+              // Überprüfe, ob die Breite oder Höhe größer als die maximale Größe ist
+              if (width > maxWidth || height > maxHeight) {
+                  // Skaliere das Bild proportional, um es auf die maximale Größe zu bringen
+                  const ratio = Math.min(maxWidth / width, maxHeight / height);
+                  width *= ratio;
+                  height *= ratio;
+              }
+
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              canvas.width = width;
+              canvas.height = height;
+              ctx.drawImage(img, 0, 0, width, height);
+
+              const base64String = canvas.toDataURL('image/jpeg', quality);
+              resolve(base64String);
+          };
+          img.onerror = reject;
+          img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+  });
+}
+
