@@ -484,7 +484,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Funktion zum Abmelden des Benutzers
     document.getElementById('signoutBtn').addEventListener('click', () => {
-        localStorage.clear();
+        localStorage.removeItem('user');
+        localStorage.removeItem('mode'); 
         window.location.href = '/login'; // Auf die Login-Seite weiterleiten
     });
 

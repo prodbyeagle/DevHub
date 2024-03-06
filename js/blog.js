@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Die API-Route mit dem identifier aufrufen
       const response = await fetch(`/api/profile/${username}`); // Anpassen des Endpunkts entsprechend deiner API
       const userData = await response.json();
-      console.log(userData);
 
       if (userData.admin === false) {
         newBlogBtn.style.display = 'none'; // Verstecke den Button für Nicht-Admin-Benutzer
@@ -94,20 +93,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /// Funktion zum Rendern der Blog-Beiträge auf der Seite
 async function renderBlogPosts() {
-  console.log("Blog-Beiträge rendern...");
   const blogPosts = await fetchBlogPosts();
   const blogPostsContainer = document.getElementById('blog-posts');
   
   // Überprüfen, ob Blog-Beiträge vorhanden sind
   if (blogPosts.length === 0) {
-    console.log("Keine Blog-Beiträge gefunden.");
     const noPostsMessage = document.createElement('p');
     noPostsMessage.textContent = 'Keine Blog-Beiträge gefunden.';
     blogPostsContainer.appendChild(noPostsMessage);
     return;
   }
-
-  console.log("Blog-Beiträge gefunden:", blogPosts);
   
   // Blog-Beiträge auf der Seite rendern
   blogPosts.reverse().forEach(post => {
@@ -214,6 +209,8 @@ async function addReactionToPost(postId, reaction, userIdentifier) {
   }
 }
 
+//FIXME: Reactions statt LocalStorage in Der DB laden und Fetchen
+
 async function removeReactionFromPost(postId, reaction, userIdentifier) {
   try {
       const response = await fetch(`/api/blogs/${postId}/reactions/remove`, {
@@ -243,7 +240,6 @@ async function getReactionsForPost(postId) {
       }
 
       const { reactions } = await response.json();
-      console.log('Reaktionen:', reactions);
       return reactions;
   } catch (error) {
       console.error('Fehler:', error);
@@ -251,20 +247,13 @@ async function getReactionsForPost(postId) {
   }
 }
 
-// Funktion zum Anzeigen von Reaktionen für einen Blogbeitrag
-async function displayReactionsOrOptions(reactions, container, postId) {
-  const fixedEmojis = [
-    '😀', '😃', '😍', '👍', '💩', 
-    '😠', '😡', '😭', '😤', '😞', '😖', '😱',
-    '😆', '😅', '😂', '😋',
-  ];
+function displayReactionsOrOptions(reactions, container, postId) {
+  const fixedEmojis = ['😀', '😍', '👍', '👎', '💩', '😡', '😭', '😱', '😂'];
 
-  // Benutzername oder Kennung aus dem Local Storage lesen
   const userIdentifier = JSON.parse(localStorage.getItem('user')).identifier;
 
   if (reactions) {
-    // Benutzerspezifische Reaktionen aus der Datenbank abrufen
-    const userReactions = await getUserReactions(postId, userIdentifier);
+    const userReactions = JSON.parse(localStorage.getItem(`reactions_${postId}_${userIdentifier}`)) || {}; // Reaktionen des aktuellen Benutzers aus dem Local Storage lesen
 
     fixedEmojis.forEach(emoji => {
       const countSpan = document.createElement('span');
@@ -275,7 +264,6 @@ async function displayReactionsOrOptions(reactions, container, postId) {
       emojiElement.classList.add('emoji');
       emojiElement.appendChild(countSpan);
 
-      // Überprüfen, ob der Benutzer auf dieses Emoji reagiert hat
       if (reactions.some(item => item.emoji === emoji && item.username === userIdentifier)) {
         emojiElement.classList.add('reacted');
       }
@@ -299,18 +287,14 @@ async function displayReactionsOrOptions(reactions, container, postId) {
           }
         }
 
-        // Aktualisiere die Benutzerreaktionen in der Datenbank
-        await updateUserReactions(postId, userIdentifier, userReactions);
-
-        // Aktualisiere die Benutzeroberfläche
-        await displayReactionsOrOptions(reactions, container, postId);
+        // Aktualisiere die Reaktionen im Local Storage
+        localStorage.setItem(`reactions_${postId}_${userIdentifier}`, JSON.stringify(userReactions));
       });
 
       container.appendChild(emojiElement);
     });
   }
 }
-
 // Funktion zum Abrufen von Benutzerreaktionen aus der Datenbank
 async function getUserReactions(postId, userIdentifier) {
   try {
