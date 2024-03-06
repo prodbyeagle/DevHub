@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const badgeData = {
                 name: name,
                 image: imageBase64,
-                description: description
+                description: description,
+                active: false,
             };
     
             // Senden der Badge-Daten an den Server

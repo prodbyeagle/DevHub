@@ -239,7 +239,7 @@ body.dark-mode .badge::before {
     border-radius: 8px;
     padding: 8px 0;
     animation: fade-in 0.5s ease;
-    border: 1px solid #ccc; /* Strich zwischen den Optionen */
+    border: 1px solid #666; /* Strich zwischen den Optionen */
     margin-top: 8px; /* Abstand vom Badge */
 }
 
@@ -259,7 +259,7 @@ body.dark-mode .dropdown-menu {
 /* Stil für die Optionen im Dropdown-Menü beim Hover */
 .dropdown-menu div:hover {
     background-color: #f2f2f2;
-    border-bottom: 1px solid #999; /* Strich zwischen den Optionen */
+    border-bottom: 1px solid #ccc; /* Strich zwischen den Optionen */
 }
 
 /* Stil für Dark Mode des Dropdown-Menüs */
@@ -378,4 +378,64 @@ body.dark-mode .close-button {
 }
 .action-buttons a {
     margin: 0 10px;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: transparent;
+    transition: all 0.3s ease;
+    }
+    
+    /* Scrollbalkengriff */
+    ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    
+    }
+    
+    /* Hover-Stil für den Scrollbalkengriff */
+    ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: all-scroll    
+    }
+    
+    /* Track (nicht scrollbarer Bereich) */
+    ::-webkit-scrollbar-track {
+    background-color: transparent;
+    }
+    
+    /* Track-Farbe beim Hover */
+    ::-webkit-scrollbar-track:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Scrollbalkenpfeil-Buttons */
+    ::-webkit-scrollbar-button {
+    display: none; /* Ausblenden der Scrollbar-Pfeil-Buttons */
+    }
+    
+    /* Ecken der Scrollleiste */
+    ::-webkit-scrollbar-corner {
+    background-color: transparent;
+    }
+
+.tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 999;
+    display: none;
+}
+
+.badge {
+    position: relative;
+}
+
+.badge:hover .tooltip {
+    display: block;
 }

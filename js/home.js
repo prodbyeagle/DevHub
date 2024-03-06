@@ -32,6 +32,7 @@ async function fetchAdminUserData() {
         document.getElementById("preferencesLink").style.display = "block";
         document.getElementById("postsLink").style.display = "block";
         document.getElementById("badgesLink").style.display = "block";
+        document.getElementById("badgesapiLink").style.display = "block";
         devHeader.style.display = "block";
     } else {
         document.getElementById("adminLink").style.display = "none";
@@ -39,6 +40,7 @@ async function fetchAdminUserData() {
         document.getElementById("preferencesLink").style.display = "none";
         document.getElementById("postsLink").style.display = "none";
         document.getElementById("badgesLink").style.display = "none";
+        document.getElementById("badgesapiLink").style.display = "none";
         devHeader.style.display = "none";
     }
 }
@@ -360,18 +362,24 @@ async function getPosts() {
             const badgeResponse = await fetch(`/api/${username}/badges`);
             const badgeData = await badgeResponse.json();
             const badges = badgeData.badges;
-                        
-            // Überprüfen, ob der Benutzer Badges hat
-            if (badges.length > 0) {
-                // Nur das letzte Badge des Benutzers verwenden
-                const lastBadge = badges[badges.length - 1];
-                const badgeIcon = document.createElement('img');
-                badgeIcon.src = lastBadge.image;
-                badgeIcon.alt = 'badge-icon';
-                badgeIcon.width = 15;
-                badgeIcon.height = 15;
-                badgeIcon.style.float = 'right'; // Das Badge rechts ausrichten
-                usernameElement.appendChild(badgeIcon);
+
+            // Überprüfen, ob badges definiert ist und ein Array ist
+            if (badges && Array.isArray(badges)) {
+                // Filtern der aktiven Badges
+                const activeBadges = badges.filter(badge => badge.active);
+            
+                // Überprüfen, ob der Benutzer aktive Badges hat
+                if (activeBadges.length > 0) {
+                    // Nur das letzte aktive Badge des Benutzers verwenden
+                    const lastActiveBadge = activeBadges[activeBadges.length - 1];
+                    const badgeIcon = document.createElement('img');
+                    badgeIcon.src = lastActiveBadge.image;
+                    badgeIcon.alt = 'badge-icon';
+                    badgeIcon.width = 15;
+                    badgeIcon.height = 15;
+                    badgeIcon.style.float = 'right'; // Das Badge rechts ausrichten
+                    usernameElement.appendChild(badgeIcon);
+                }
             }
 
             let isLiked = localStorage.getItem(`liked_${post._id}`);
@@ -476,8 +484,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Funktion zum Abmelden des Benutzers
     document.getElementById('signoutBtn').addEventListener('click', () => {
-        localStorage.removeItem('user'); // Benutzerdaten aus dem lokalen Speicher entfernen
-        localStorage.removeItem('mode'); // Dark / White Mode entfernen
+        localStorage.clear();
         window.location.href = '/login'; // Auf die Login-Seite weiterleiten
     });
 
@@ -737,7 +744,7 @@ async function saveLike(postId) {
         }
 
         const data = await response.json();
-        console.log(data.message); // Erfolgsmeldung vom Server
+        (data.message); // Erfolgsmeldung vom Server
     } catch (error) {
         console.error('Fehler:', error);
     }
@@ -754,7 +761,7 @@ async function removeLike(postId) {
         }
 
         const data = await response.json();
-        console.log(data.message); // Erfolgsmeldung vom Server
+        (data.message); // Erfolgsmeldung vom Server
     } catch (error) {
         console.error('Fehler:', error);
     }
@@ -762,7 +769,7 @@ async function removeLike(postId) {
 
 async function getLikes(postId) {
     try {
-        console.log(postId)
+        (postId)
         const response = await fetch(`/posts/${postId}`);
         if (!response.ok) {
             throw new Error('Fehler beim Abrufen der Likes');
@@ -827,7 +834,7 @@ async function createGenPosts(event) {
                 throw new Error('Failed to create post');
             }
 
-            console.log(`Post ${i + 1} created successfully.`);
+            (`Post ${i + 1} created successfully.`);
         }
 
         // Hier können Sie eine Erfolgsmeldung anzeigen oder andere Aktionen ausführen
@@ -881,7 +888,7 @@ async function fetchAllUserBadges() {
                 const badgeResponse = await fetch(`/api/${username}/badges`);
                 const badgeData = await badgeResponse.json();
                 const badges = badgeData.badges;
-                console.log(`Badges für Benutzer ${username}:`);
+                (`Badges für Benutzer ${username}:`);
                 
                 // Überprüfen, ob der Benutzer Badges hat
                 if (badges.length > 0) {
@@ -895,9 +902,9 @@ async function fetchAllUserBadges() {
                     badgeElement.style.float = 'right';
                     
                     // Benutzername mit dem Badge anzeigen
-                    console.log(`Benutzer ${username} hat das folgende Badge:`);
-                    console.log(lastBadge);
-                    console.log('------');
+                    (`Benutzer ${username} hat das folgende Badge:`);
+                    (lastBadge);
+                    ('------');
                     
                     // Hier fügen Sie das Badge-Element zum Benutzername-Element hinzu
                     const usernameElement = document.createElement('span');
@@ -905,7 +912,7 @@ async function fetchAllUserBadges() {
                     usernameElement.appendChild(badgeElement);
                 
                 } else {
-                    console.log(`Benutzer ${username} hat keine Badges.`);
+                    (`Benutzer ${username} hat keine Badges.`);
                 }
             }
         } else {
@@ -918,3 +925,4 @@ async function fetchAllUserBadges() {
 
 // Aufruf der Funktion zum Abrufen aller Benutzer und ihrer Badges
 fetchAllUserBadges();
+

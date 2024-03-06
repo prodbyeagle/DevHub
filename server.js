@@ -59,6 +59,7 @@ async function run() {
         db = client.db(dbName);
         usersCollection = db.collection('users');
         postsCollection = db.collection('posts');
+        blogCollection = db.collection('blogs');
         console.log("Connected to MongoDB successfully!");
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -1114,7 +1115,7 @@ app.get('/api/:username/badges', async (req, res) => {
 // API-Route zum Hinzufügen eines neuen Badges
 app.post('/api/admin/badges', async (req, res) => {
     try {
-        const { name, image, description } = req.body;
+        const { name, image, description, active } = req.body;
 
         // Validierung der Eingabedaten
         if (!name || !image || !description) {
@@ -1122,7 +1123,7 @@ app.post('/api/admin/badges', async (req, res) => {
         }
 
         const badgesCollection = db.collection('badges');
-        await badgesCollection.insertOne({ name, image, description });
+        await badgesCollection.insertOne({ name, image, description, active });
 
         res.json({ message: 'Badge erfolgreich hinzugefügt', /* insertedId: result.insertedId */ });
     } catch (error) {
@@ -1225,9 +1226,213 @@ app.put('/api/admin/badges/:name', async (req, res) => {
     }
 });
 
+// API-Route zum Aktivieren oder Deaktivieren eines Badges
+app.put('/api/admin/badges/:name/activate', async (req, res) => {
+    const badgeName = req.params.name;
+    const { active } = req.body;
+
+    try {
+        const badgesCollection = db.collection('badges');
+        // Suche nach dem zu aktivierenden oder deaktivierenden Badge
+        const badge = await badgesCollection.findOne({ name: badgeName });
+
+        // Wenn das Badge gefunden wurde, aktualisiere das active-Feld
+        if (badge) {
+            await badgesCollection.updateOne(
+                { name: badgeName },
+                { $set: { active: active } }
+            );
+            res.status(200).json({ message: `Badge "${badgeName}" erfolgreich ${active ? 'aktiviert' : 'deaktiviert'}` });
+        } else {
+            res.status(404).json({ error: `Badge "${badgeName}" nicht gefunden` });
+        }
+    } catch (error) {
+        console.error('Fehler beim Aktivieren oder Deaktivieren des Badges:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
+// API-Route zum Deaktivieren aller Badges
+app.put('/api/admin/badges/deactivate-all', async (req, res) => {
+    try {
+        // Badges-Sammlung auswählen
+        const badgesCollection = db.collection('badges');
+
+        // Alle Badges deaktivieren
+        await badgesCollection.updateMany(
+            { active: true }, // Filter: Nur aktive Badges
+            { $set: { active: false } }
+        );
+
+        res.status(200).json({ message: 'Alle Badges erfolgreich deaktiviert' });
+
+    } catch (error) {
+        console.error('Fehler beim Deaktivieren aller Badges:', error);
+        res.status(500).json({ error: 'Interner Serverfehler' });
+    }
+});
+
+// API-Route zum Abrufen aller aktiven Abzeichen
+app.get('/api/badges/active', async (req, res) => {
+    try {
+        const badgesCollection = db.collection('badges');
+        const activeBadges = await badgesCollection.find({ active: true }).toArray();
+        res.json(activeBadges);
+    } catch (error) {
+        console.error('Fehler beim Abrufen der aktiven Badges:', error);
+        res.status(500).json({ error: 'Fehler beim Abrufen der aktiven Badges' });
+    }
+});
+
+// Route zum Hinzufügen eines neuen Blog-Beitrags
+app.post('/api/blogs', async (req, res) => {
+    const { title, content, author, date, reactions } = req.body;
+  
+    // Blog-Beitrag zur Datenbank hinzufügen
+    try {
+      const newPost = { title, content, author, date, reactions }; // Feld "reactions" hinzugefügt
+      const result = await blogCollection.insertOne(newPost);
+      console.log(`Blog-Beitrag mit ID ${result.insertedId} hinzugefügt`);
+      res.status(201).json(newPost);
+    } catch (error) {
+      console.error('Fehler beim Hinzufügen des Blog-Beitrags:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Route zum Abrufen aller Blog-Beiträge
+app.get('/api/blogs', async (req, res) => {
+    try {
+      const blogPosts = await blogCollection.find({}).toArray();
+      res.status(200).json(blogPosts);
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Blog-Beiträge:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Serverseite: Route zum Abrufen von Reaktionen für einen Blogbeitrag
+app.get('/api/blogs/:postId/reactions', async (req, res) => {
+    const { postId } = req.params;
+
+    try {
+        // Finde den Blogbeitrag anhand der postId und gib die Reaktionen zurück
+        const blogPost = await blogCollection.findOne({ _id: new ObjectId(postId) });
+        if (!blogPost) {
+            return res.status(404).json({ error: 'Blog post not found' });
+        }
+
+        const reactions = blogPost.reactions || {};
+        res.status(200).json({ reactions });
+    } catch (error) {
+        console.error('Error getting reactions:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Route zum Hinzufügen einer Reaktion zu einem Blogbeitrag
+app.post('/api/blogs/:postId/reactions', async (req, res) => {
+    const { postId } = req.params;
+    const { reaction, userIdentifier } = req.body; // Hier sollte der Benutzername oder die Kennung übergeben werden
+
+    try {
+        const result = await blogCollection.updateOne(
+            { _id: new ObjectId(postId) },
+            { $addToSet: { reactions: { emoji: reaction, username: userIdentifier } } }
+        );
+
+        if (result.modifiedCount === 1) {
+            res.status(200).json({ message: 'Reaction added successfully' });
+        } else {
+            res.status(404).json({ error: 'Post not found' });
+        }
+    } catch (error) {
+        console.error('Error adding reaction:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Serverroute zum Entfernen einer Reaktion von einem Blogbeitrag
+app.post('/api/blogs/:postId/reactions/remove', async (req, res) => {
+    const { reaction, userIdentifier } = req.body;
+    const { postId } = req.params;
+  
+    try {
+        // Suchen Sie den Blogbeitrag anhand der postId und aktualisieren Sie das Reactions-Feld, um die Reaktion für den angegebenen Benutzer zu entfernen
+        const result = await blogCollection.updateOne(
+            { _id: new ObjectId(postId) }, // Hier verwenden Sie `new` um die ObjectId zu initialisieren
+            { $pull: { reactions: { emoji: reaction, username: userIdentifier } } } // Entfernen Sie die Reaktion für den angegebenen Benutzer und das angegebene Emoji
+        );
+  
+        if (result.modifiedCount === 1) {
+            res.status(200).json({ message: 'Reaction removed successfully' });
+        } else {
+            res.status(404).json({ error: 'Post not found or reaction not found' });
+        }
+    } catch (error) {
+        console.error('Error removing reaction:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/blogs/:postId/reactions', async (req, res) => {
+    const { reaction } = req.body;
+    const { postId } = req.params;
+
+    try {
+        const result = await blogCollection.updateOne(
+            { _id: new ObjectId(postId) },
+            { $inc: { [`reactions.${reaction}`]: 1 } }
+        );
+
+        if (result.modifiedCount === 1) {
+            res.status(200).json({ message: 'Reaction added successfully' });
+        } else {
+            res.status(404).json({ error: 'Post not found' });
+        }
+    } catch (error) {
+        console.error('Error adding reaction:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+// Route zum Entfernen einer Reaktion von einem Blogbeitrag
+app.delete('/api/blogs/:postId/reactions/:emoji', async (req, res) => {
+    const { postId, emoji } = req.params;
+    const userIdentifier = req.body.userIdentifier; // Hier sollten Sie den Benutzernamen oder die Kennung erhalten
+
+    try {
+        const result = await blogCollection.updateOne(
+            { _id: new ObjectId(postId) },
+            { $pull: { reactions: { emoji: emoji, username: userIdentifier } } }
+        );
+
+        if (result.modifiedCount === 1) {
+            res.status(200).json({ message: 'Reaction removed successfully' });
+        } else {
+            res.status(404).json({ error: 'Post or reaction not found' });
+        }
+    } catch (error) {
+        console.error('Error removing reaction:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/blogs/:postId', async (req, res) => {
+    const postId = new ObjectId(req.params.postId);
+    try {
+        const blogPost = await blogCollection.findOne({ _id: ObjectId(postId) });
+        res.status(200).json(blogPost);
+    } catch (error) {
+        console.error('Fehler beim Abrufen des Blog-Beitrags:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // -----------------------
 
-const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'preferences', 'admin', 'badges'];
+const pages = ['home', 'explore', 'settings', 'profile', 'login', 'signup', 'preferences', 'admin', 'blog'];
 const adminpages = ['badges'];
 
 pages.forEach(page => {

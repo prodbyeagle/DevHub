@@ -761,4 +761,146 @@ function truncateText(text, maxLength) {
     }
 }
 
-//TODO POSTS ANZEIGE VERBESSERN (on click ganzen post)
+//TODO POSTS ANZEIGE VERBESSERN (on click ganzen posts
+
+
+// Funktion zum Anzeigen der Badge-Info beim Überfahren des Bildes
+function showBadgeInfo(name, description) {
+    const badgeInfo = document.getElementById('badge-info');
+    if (!badgeInfo) return;
+    badgeInfo.innerHTML = `
+        <h3>${name}</h3>
+        <p>${description}</p>
+    `;
+    badgeInfo.classList.remove('hidden');
+}
+
+// Funktion zum Ausblenden der Badge-Info beim Verlassen des Bildes
+function hideBadgeInfo() {
+    const badgeInfo = document.getElementById('badge-info');
+    if (!badgeInfo) return;
+    badgeInfo.classList.add('hidden');
+}
+
+function loadBadges(username) {
+    fetch(`/api/profile/${username}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Überprüfen, ob badges eine Eigenschaft des Datenobjekts ist und ob sie ein Array ist
+            if (data.badges && Array.isArray(data.badges)) {
+                displayBadges(data.badges);
+            } else {
+                throw new Error('Badges data is not in the expected format');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading badges:', error);
+            Toastify({
+                text: 'Error loading badges: ' + error.message,
+                duration: 3000,
+                gravity: 'bottom',
+                position: 'center',
+                backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+            }).showToast();
+        });
+}
+
+function showBadgeOverlay() {
+    // Hier Badges laden und anzeigen
+    loadBadges(username); // Ändern Sie dies in loadBadges(username);
+    
+    // Overlay anzeigen
+    const badgeOverlay = document.getElementById('badgeOverlay');
+    badgeOverlay.classList.remove('hidden'); // Klasse "hidden" entfernen
+    badgeOverlay.classList.add('overlay-show'); // Klasse "overlay-show" hinzufügen
+}
+
+function closeBadgeOverlay() {
+    const badgeOverlay = document.getElementById('badgeOverlay');
+    badgeOverlay.classList.remove('overlay-show'); // Klasse "overlay-show" entfernen
+    badgeOverlay.classList.add('hidden'); // Klasse "hidden" hinzufügen
+}
+
+
+async function loadBadges() {
+    try {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        username = userData.identifier;
+        const response = await fetch(`/api/profile/${username}`); // API-Anfrage, um die Badges des Benutzers zu erhalten
+        const data = await response.json();
+        (data);
+        
+        if (response.ok) {
+            displayBadges(data.badges);
+        } else {
+            throw new Error(data.error || 'Failed to load badges');
+        }
+    } catch (error) {
+        console.error('Error loading badges:', error);
+        // Hier können Sie Fehlerbehandlung durchführen, z.B. eine Benachrichtigung an den Benutzer anzeigen
+    }
+}
+
+function displayBadges(badges) {
+    const badgesContainer = document.getElementById('badges-container');
+    badgesContainer.innerHTML = ''; // Vorherige Badges löschen
+
+    badges.forEach(badge => {
+        const badgeElement = document.createElement('img');
+        badgeElement.src = badge.image;
+        badgeElement.alt = badge.name;
+        badgeElement.classList.add('badge');
+
+        // Event-Listener hinzufügen, um die Badge-Info anzuzeigen bzw. auszublenden
+        badgeElement.addEventListener('mouseover', () => showBadgeInfo(badge.name, badge.description));
+        badgeElement.addEventListener('mouseout', hideBadgeInfo);
+
+        badgeElement.onclick = () => changeActiveBadge(badge.name); // Click-Event hinzufügen, um das aktive Badge zu ändern
+        badgesContainer.appendChild(badgeElement);
+    });
+}
+
+// Funktion, um das aktive Badge zu ändern
+async function changeActiveBadge(badgeName) {
+    try {
+        // Zuerst deaktivieren Sie alle anderen Badges auf dem Server
+        const deactivateResponse = await fetch(`/api/admin/badges/deactivate-all`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!deactivateResponse.ok) {
+            throw new Error('Failed to deactivate badges');
+        }
+
+        // Dann aktivieren Sie das ausgewählte Badge
+        const activateResponse = await fetch(`/api/admin/badges/${badgeName}/activate`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ active: true }) // Aktivieren des Badges
+        });
+
+        if (!activateResponse.ok) {
+            throw new Error('Failed to activate badge');
+        }
+
+        // Erfolgreiche Antwort vom Server
+        const activateData = await activateResponse.json();
+        (activateData.message); // Optional: Konsolenausgabe der Serverantwort
+        
+        // Overlay schließen, nachdem das Badge geändert wurde
+        closeBadgeOverlay();
+    } catch (error) {
+        console.error('Error changing active badge:', error);
+        // Hier können Sie Fehlerbehandlung durchführen, z.B. eine Benachrichtigung an den Benutzer anzeigen
+    }
+}

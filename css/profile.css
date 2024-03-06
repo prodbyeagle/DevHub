@@ -191,34 +191,41 @@ transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hove
     overflow: hidden;
     }
 
+/* Stil für das Overlay */
 .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5); /* Hintergrundfarbe mit Transparenz */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
+    justify-content: center; /* Zentrieren des Inhalts horizontal */
+    align-items: center; /* Zentrieren des Inhalts vertikal */
+    z-index: 1000; /* Z-Index, um das Overlay über anderen Inhalten zu platzieren */
 }
 
+/* Stil für das Feld im Overlay */
 .overlay-content {
-    background-color: #fff;
+    background-color: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%; /* Maximale Breite des Inhalts */
+    max-height: 80%; /* Maximale Höhe des Inhalts */
+    overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
 }
 
-.hidden {
-    display: none;
-}
-
+/* Stil für den Schließen-Button */
 .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
     cursor: pointer;
+}
+
+.hidden {
+    display: none;
 }
 
 .post:hover {

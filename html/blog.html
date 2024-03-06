@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog</title>
+  <link rel="stylesheet" href="css/blog.css">
+</head>
+<body>
+  <header>
+    <h1>Dev Hub: Dev-Blogs</h1>
+    <button class="neumorphism-button" id="new-blog-btn">NEW POST</button> 
+  </header>
+
+  <main id="blog-posts">
+  </main>
+
+  <div class="overlay" id="neumorphism-form" style="display: none;">
+    <div class="overlay-content" id="new-blog-form">
+      <h2>Neuen Blog-Beitrag erstellen</h2>
+      <label for="title">Titel:</label>
+      <input rows="1" cols="1" maxlength="64" style="resize: none;" type="text" id="title" name="title" class="neumorphism-input">
+      <label for="content">Inhalt:</label>
+      <textarea class="neumorphism-input" id="content" name="content" rows="5" cols="1" maxlength="5000" style="resize: none;"></textarea>
+      <button class="neumorphism-button" id="send-blog-btn">Blog-Beitrag senden</button>
+      <button class="neumorphism-button" id="cancel-btn">Abbrechen</button>
+    </div>
+  </div>
+    
+
+  <script src="js/blog.js"></script>
+</body>
+</html>
