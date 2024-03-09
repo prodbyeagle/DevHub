@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('badge-form').addEventListener('submit', async (event) => {
         event.preventDefault();
+
+        document.getElementById('badge-name').value = '';
+        document.getElementById('badge-image').value = '';
+        document.getElementById('badge-description').value = '';
     
         // Badge-Daten aus dem Formular abrufen
         const name = document.getElementById('badge-name').value;
@@ -225,7 +229,7 @@ async function loadBadges() {
                 
                 // Optionen für das Dropdown-Menü erstellen
                 const editOption = document.createElement('div');
-                editOption.textContent = 'Edit Badge';
+                editOption.textContent = '✏️ Edit Badge';
                 editOption.addEventListener('click', () => {
                     console.log('Edit Badge:', badge.name);
                     openOverlay(showEditBadgeOverlay(badge));
@@ -233,7 +237,7 @@ async function loadBadges() {
 
                 // Innerhalb der showContextMenu-Funktion, wo du die Optionen für das Dropdown-Menü erstellst
                 const assignOption = document.createElement('div');
-                assignOption.textContent = 'Assign Badge';
+                assignOption.textContent = '📌 Assign Badge';
                 assignOption.addEventListener('click', () => {
                     console.log('Assign Badge:', badge.name);
                     const assignBadgeOverlay = document.getElementById('assign-badge-overlay');
@@ -243,7 +247,7 @@ async function loadBadges() {
                 
                 // Optionen für das Dropdown-Menü erstellen
                 const deleteOption = document.createElement('div');
-                deleteOption.textContent = 'Delete Badge';
+                deleteOption.textContent = '🗑️ Delete Badge';
                 deleteOption.addEventListener('click', () => {
                     // Bestätigungsdialog anzeigen
                     const confirmed = confirm(`Do you really want to DELETE the Badge "${badge.name}" ?`);
@@ -253,7 +257,7 @@ async function loadBadges() {
                 });
                 
                 const showUsersOption = document.createElement('div');
-                showUsersOption.textContent = 'Show All Badge Users';
+                showUsersOption.textContent = '👥 Show All Badge Users';
                 showUsersOption.addEventListener('click', () => {
                     fetchAndDisplayBadgeUsers(badge.name);
                     openOverlay(showUsersOptionContent);
@@ -487,11 +491,11 @@ function showEditBadgeOverlay(badge) {
             <h2>Edit Badge: ${badge.name}</h2>
             <form id="edit-badge-form">
                 <label for="edit-badge-name">Name:</label>
-                <input type="text" id="edit-badge-name" placeholder="What's the Name of the Badge?" name="name" class="neumorphism-input" value="${badge.name}" rows="1" cols="1" maxlength="32" style="resize: none;" required>
+                <input style="font-family: 'Cascadia Code',  sans-serif;" type="text" id="edit-badge-name" placeholder="What's the Name of the Badge?" name="name" class="neumorphism-input" value="${badge.name}" rows="1" cols="1" maxlength="32" style="resize: none;" required>
                 <label for="edit-badge-image">Picture:</label>
-                <input type="file" id="edit-badge-image" name="image" class="neumorphism-input" accept="image/*">
+                <input style="font-family: 'Cascadia Code',  sans-serif;" type="file" id="edit-badge-image" name="image" class="neumorphism-input" accept="image/*">
                 <label for="edit-badge-description">Description:</label>
-                <textarea id="edit-badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required>${badge.description}</textarea>
+                <textarea style="font-family: 'Cascadia Code',  sans-serif;" id="edit-badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required>${badge.description}</textarea>
                 <div class="button-group">
                     <button onclick="handleEditFormSubmit(event, '${badge.name}');" type="submit" class="neumorphism-button">Save Changes</button>
                     <button type="button" onclick="location.reload();" class="neumorphism-button">Close</button>
@@ -543,3 +547,8 @@ async function handleEditFormSubmit(event, badgeName) {
 
     
 }
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

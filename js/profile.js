@@ -244,12 +244,13 @@ try {
 
     // Funktion zum Anzeigen des Overlays
     function showOverlay() {
-        document.getElementById('overlay').classList.remove('hidden');
+        document.getElementById('bio-overlay').classList.remove('hidden');
     }
 
     // Funktion zum Schließen des Overlays
     function closeOverlay() {
-        document.getElementById('overlay').classList.add('hidden');
+        document.getElementById('bio-overlay').classList.add('hidden');
+        console.log("Close overlay")
     }
 
     // Funktion zum Speichern der Biografie
@@ -289,11 +290,16 @@ try {
             }
     
             // Overlay schließen
-            closeOverlay();
+            closeBioOverlay();
         } catch (error) {
             console.error('Error saving bio:', error);
             // Hier können Sie eine Fehlermeldung anzeigen oder entsprechend reagieren
         }
+    }
+    
+    function closeBioOverlay() {
+        document.getElementById('bio-overlay').classList.add('hidden');
+        console.log("Close overlay")
     }
 
 // Funktion zum Anzeigen der Zeichenanzahl und Anpassen der Farbe
@@ -682,12 +688,12 @@ if (menuContent) {
 
 const editContentInput = document.createElement('textarea');
 editContentInput.classList.add('w-full', 'p-2', 'border', 'border-grey-300', 'rounded-md', 'mb-4', 'neumorphism-input');
-editContentInput.setAttribute('style', 'resize: none; white-space: nowrap; font-family: Font, SF Pro Medium, \'Open Sans\', sans-serif;');
+editContentInput.setAttribute('style', 'resize: none; white-space: nowrap; font-family: Cascadia Code, sans-serif');
 editContentInput.value = contentElement.textContent;
 
 const editCodeSnippetInput = document.createElement('textarea');
 editCodeSnippetInput.classList.add('w-full', 'p-2', 'border', 'border-grey-300', 'rounded-md', 'mb-4', 'neumorphism-input');
-editCodeSnippetInput.setAttribute('style', 'white-space: nowrap; font-family: Font, SF Pro Medium, \'Open Sans\', sans-serif;');
+editCodeSnippetInput.setAttribute('style', 'white-space: nowrap; font-family: Cascadia Code, sans-serif');
 editCodeSnippetInput.value = codeSnippetElement.textContent;
 
 const saveButton = document.createElement('button');
@@ -811,44 +817,45 @@ function loadBadges(username) {
 }
 
 function showBadgeOverlay() {
-    // Hier Badges laden und anzeigen
-    loadBadges(username); // Ändern Sie dies in loadBadges(username);
-    
-    // Overlay anzeigen
+    loadBadges(); // Lade die Badges des Benutzers
     const badgeOverlay = document.getElementById('badgeOverlay');
-    badgeOverlay.classList.remove('hidden'); // Klasse "hidden" entfernen
-    badgeOverlay.classList.add('overlay-show'); // Klasse "overlay-show" hinzufügen
+    badgeOverlay.classList.remove('hidden');
 }
 
 function closeBadgeOverlay() {
     const badgeOverlay = document.getElementById('badgeOverlay');
-    badgeOverlay.classList.remove('overlay-show'); // Klasse "overlay-show" entfernen
-    badgeOverlay.classList.add('hidden'); // Klasse "hidden" hinzufügen
+    badgeOverlay.classList.add('hidden');
 }
-
 
 async function loadBadges() {
     try {
         const userData = JSON.parse(localStorage.getItem('user'));
-        username = userData.identifier;
-        const response = await fetch(`/api/profile/${username}`); // API-Anfrage, um die Badges des Benutzers zu erhalten
+        const username = userData.identifier;
+        const response = await fetch(`/api/profile/${username}`);
         const data = await response.json();
-        (data);
-        
+
         if (response.ok) {
             displayBadges(data.badges);
+
+            // Überprüfen, ob der Benutzer Abzeichen hat
+            if (data.badges.length > 0) {
+                // Benutzer hat Abzeichen, den Button zum Ändern anzeigen
+                document.querySelector('.change-badge button').style.display = 'block';
+            } else {
+                // Benutzer hat keine Abzeichen, den Button zum Ändern ausblenden
+                document.querySelector('.change-badge button').style.display = 'none';
+            }
         } else {
             throw new Error(data.error || 'Failed to load badges');
         }
     } catch (error) {
         console.error('Error loading badges:', error);
-        // Hier können Sie Fehlerbehandlung durchführen, z.B. eine Benachrichtigung an den Benutzer anzeigen
     }
 }
 
 function displayBadges(badges) {
     const badgesContainer = document.getElementById('badges-container');
-    badgesContainer.innerHTML = ''; // Vorherige Badges löschen
+    badgesContainer.innerHTML = '';
 
     badges.forEach(badge => {
         const badgeElement = document.createElement('img');
@@ -856,51 +863,63 @@ function displayBadges(badges) {
         badgeElement.alt = badge.name;
         badgeElement.classList.add('badge');
 
-        // Event-Listener hinzufügen, um die Badge-Info anzuzeigen bzw. auszublenden
-        badgeElement.addEventListener('mouseover', () => showBadgeInfo(badge.name, badge.description));
-        badgeElement.addEventListener('mouseout', hideBadgeInfo);
+        if (badge.active) {
+            badgeElement.classList.add('active');
+        }
 
-        badgeElement.onclick = () => changeActiveBadge(badge.name); // Click-Event hinzufügen, um das aktive Badge zu ändern
+        badgeElement.onclick = () => changeActiveBadge(badge.name);
         badgesContainer.appendChild(badgeElement);
     });
 }
 
-// Funktion, um das aktive Badge zu ändern
 async function changeActiveBadge(badgeName) {
     try {
-        // Zuerst deaktivieren Sie alle anderen Badges auf dem Server
-        const deactivateResponse = await fetch(`/api/admin/badges/deactivate-all`, {
+        // Benutzerdaten aus dem LocalStorage abrufen
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const username = userData.identifier;
+
+        // Deaktiviere alle Badges des Benutzers
+        const deactivateResponse = await fetch(`/api/${username}/badges/deactivate-all/${badgeName}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({ active: false }) // Deaktiviere alle Badges
         });
 
         if (!deactivateResponse.ok) {
             throw new Error('Failed to deactivate badges');
         }
 
-        // Dann aktivieren Sie das ausgewählte Badge
-        const activateResponse = await fetch(`/api/admin/badges/${badgeName}/activate`, {
+        const deactivateData = await deactivateResponse.json();
+        console.log(deactivateData.message); // Optional: Konsolenausgabe der Serverantwort
+
+        // Aktiviere den ausgewählten Badge des Benutzers
+        const activateResponse = await fetch(`/api/${username}/badges/${badgeName}/activate`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ active: true }) // Aktivieren des Badges
+            body: JSON.stringify({ active: true }) // Stelle sicher, dass das neue Badge aktiviert wird
         });
 
         if (!activateResponse.ok) {
             throw new Error('Failed to activate badge');
         }
 
-        // Erfolgreiche Antwort vom Server
         const activateData = await activateResponse.json();
-        (activateData.message); // Optional: Konsolenausgabe der Serverantwort
-        
-        // Overlay schließen, nachdem das Badge geändert wurde
+        console.log(activateData.message);
+
+        // Aktualisiere die Badges nach der Aktivierung
+        loadBadges();
         closeBadgeOverlay();
     } catch (error) {
         console.error('Error changing active badge:', error);
-        // Hier können Sie Fehlerbehandlung durchführen, z.B. eine Benachrichtigung an den Benutzer anzeigen
+        // Fehlerbehandlung durchführen, z.B. Benutzernachricht anzeigen
     }
 }
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

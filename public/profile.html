@@ -10,12 +10,7 @@
     <title>Profil</title>
     <style>
         body {
-            @font-face {
-              font-family: 'Font';
-              src:  url('SF-Pro.woff2') format('woff2'),
-            }
-            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Cascadia Code',  sans-serif;
             color: #333;
             transition: all 0.3s ease;
         }
@@ -60,7 +55,7 @@
         .neumorphism-button {
             background-color: #007bff;
             color: #fff;
-            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            font-family: 'Cascadia Code',  sans-serif;
             padding: 0.5rem 1rem;
             border: none;
             border: 1px solid; /* 1px-Rand hinzufügen */
@@ -78,7 +73,7 @@
         body.dark-mode .neumorphism-button {
             background-color: #222;
             color: #eee;
-            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            font-family: 'Cascadia Code',  sans-serif;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
 
@@ -148,7 +143,7 @@
             padding: 1rem;
             background-color: #f0f0f0;
             color: #333;
-            font-family: Font, SF Pro Medium, 'Helvetica Neue', sans-serif;
+            font-family: 'Cascadia Code',  sans-serif;
             border-radius: 16px;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             margin-bottom: 20px;
@@ -371,7 +366,7 @@ body.dark-mode .profile-info p {
 }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark-mode">
     <div class="container mx-auto py-8 profile-container neumorphism-form">
         <div class="profile-card" id="profile-card">
             <div class="profile-picture">
@@ -393,7 +388,7 @@ body.dark-mode .profile-info p {
             </div>
         </div>
     <div class="content-container">
-        <div id="user-posts" class="mt-8" style="font-family: Font, SF Pro Medium, 'Ubuntu', Roboto, Oxygen, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+        <div id="user-posts" class="mt-8" style="font-family: 'Cascadia Code',  sans-serif;">
         </div>
     </div>
     <div class="flex justify-center items-center fixed inset-x-0 bottom-0 mb-8">

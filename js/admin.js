@@ -426,22 +426,23 @@ startChartRefreshTimer();
     // }
 // });
 
-//Update error log in real-time when a new error occurs
 // document.addEventListener('newError', fetchErrorLogAndUpdate);
-// const deletePostsButton = document.getElementById('deletePostsButton');
-// 
-// deletePostsButton.addEventListener('click', async () => {
-    // try {
-        // const response = await fetch('/admin/delete-posts', { method: 'DELETE' });
-        // if (response.ok) {
-            // console.log('Posts collection deleted successfully');
-        // } else {
-            // throw new Error('Failed to delete posts collection');
-        // }
-    // } catch (error) {
-        // console.error('Error deleting posts collection:', error.message);
-    // }
-// });
+const deletePostsButton = document.getElementById('deletePostsButton');
+
+deletePostsButton.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/admin/delete-posts', { method: 'DELETE' });
+        if (response.ok) {
+            console.log('Posts collection deleted successfully');
+            window.location.reload();
+        } else {
+            throw new Error('Failed to delete posts collection');
+        }
+    } catch (error) {
+        console.error('Error deleting posts collection:', error.message);
+    }
+});
+
 // 
 // async function fetchErrorLogAndUpdate() {
     // try {
@@ -661,3 +662,25 @@ startChartRefreshTimer();
 // function triggerErrorLogUpdate() {
     // document.dispatchEvent(new Event('newError'));
 // }
+
+// Funktion zum Laden der bevorzugten Anzeigemodus
+function loadModePreference() {
+    // Lade den gespeicherten Moduswert aus dem Local Storage
+    const mode = localStorage.getItem('mode');
+    if (mode === 'light') {
+        // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('light-mode');
+    } else {
+        // Andernfalls füge die Klasse für den hellen Modus hinzu
+        document.body.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+    }
+}
+
+loadModePreference();
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

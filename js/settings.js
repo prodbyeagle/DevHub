@@ -389,38 +389,77 @@ changePasswordForm.addEventListener('submit', async (event) => {
 
 document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
     try {
-        // Benutzernamen aus dem lokalen Speicher abrufen
-        const { identifier: username } = JSON.parse(localStorage.getItem('user'));
+        // Bestätigungsdialog anzeigen
+        const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
 
-        // Benutzer aus der Datenbank entfernen
-        const response = await fetch(`/api/profile/delete/${username}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
+        // Wenn der Benutzer die Aktion bestätigt hat
+        if (confirmed) {
+            // Benutzernamen aus dem lokalen Speicher abrufen
+            const { identifier: username } = JSON.parse(localStorage.getItem('user'));
+
+            // Benutzer aus der Datenbank entfernen
+            const response = await fetch(`/api/profile/delete/${username}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete account');
             }
-        });
 
-        if (!response.ok) {
-            throw new Error('Failed to delete account');
-        }
+            // Löschen aller Posts des Benutzers
+            const deletePostsResponse = await fetch(`/api/${username}/posts`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        // Löschen aller Posts des Benutzers
-        const deletePostsResponse = await fetch(`/api/${username}/posts`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
+            if (!deletePostsResponse.ok) {
+                throw new Error('Failed to delete user posts');
             }
-        });
 
-        if (!deletePostsResponse.ok) {
-            throw new Error('Failed to delete user posts');
+            localStorage.clear();
+
+            window.location.href = '/login';
         }
-
-        localStorage.clear();
-
-        window.location.href = '/login';
     } catch (error) {
         console.error('Error deleting account:', error);
         // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
 });
+
+// Funktion zum Umschalten zwischen Dark Mode und Light Mode
+function toggleMode() {
+    // Finde das Button-Element
+    const button = document.getElementById('mode-toggle');
+
+    // Überprüfe, ob der aktuelle Modus Dark Mode ist
+    const isDarkMode = document.body.classList.contains('dark-mode');
+
+    // Speichere den aktuellen Modus im localStorage
+    localStorage.setItem('mode', isDarkMode ? 'light' : 'dark');
+
+    // Aktualisiere den Text des Buttons basierend auf dem aktuellen Modus
+    button.textContent = isDarkMode ? '🌑 Dark Mode' : '🌞 Light Mode';
+
+    // Füge oder entferne die CSS-Klasse 'dark-mode' basierend auf dem aktuellen Modus
+    document.body.classList.toggle('dark-mode');
+}
+
+// Füge einen Event-Listener zum Klicken auf den Button hinzu, um den Modus zu wechseln
+document.getElementById('mode-toggle').addEventListener('click', toggleMode);
+
+// Überprüfe den gespeicherten Modus im localStorage und wende ihn an
+const savedMode = localStorage.getItem('mode');
+if (savedMode === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+document.getElementById('mode-toggle').textContent = savedMode === 'dark' ? '🌞 Light Mode' : '🌑 Dark Mode';
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

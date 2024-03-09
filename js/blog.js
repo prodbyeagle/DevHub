@@ -91,59 +91,110 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  async function fetchProfilePicture(username) {
+    try {
+        const response = await fetch(`/api/profile/${username}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile picture');
+        }
+        const profile = await response.json();
+        const profilePicture = profile.pb; // Retrieve the profile picture URL
+        console.log('Profile picture URL for user', username + ':', profilePicture); // Log the profile picture URL
+        return profilePicture; // Return the profile picture URL
+    } catch (error) {
+        console.error('Error fetching profile picture:', error);
+        return null; // Return null if there's an error
+    }
+}
+
 /// Funktion zum Rendern der Blog-Beiträge auf der Seite
 async function renderBlogPosts() {
-  const blogPosts = await fetchBlogPosts();
-  const blogPostsContainer = document.getElementById('blog-posts');
-  
-  // Überprüfen, ob Blog-Beiträge vorhanden sind
-  if (blogPosts.length === 0) {
-    const noPostsMessage = document.createElement('p');
-    noPostsMessage.textContent = 'Keine Blog-Beiträge gefunden.';
-    blogPostsContainer.appendChild(noPostsMessage);
-    return;
-  }
-  
-  blogPosts.reverse().forEach(post => {
-    const postId = post._id; // Hier die postId aus den Blog-Beitragsdaten erhalten
-    
-    const postElement = document.createElement("article");
-    postElement.classList.add("blog-post");
-    postElement.innerHTML = `
-      <h2>${post.title}</h2>
-      <p>${makeLinksClickable(post.content)}</p>
-      <div class="post-image-container"></div>
-      <p>Author: ${post.author}</p>
-      <p class="post-date" data-date-time="${post.date}">${formatDateTime(post.date)}</p>
-    `;
-  
-    // Reaktionspanel für den Blog-Beitrag erstellen
-    const reactionPanel = document.createElement('div');
-    reactionPanel.classList.add('reaction-panel');
-  
-    // Reaktionen oder Reaktionsmöglichkeiten für den Blog-Beitrag anzeigen
-    displayReactionsOrOptions(reactionPanel, postId); // Hier postId übergeben
-  
-    // Bild hinzufügen, wenn vorhanden
-    if (post.image) {
-      const imgElement = document.createElement("img");
-      imgElement.src = post.image;
-      imgElement.style.maxWidth = '100px';
-      imgElement.style.maxHeight = '100px';
-      imgElement.style.marginBottom = '10px'; 
-      imgElement.style.borderRadius = '10px';
-      imgElement.addEventListener('click', () => {
-        displayImageOverlay(post.image);
-      });
-  
-      // Das Bild in den Container einfügen
-      const imageContainer = postElement.querySelector('.post-image-container');
-      imageContainer.appendChild(imgElement);
+    const blogPosts = await fetchBlogPosts();
+    const blogPostsContainer = document.getElementById('blog-posts');
+
+    // Überprüfen, ob Blog-Beiträge vorhanden sind
+    if (blogPosts.length === 0) {
+        const noPostsMessage = document.createElement('p');
+        noPostsMessage.textContent = 'Keine Blog-Beiträge gefunden.';
+        blogPostsContainer.appendChild(noPostsMessage);
+        return;
     }
-  
-    postElement.appendChild(reactionPanel); // Reaktionspanel zum Blogbeitrag hinzufügen
-    blogPostsContainer.appendChild(postElement);
-  });
+
+    let lastActiveBadge; // Variable für das letzte aktive Badge
+    let profilePicture;
+
+    try {
+        const userDataString = localStorage.getItem('user');
+        const usernameData = JSON.parse(userDataString); // String in ein JavaScript-Objekt umwandeln
+        const username = usernameData.identifier;
+        const badgeResponse = await fetch(`/api/${username}/badges`);
+        const badgeData = await badgeResponse.json();
+        const profilePicture = await fetchProfilePicture(username); // Fetch profile picture
+
+        // Überprüfen, ob die Antwort erfolgreich war
+        if (badgeResponse.ok) {
+            const badges = badgeData.badges;
+
+            // Überprüfen, ob badges definiert ist und ein Array ist
+            if (badges && Array.isArray(badges)) {
+                // Filtern der aktiven Badges
+                const activeBadges = badges.filter((badge) => badge.active);
+
+                // Überprüfen, ob der Benutzer aktive Badges hat
+                if (activeBadges.length > 0) {
+                    // Nur das letzte aktive Badge des Benutzers verwenden
+                    lastActiveBadge = activeBadges[activeBadges.length - 1];
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Badges:', error);
+    }
+
+    // Render blog posts
+    for (const post of blogPosts.reverse()) {
+        const postId = post._id;
+        const postElement = document.createElement("article");
+        postElement.classList.add("blog-post");
+
+        const profilePictureHTML = profilePicture ? `<img src="${profilePicture}" alt="profile-picture" width="15" height="15" style="border-radius: 50%;">` : '';
+        const authorInfo = `${profilePictureHTML} ${post.author}`;
+
+        postElement.innerHTML = `
+            <h2>${post.title}</h2>
+            <p>${makeLinksClickable(post.content)}</p>
+            <div class="post-image-container"></div>
+            <p style="display: inline-block;">Author: ${authorInfo} ${lastActiveBadge ? `<img src="${lastActiveBadge.image}" alt="badge-icon" width="15" height="15" style="border-radius: 25%;">` : ''}</p>
+            <p class="post-date" data-date-time="${post.date}">${formatDateTime(post.date)}</p>
+        `;
+
+        // Reaktionspanel für den Blog-Beitrag erstellen
+        const reactionPanel = document.createElement('div');
+        reactionPanel.classList.add('reaction-panel');
+
+        // Reaktionen oder Reaktionsmöglichkeiten für den Blog-Beitrag anzeigen
+        displayReactionsOrOptions(reactionPanel, postId); // Hier postId übergeben
+
+        // Bild hinzufügen, wenn vorhanden
+        if (post.image) {
+            const imgElement = document.createElement("img");
+            imgElement.src = post.image;
+            imgElement.style.maxWidth = '100px';
+            imgElement.style.maxHeight = '100px';
+            imgElement.style.marginBottom = '10px'; 
+            imgElement.style.borderRadius = '10px';
+            imgElement.addEventListener('click', () => {
+                displayImageOverlay(post.image);
+            });
+
+            // Das Bild in den Container einfügen
+            const imageContainer = postElement.querySelector('.post-image-container');
+            imageContainer.appendChild(imgElement);
+        }
+
+        postElement.appendChild(reactionPanel); // Reaktionspanel zum Blogbeitrag hinzufügen
+        blogPostsContainer.appendChild(postElement);
+    }
 }
 
 // Funktion zum Anzeigen eines Overlays mit dem vergrößerten Bild
@@ -180,8 +231,14 @@ function displayImageOverlay(imageSrc) {
 async function addBlogPost(event) {
   event.preventDefault();
 
-  const title = document.getElementById('title').value;
-  const content = document.getElementById('content').value;
+  const title = document.getElementById('title').value.trim(); // Trimmen, um Leerzeichen zu entfernen
+  const content = document.getElementById('content').value.trim(); // Trimmen, um Leerzeichen zu entfernen
+  
+  // Überprüfen, ob Titel und Inhalt nicht leer sind
+  if (!title || !content) {
+    return;
+  }
+
   const userDataString = localStorage.getItem('user');
   const usernameData = JSON.parse(userDataString);
   const author = usernameData.identifier;
@@ -441,3 +498,9 @@ function convertImageToBase64(file, quality, maxWidth, maxHeight) {
   });
 }
 
+
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

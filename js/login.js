@@ -1,10 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const storedUser = localStorage.getItem('user');
+    const loggedInStatus = document.getElementById('loggedInStatus');
 
+    const storedUser = localStorage.getItem('user');
     const urlParams = new URLSearchParams(window.location.search);
     const user = urlParams.get('user');
 
-    if (user) {
+    if (storedUser) {
+        const usernameData = JSON.parse(storedUser);
+        const username = usernameData.identifier;
+        loggedInStatus.textContent = `⚠️ Already logged in with: ${username}`;
+    } else if (user) {
         // Benutzerdaten aus der URL extrahieren und im localStorage speichern
         localStorage.setItem('user', user);
         console.log('User data saved in localStorage:', user);
@@ -103,3 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Mode Loaded:', mode);
         }
         loadModePreference();
+
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

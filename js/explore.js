@@ -38,15 +38,34 @@ async function fetchAndDisplayPosts() {
 
                 // Nur anzeigen, wenn sowohl content als auch codesnippet vorhanden sind
                 if (post.content && post.codesnippet) {
-                    // Profilbild und Benutzername in den Post einfügen
-                    postElement.innerHTML = `
-                        <h3>${post.content}</h3>
-                        <p>${truncateText(post.codesnippet, 200)}</p>
-                        <div class="user-info">
-                            <img src="${post.imageUrl}" alt="Profilbild" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 5px; float: left;">
-                            <p>Author: ${post.username}</p>
-                        </div>
-                    `;
+                    // Textinhalt des Posts einfügen
+                    const contentParagraph = document.createElement('p');
+                    contentParagraph.textContent = truncateText(post.content, 25);
+                    postElement.appendChild(contentParagraph);
+
+                    const codesnippetParagraph = document.createElement('p');
+                    codesnippetParagraph.textContent = truncateText(post.codesnippet, 200);
+                    contentParagraph.style.fontSize = '20px'; 
+                    contentParagraph.style.fontWeight = 'bold';
+                    postElement.appendChild(codesnippetParagraph);
+
+                    // Benutzerinformationen einfügen
+                    const userInfoDiv = document.createElement('div');
+                    userInfoDiv.classList.add('user-info');
+                    const profileImg = document.createElement('img');
+                    profileImg.src = post.imageUrl;
+                    profileImg.alt = '❌';
+                    profileImg.style.width = '30px';
+                    profileImg.style.height = '30px';
+                    profileImg.style.borderRadius = '50%';
+                    profileImg.style.marginRight = '5px';
+                    profileImg.style.float = 'left';
+                    const usernameParagraph = document.createElement('p');
+                    usernameParagraph.textContent = `Author: ${post.username}`;
+                    userInfoDiv.appendChild(profileImg);
+                    userInfoDiv.appendChild(usernameParagraph);
+                    postElement.appendChild(userInfoDiv);
+
                     postsContainer.appendChild(postElement);
                 }
             });
@@ -145,3 +164,8 @@ function loadModePreference() {
 }
 
 loadModePreference();
+
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
