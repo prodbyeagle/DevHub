@@ -1,15 +1,5 @@
         body {
-            @font-face {
-                font-family: 'SF Pro Display Bold';
-                src: url('assets/SF-Pro-Display-Bold.ttf') format('truetype'),
-                     url('assets/SF-Pro-Display-Bold.otf') format('opentype'),
-                     url('assets/SF-Pro-Display-Bold.woff') format('woff'),
-                     url('assets/SF-Pro-Display-Bold.woff2') format('woff2');
-                font-weight: bold;
-                font-style: normal;
-            }
-
-            font-family: 'SF Pro Display Bold', sans-serif;
+            font-family: 'Cascadia Code',  sans-serif;
             background-color: #f0f0f0;
             color: #333;
             transition: all 0.3s ease;
@@ -72,7 +62,7 @@
         }
         
         .sidebar a:hover {
-            color: #007bff;
+            color: #ff285a;
         }
         
         .sidebar a::before {
@@ -82,7 +72,7 @@
             left: 0;
             width: 0%;
             height: 2px;
-            background-color: #007bff;
+            background-color: #ff285a;
             transition: width 0.3s ease;
         }
         
@@ -235,7 +225,7 @@
 
         /* Neumorphism styles for the Send button */
         #postForm button {
-            background-color: #007bff;
+            background-color: #333;
             color: #fff;
             padding: 0.5rem 1rem;
             border: none;
@@ -246,25 +236,25 @@
         }
     
         #postForm button:hover {
-            background-color: #0056b3;
+            background-color: #ff285a;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.3); /* verstärkter Schatten beim Hover */
         }
     
         /* Neumorphism styles for dark mode */
         body.dark-mode #postForm button {
-            background-color: #007bff;
+            background-color: #444;
             color: #eee;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
     
         body.dark-mode #postForm button:hover {
-            background-color: #0056b3;
+            background-color: #ff285a;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* verstärkter Schatten beim Hover */
         }
         
         /* Dark Mode styles for the button */
         body.dark-mode .create-post-form button {
-            background-color: #222;
+            background-color: #ff285a;
             color: #eee;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
@@ -314,58 +304,6 @@
         background-color: transparent;
     }
 
-        /* Neumorphismus-Stil für den Dark/White Mode Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Stil für den Text des Dark/White Mode Switch */
-        .switch-label {
-            margin-left: 0.5rem;
-            font-size: 0.875rem;
-            color: #333; /* Farbe des Textes */
-        }
-
-        /* Dark Mode-Stil für den Text des Dark/White Mode Switch */
-        body.dark-mode .switch-label {
-            color: #eee; /* Farbe des Textes im Dark Mode */
-        }
-
         .scroll-to-top {
             position: fixed;
             bottom: 20px; /* Adjust as needed */
@@ -374,7 +312,7 @@
             display: none; /* Hide by default */
             width: 60px;
             height: 60px;
-            background-color: #007bff;
+            background-color: #222;
             color: #fff;
             border: none;
             border-radius: 50%;
@@ -384,7 +322,7 @@
         }
 
         .scroll-to-top:hover {
-            background-color: #0056b3;
+            background-color: #ff285a;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
         }
 
@@ -395,7 +333,7 @@
         }
 
         body.dark-mode .scroll-to-top:hover {
-            background-color: #333;
+            background-color: #ff285ac0;
         }
 
                 /* Neumorphism styles for the input fields */
@@ -415,7 +353,7 @@
 
         /* Neumorphism styles for the submit button */
         .neumorphism-button {
-            background-color: #007bff;
+            background-color: #333;
             color: #fff;
             padding: 0.5rem 1rem;
             border: none;
@@ -426,18 +364,18 @@
         }
 
         .neumorphism-button:hover {
-            background-color: #0056b3;
+            background-color: #ff285a;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
         }
 
         body.dark-mode .neumorphism-button {
-            background-color: #222;
+            background-color: #333;
             color: #eee;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
 
         body.dark-mode .neumorphism-button:hover {
-            background-color: #333;
+            background-color: #ff285a;
         }
     
         .search-overlay {
@@ -500,7 +438,7 @@ body.dark-mode .search-input {
 
 .search-button:hover,
 .close-button:hover {
-    background-color: #0056b3;;
+    background-color: #b9153b;
 }
 
 .overlay {
@@ -599,7 +537,7 @@ body.dark-mode .search-button:hover {
 
 /* Stil für den Hover-Effekt */
 .search-results-item:hover {
-    color: #007bff; /* Hellere Farbe bei Hover */
+    color: #ff285a; /* Hellere Farbe bei Hover */
 }
 
 .pop {

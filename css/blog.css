@@ -1,6 +1,6 @@
 /* Gemeinsame Stile für den Body */
 body {
-  font-family: 'SF Pro Display Bold', sans-serif;
+  font-family: 'Cascadia Code',  sans-serif;
   background-color: #f0f0f0;
   color: #333;
   transition: all 0.3s ease;
@@ -17,7 +17,7 @@ body.dark-mode {
 header {
   text-align: center;
   padding: 2rem 0;
-  background-color: #007bff;
+  background-color: #ff285a;
   color: #fff;
   border-radius: 8px;
 }
@@ -130,23 +130,32 @@ body.dark-mode .neumorphism-input {
   resize: none;
 }
 
-/* Neumorphism-Stil für Buttons */
-.neumorphism-button {
-  background-color: #007bff;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  font-family: 'SF Pro Display Bold', sans-serif;
-}
+        /* Neumorphism styles for the submit button */
+        .neumorphism-button {
+          background-color: #333;
+          color: #fff;
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+          box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+      }
 
-/* Hover-Stil für Buttons */
-.neumorphism-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
+      .neumorphism-button:hover {
+          background-color: #ff285a;
+          box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+      }
+
+      body.dark-mode .neumorphism-button {
+          background-color: #333;
+          color: #eee;
+          box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+      }
+
+      body.dark-mode .neumorphism-button:hover {
+          background-color: #ff285a;
+      }
 
 /* Neumorphism-Stil für das Formular */
 .neumorphism-form {
@@ -231,4 +240,14 @@ body.dark-mode .emoji:hover {
 body.dark-mode .emoji.reacted,
 .emoji.reacted {
   background-color: #00ff001f;
+}
+
+.action-buttons {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.action-buttons a {
+  margin: 0 10px;
 }
