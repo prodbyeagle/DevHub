@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Hub: Login</title>
-    <link rel="icon" type="image/x-icon" href="/icon.ico">
+    <title>Devolution: Login</title>
+    <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -12,18 +12,18 @@
 </head>
 <body class="bg-gray-100 dark-mode">
 <div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold text-center mb-8">Dev Hub: Login</h1>
-    <p class="text-center mb-4">Dont Have an Account? <a href="/signup" class="text-blue-500 hover:underline">Signup</a></p>
-    <p id="loggedInStatus" class="text-center mb-4"></p>
+    <h1 class="text-3xl font-bold text-center mb-8">Devolution: Login</h1>
+    <p class="text-center mb-4">🤔 Dont Have an Account? <a href="/signup" class="text-blue-500 hover:underline">Signup</a></p>
+    <p id="loggedInStatus" class="text-sm text-center mb-4"></p>
     <div class="max-w-md mx-auto neumorphism-form">
         <form id="loginForm" class="space-y-4">
             <div>
-                <label for="identifier" class="block text-sm font-medium">Username:</label>
+                <label for="identifier" class="block text-sm font-medium">🪪 Username:</label>
                 <input type="text" id="identifier" name="identifier" required autocomplete="username"
                        class="mt-1 block w-full neumorphism-input">
             </div>
             <div>
-                <label for="password" class="block text-sm font-medium">Password:</label>
+                <label for="password" class="block text-sm font-medium">🔑 Password:</label>
                 <input type="password" id="password" name="password" required autocomplete="password"
                        class="mt-1 block w-full neumorphism-input">
             </div>
@@ -31,16 +31,16 @@
                 <input type="checkbox" id="rememberMe" name="rememberMe" class="neumorphism-checkbox">
                 <label for="rememberMe" class="switch-label">Remember me</label>
             </div>
-            <button type="submit" class="neumorphism-button w-full">Login</button>
+            <button type="submit" class="neumorphism-button w-full">✅ Login</button>
         </form>
     </div>
 </div>
 <div class="flex justify-center items-center fixed inset-x-0 top-120">
     <a href="/auth/google" class="neumorphism-button mr-3">
-        <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/google-logo.png" alt="google-logo"/>
+        <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/google-logo.png" alt="google-logo"/>
     </a>
     <a href="/auth/github" class="neumorphism-button">
-        <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/github.png" alt="GitHub-Logo" class="mr-2"/>
+        <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/github.png" alt="GitHub-Logo" class="mr-2"/>
     </a>
 </div>
 <script src="/js/login.js"></script>
