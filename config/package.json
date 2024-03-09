@@ -1,8 +1,8 @@
 {
   "name": "dev-hub",
-  "displayName": "Dev Hub",
+  "displayName": "Devolution",
   "version": "19.2.3",
-  "description": "Dev Hub made by prodbyeagle and dwhincandi",
+  "description": "Devolution made by prodbyeagle and dwhincandi",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
