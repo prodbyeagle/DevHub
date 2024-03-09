@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devolution</title>
+    <link rel="stylesheet" href="/css/landing.css">
+    <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
+    <style>
+.gradient {
+    /* Füge hier deine CSS-Stile für den Gradienten ein */
+    background: linear-gradient(to left, #ff416c, #ff4b2b);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+    min-width: 100vw;
+    min-height: 100vh;
+    width: var(--size);
+    height: var(--size);
+    animation: dynamicSize var(--speed) var(--easing) alternate infinite, rotate var(--speed) var(--easing) alternate infinite;
+    --size: 250px;
+    --speed: 180s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+@keyframes dynamicSize {
+    0% {
+        width: 50vw;
+        height: 50vh;
+    }
+    50% {
+        width: 100vw;
+        height: 100vh;
+    }
+    100% {
+        width: 50vw;
+        height: 50vh;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+        .dev-hub-text {
+            /* Füge hier deine CSS-Stile für den "Devolution"-Text ein */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .slogan {
+            /* Füge hier deine CSS-Stile für den Slogan ein */
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: white;
+        }
+
+        .slogan h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .signin-button, .login-button {
+            /* Füge hier deine CSS-Stile für die Buttons ein */
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            background-color: #af3131;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .signin-button:hover,
+        .login-button:hover {
+            background-color: rgba(255, 255, 255, 0.192); /* Transparente Hintergrundfarbe */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Unschärfeeffekt */
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient"></div>
+    <div class="dev-hub-text">Devolution</div>
+
+    <div class="slogan">
+        <h2>The Social Media for Coders</h2>
+        <div class="button-container">
+            <a href="/signup" class="signin-button">Sign In</a>
+            <a href="/login" class="login-button">Login</a>
+        </div>
+    </div>
+</body>
+</html>
