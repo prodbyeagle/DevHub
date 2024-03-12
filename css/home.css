@@ -1,7 +1,7 @@
         body {
             font-family: 'Cascadia Code',  sans-serif;
             background-color: #f0f0f0;
-            color: #333;
+            color: rgb(51, 51, 51);
             transition: all 0.3s ease;
         }
 
@@ -16,7 +16,7 @@
             width: 200px;
             margin-right: 2rem;
             flex-shrink: 0;
-            background-color: #f0f0f0;
+            background-color: #cecece8f;
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
             border-radius: 16px;
             user-select: none;
@@ -91,7 +91,7 @@
 
     /* Neumorphism styles for the posts */
     .post {
-        background-color: #f0f0f0;
+        background-color: #cecece8f;
         border: 1px solid #ccc;
         padding: 1rem;
         margin-bottom: 1rem;
@@ -141,7 +141,7 @@
         }
 
         body.dark-mode .sidebar {
-            background-color: #222;
+            background-color: #4d4d4d7c;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
             position: sticky;
             top: 43px;
@@ -164,8 +164,8 @@
         }
 
         body.dark-mode .post {
-            background-color: #222;
-            border: 1px solid #333;
+            background-color: #2727277c;
+            border: 1px solid #33333300;
             color: #eee;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
@@ -185,8 +185,8 @@
         /* Neumorphism styles for title and content */
         .title-container {
             padding: 1rem;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: #cecece00;
+            color: #111111;
             border-radius: 16px;
             margin-bottom: 20px;
             text-align: center;
@@ -196,17 +196,17 @@
         
         .content-container {
             padding: 1rem;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: #cecece8f;
+            color: #111111;
             border-radius: 16px;
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+            /* box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5); */
             margin-bottom: 20px;
             transition: all 0.3s ease;
         }
 
         body.dark-mode .title-container {
             padding: 1rem;
-            background-color: #222;
+            background-color: #00000000;
             color: #eee;
             margin-bottom: 20px;
             text-align: center;
@@ -215,7 +215,7 @@
         
         body.dark-mode .content-container {
             padding: 1rem;
-            background-color: #222;
+            background-color: #4d4d4d7c;
             color: #eee;
             border-radius: 16px;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
@@ -548,4 +548,17 @@ body.dark-mode .search-button:hover {
     0% { transform: scale(1); }
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
+}
+
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+.hidden {
+    display: none;
 }

@@ -145,7 +145,7 @@ body.dark-mode .neumorphism-input {
 
 .button-group {
     display: flex;
-    gap: 10px;
+    /* gap: 10px; */
 }
 
 /* Styling für Fehlermeldungen */
