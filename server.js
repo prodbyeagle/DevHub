@@ -1,17 +1,21 @@
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const session = require("express-session");
-const crypto = require("crypto");
-require("dotenv").config();
-const { ObjectId } = require("mongodb");
-const http = require("http");
+
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const session = require('express-session');
+const crypto = require('crypto');
+require('dotenv').config();
+const { ObjectId } = require('mongodb');
+const objectId = new ObjectId();
+const socketIo = require('socket.io');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
+const io = socketIo(server);
 
 const sessionSecret = require("crypto").randomBytes(64).toString("hex");
 
@@ -771,25 +775,71 @@ app.delete("/api/posts/delete/:postId", async (req, res) => {
   }
 });
 
+// Route zum Liken eines Posts
+app.post('/posts/:username/:postId/like', async (req, res) => {
+  const postsCollection = db.collection("posts");
+  const { postId, username } = req.params;
 
-app.post("/posts/:postId/like", async (req, res) => {
   try {
-    const postId = req.params.postId;
-    const postsCollection = db.collection("posts");
-
-    const result = await postsCollection.updateOne(
-      { _id: new ObjectId(postId) },
-      { $inc: { likes: 1 } }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Beitrag nicht gefunden" });
+    const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.json({ message: "Like gespeichert" });
+    // Überprüfen, ob das liked-Feld vorhanden und ein Array ist
+    if (!Array.isArray(post.liked)) {
+      post.liked = []; // Wenn nicht, initialisieren Sie es mit einem leeren Array
+    }
+
+    // Überprüfen, ob der Benutzer bereits den Post gelikt hat
+    if (!post.liked.includes(username)) {
+      post.liked.push(username); // Benutzername zum Array der gelikten Benutzer hinzufügen
+      post.likes++;
+      await postsCollection.updateOne(
+        { _id: new ObjectId(postId) },
+        { $set: { likes: post.likes } },
+        { $set: { liked: post.liked } }, // Aktualisieren Sie das liked-Array im Post-Dokument
+      );
+    }
+
+    res.json({ message: 'Post liked successfully' });
   } catch (error) {
-    console.error("Fehler beim Speichern des Likes:", error);
-    res.status(500).json({ message: "Interner Serverfehler" });
+    console.error('Error liking post:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Route zum Entliken eines Posts
+app.post('/posts/:username/:postId/unlike', async (req, res) => {
+  const postsCollection = db.collection("posts");
+  const { postId, username } = req.params;
+
+  try {
+    const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Überprüfen, ob das liked-Feld vorhanden und ein Array ist
+    if (!Array.isArray(post.liked)) {
+      post.liked = []; // Wenn nicht, initialisieren Sie es mit einem leeren Array
+    }
+
+    const index = post.liked.indexOf(username);
+    if (index !== -1) {
+      post.liked.splice(index, 1); // Benutzername aus dem Array der gelikten Benutzer entfernen
+      post.likes--; // Anzahl der Likes verringern
+
+      // Dokument in der Datenbank aktualisieren
+      await postsCollection.updateOne(
+        { _id: new ObjectId(postId) },
+        { $set: { likes: post.likes, liked: post.liked } }
+      );
+    }
+    res.json({ message: 'Post unliked successfully' });
+  } catch (error) {
+    console.error('Error unliking post:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -808,28 +858,6 @@ app.get("/posts/:postId", async (req, res) => {
     res.json({ likes: post.likes });
   } catch (error) {
     console.error("Fehler beim Abrufen des Beitrags:", error);
-    res.status(500).json({ message: "Interner Serverfehler" });
-  }
-});
-
-
-app.post("/posts/:postId/unlike", async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const postsCollection = db.collection("posts");
-
-    const result = await postsCollection.updateOne(
-      { _id: new ObjectId(postId) },
-      { $inc: { likes: -1 } } 
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "Beitrag nicht gefunden" });
-    }
-
-    res.json({ message: "Like entfernt" });
-  } catch (error) {
-    console.error("Fehler beim Entfernen des Likes:", error);
     res.status(500).json({ message: "Interner Serverfehler" });
   }
 });
@@ -875,31 +903,26 @@ passport.use(
             ? profile.photos[0].value
             : null;
 
-        const existingUser = await collection.findOne({ email: userEmail });
+        let username = sanitizeUsername(profile.displayName);
 
-        if (existingUser) {
-          return done(null, existingUser);
-        } else {
-          const randomPassword = generateRandomPassword(); 
-          const newUser = {
-            username: sanitizeUsername(profile.displayName),
-            email: userEmail,
-            password: randomPassword,
-            follower: 0,
-            pb: userPhoto,
-            bio: "Hello, I'm New here!",
-            admin: false,
-            googlelogin: true,
-            githubLogin: false,
-            banned: false,
-            follower: 0,
-            followers: [],
-            badges: [],
-          };
+        const randomPassword = generateRandomPassword();
+        const newUser = {
+          username: username,
+          email: userEmail,
+          password: randomPassword,
+          follower: 0,
+          pb: userPhoto,
+          bio: "Hello, I'm New here!",
+          admin: false,
+          googlelogin: true,
+          githubLogin: false,
+          banned: false,
+          followers: [],
+          badges: [],
+        };
 
-          await collection.insertOne(newUser);
-          return done(null, newUser);
-        }
+        await collection.insertOne(newUser);
+        return done(null, newUser);
       } catch (error) {
         console.error("Error processing Google authentication:", error);
         return done(error, null);
@@ -907,7 +930,6 @@ passport.use(
     }
   )
 );
-
 
 app.post(
   "/auth/google/callback",
@@ -1550,6 +1572,10 @@ app.get("/api/blogs/:postId", async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'html', 'landing.html'));
+});
+
 const pages = [
   "home",
   "explore",
@@ -1561,6 +1587,22 @@ const pages = [
   "admin",
   "blog",
 ];
+
+const errorPages = [
+  400, // Bad Request
+  401, // Unauthorized
+  403, // Forbidden
+  404, // Not Found
+  405, // Method Not Allowed
+  500, // Internal Server Error
+  503, // Service Unavailable
+];
+
+errorPages.forEach((errorCode) => {
+  app.get(`/${errorCode}`, (req, res) => {
+    res.sendFile(path.join(__dirname, "html", `${errorCode}.html`));
+  });
+});
 const adminpages = ["badges"];
 
 pages.forEach((page) => {
@@ -1575,9 +1617,20 @@ adminpages.forEach((page) => {
   });
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'html', 'landing.html'));
-});
+const sendErrorPage = (statusCode, fileName) => {
+  return (req, res, next) => {
+    res.status(statusCode).sendFile(path.join(__dirname, "html", fileName));
+  };
+};
+
+// Verwenden Sie die Middleware für Fehlerseiten für verschiedene Statuscodes
+app.use(sendErrorPage(404, "404.html"));
+app.use(sendErrorPage(400, "400.html"));
+app.use(sendErrorPage(401, "401.html"));
+app.use(sendErrorPage(403, "403.html"));
+app.use(sendErrorPage(405, "405.html"));
+app.use(sendErrorPage(500, "500.html"));
+app.use(sendErrorPage(503, "503.html"));
 
 app.listen(PORT, () => {
     run().catch((error) =>
