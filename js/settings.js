@@ -203,186 +203,190 @@ changePasswordForm.addEventListener('submit', async (event) => {
     }
 });
 
-// // JavaScript, um das Benutzernamenänderungs-Overlay zu öffnen
-// document.getElementById('openChangeUsernameOverlayBtn').addEventListener('click', function() {
-//     document.getElementById('changeUsernameOverlay').classList.remove('hidden');
-// });
-// 
-// // JavaScript, um das Benutzernamenänderungs-Overlay zu schließen
-// document.getElementById('closeUsernameOverlay').addEventListener('click', function() {
-//     document.getElementById('changeUsernameOverlay').classList.add('hidden');
-// });
-// 
-// const changeUsernameForm = document.getElementById('changeUsernameForm');
-// changeUsernameForm.addEventListener('submit', async (event) => {
-//     event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
-// 
-//     const currentUsername = document.getElementById('currentUsername').value; // Aktuelles Passwort
-//     const newUsername = document.getElementById('newUsername').value; // Neuer Benutzername
-//     const confirmUsername = document.getElementById('confirmUsername').value; // Bestätigung des neuen Benutzernamens
-// 
-//     try {
-//         // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-//         const savedUser = localStorage.getItem('user');
-//         if (!savedUser) {
-//             console.error('User not found in local storage');
-//             return;
-//         }
-// 
-//         // Parse die Benutzerdaten aus dem Local Storage
-//         const { identifier } = JSON.parse(savedUser);
-// 
-//         // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
-//         if (!newUsername) {
-//             console.error('New username cannot be empty');
-//             return;
-//         }
-// 
-//         // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
-//         if (newUsername !== confirmUsername) {
-//             console.error('New username and confirm username do not match');
-//             return;
-//         }
-// 
-//         console.log('Sending username change request...');
-//         console.log('New Username:', newUsername);
-// 
-//         // Senden der Benutzernamenänderungsanforderung an den Server
-//         const response = await fetch('/api/profile/change/username', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({
-//                 username: identifier, // Aktueller Benutzername
-//                 currentUsername: currentUsername, // Aktuelles Passwort
-//                 newUsername: newUsername // Neuer Benutzername
-//             })
-//         });
-// 
-//         console.log('Response received:', response);
-// 
-//         if (response.ok) {
-//             const savedUser = JSON.parse(localStorage.getItem('user'));
-//             savedUser.identifier = newUsername; // Aktualisieren Sie den Benutzernamen im Local Storage
-//             localStorage.setItem('user', JSON.stringify(savedUser));
-//             Toastify({
-//                 text: 'Username changed successfully',
-//                 duration: 3000,
-//                 close: true,
-//                 backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-//             }).showToast();
-//             document.getElementById('changeUsernameOverlay').classList.add('hidden');
-//         } else {
-//             console.error('Failed to change username:', response.statusText);
-//             // Hier kannst du eine Fehlermeldung anzeigen
-//             Toastify({
-//                 text: 'Failed to change username: ' + response.statusText,
-//                 duration: 3000,
-//                 close: true,
-//                 backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-//             }).showToast();
-//         }
-//     } catch (error) {
-//         console.error('Error changing username:', error);
-//         // Hier kannst du eine Fehlermeldung anzeigen
-//         Toastify({
-//             text: 'Error changing username: ' + error,
-//             duration: 3000,
-//             close: true,
-//             backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-//         }).showToast();
-//     }
-// });
+// JavaScript, um das Benutzernamenänderungs-Overlay zu öffnen
+document.getElementById('openChangeUsernameOverlayBtn').addEventListener('click', function() {
+    document.getElementById('changeUsernameOverlay').classList.remove('hidden');
+});
+
+// JavaScript, um das Benutzernamenänderungs-Overlay zu schließen
+document.getElementById('closeUsernameOverlay').addEventListener('click', function() {
+    document.getElementById('changeUsernameOverlay').classList.add('hidden');
+});
+
+const changeUsernameForm = document.getElementById('changeUsernameForm');
+changeUsernameForm.addEventListener('submit', async (event) => {
+    event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+
+    const currentUsername = document.getElementById('currentUsername').value; // Aktuelles Passwort
+    const newUsername = document.getElementById('newUsername').value; // Neuer Benutzername
+    const confirmUsername = document.getElementById('confirmUsername').value; // Bestätigung des neuen Benutzernamens
+
+    try {
+        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+        const savedUser = localStorage.getItem('user');
+        if (!savedUser) {
+            console.error('User not found in local storage');
+            return;
+        }
+
+        // Parse die Benutzerdaten aus dem Local Storage
+        const { identifier } = JSON.parse(savedUser);
+
+        // Fülle das aktuelle Benutzernamefeld automatisch aus
+        document.getElementById('currentUsername').value = identifier;
+        console.log('Current Username:', identifier);
+
+        // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
+        if (!newUsername) {
+            console.error('New username cannot be empty');
+            return;
+        }
+
+        // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
+        if (newUsername !== confirmUsername) {
+            console.error('New username and confirm username do not match');
+            return;
+        }
+
+        console.log('Sending username change request...');
+        console.log('New Username:', newUsername);
+
+        // Senden der Benutzernamenänderungsanforderung an den Server
+        const response = await fetch('/api/profile/change/username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: identifier, // Aktueller Benutzername
+                currentUsername: currentUsername, // Aktuelles Passwort
+                newUsername: newUsername // Neuer Benutzername
+            })
+        });
+
+        console.log('Response received:', response);
+
+        if (response.ok) {
+            const savedUser = JSON.parse(localStorage.getItem('user'));
+            savedUser.identifier = newUsername; // Aktualisieren Sie den Benutzernamen im Local Storage
+            localStorage.setItem('user', JSON.stringify(savedUser));
+            Toastify({
+                text: 'Username changed successfully',
+                duration: 3000,
+                close: true,
+                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+            }).showToast();
+            document.getElementById('changeUsernameOverlay').classList.add('hidden');
+        } else {
+            console.error('Failed to change username:', response.statusText);
+            // Hier kannst du eine Fehlermeldung anzeigen
+            Toastify({
+                text: 'Failed to change username: ' + response.statusText,
+                duration: 3000,
+                close: true,
+                backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+            }).showToast();
+        }
+    } catch (error) {
+        console.error('Error changing username:', error);
+        // Hier kannst du eine Fehlermeldung anzeigen
+        Toastify({
+            text: 'Error changing username: ' + error,
+            duration: 3000,
+            close: true,
+            backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+        }).showToast();
+    }
+});
 
 
-// // JavaScript, um das E-Mail-Änderungs-Overlay zu öffnen
+// JavaScript, um das E-Mail-Änderungs-Overlay zu öffnen
 // document.getElementById('openChangeEmailOverlayBtn').addEventListener('click', function() {
-//     document.getElementById('changeEmailOverlay').classList.remove('hidden');
+    // document.getElementById('changeEmailOverlay').classList.remove('hidden');
 // });
 // 
-// // JavaScript, um das E-Mail-Änderungs-Overlay zu schließen
+// JavaScript, um das E-Mail-Änderungs-Overlay zu schließen
 // document.getElementById('closeEmailOverlay').addEventListener('click', function() {
-//     document.getElementById('changeEmailOverlay').classList.add('hidden');
+    // document.getElementById('changeEmailOverlay').classList.add('hidden');
 // });
 // 
 // const changeEmailForm = document.getElementById('changeEmailForm');
 // changeEmailForm.addEventListener('submit', async (event) => {
-//     event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+    // event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
 // 
-//     const currentPassword = document.getElementById('currentPassword').value; // Aktuelles Passwort
-//     const newEmail = document.getElementById('newEmail').value; // Neue E-Mail-Adresse
-//     const confirmEmail = document.getElementById('confirmEmail').value; // Bestätigung der neuen E-Mail-Adresse
+    // const currentPassword = document.getElementById('currentPassword').value; // Aktuelles Passwort
+    // const newEmail = document.getElementById('newEmail').value; // Neue E-Mail-Adresse
+    // const confirmEmail = document.getElementById('confirmEmail').value; // Bestätigung der neuen E-Mail-Adresse
 // 
-//     try {
-//         // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-//         const savedUser = localStorage.getItem('user');
-//         if (!savedUser) {
-//             console.error('User not found in local storage');
-//             return;
-//         }
+    // try {
+        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+        // const savedUser = localStorage.getItem('user');
+        // if (!savedUser) {
+            // console.error('User not found in local storage');
+            // return;
+        // }
 // 
-//         // Parse die Benutzerdaten aus dem Local Storage
-//         const { identifier } = JSON.parse(savedUser);
+        // Parse die Benutzerdaten aus dem Local Storage
+        // const { identifier } = JSON.parse(savedUser);
 // 
-//         // Überprüfen, ob das neue E-Mail-Feld nicht leer ist
-//         if (!newEmail) {
-//             console.error('New email cannot be empty');
-//             return;
-//         }
+        // Überprüfen, ob das neue E-Mail-Feld nicht leer ist
+        // if (!newEmail) {
+            // console.error('New email cannot be empty');
+            // return;
+        // }
 // 
-//         // Überprüfen, ob die neue E-Mail-Adresse mit der Bestätigung übereinstimmt
-//         if (newEmail !== confirmEmail) {
-//             console.error('New email and confirm email do not match');
-//             return;
-//         }
+        // Überprüfen, ob die neue E-Mail-Adresse mit der Bestätigung übereinstimmt
+        // if (newEmail !== confirmEmail) {
+            // console.error('New email and confirm email do not match');
+            // return;
+        // }
 // 
-//         console.log('Sending email change request...');
-//         console.log('New Email:', newEmail);
+        // console.log('Sending email change request...');
+        // console.log('New Email:', newEmail);
 // 
-//         // Senden der E-Mail-Änderungsanforderung an den Server
-//         const response = await fetch('/api/profile/change/email', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({
-//                 username: identifier, // Aktueller Benutzername
-//                 currentEmail: currentEmail, // Aktuelles Passwort
-//                 newEmail: newEmail // Neue E-Mail-Adresse
-//             })
-//         });
+        // Senden der E-Mail-Änderungsanforderung an den Server
+        // const response = await fetch('/api/profile/change/email', {
+            // method: 'POST',
+            // headers: {
+                // 'Content-Type': 'application/json'
+            // },
+            // body: JSON.stringify({
+                // username: identifier, // Aktueller Benutzername
+                // currentEmail: currentEmail, // Aktuelles Passwort
+                // newEmail: newEmail // Neue E-Mail-Adresse
+            // })
+        // });
 // 
-//         console.log('Response received:', response);
+        // console.log('Response received:', response);
 // 
-//         if (response.ok) {
-//             Toastify({
-//                 text: 'Email changed successfully',
-//                 duration: 3000,
-//                 close: true,
-//                 backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-//             }).showToast();
-//             document.getElementById('changeEmailOverlay').classList.add('hidden');
-//         } else {
-//             console.error('Failed to change email:', response.statusText);
-//             // Hier kannst du eine Fehlermeldung anzeigen
-//             Toastify({
-//                 text: 'Failed to change email: ' + response.statusText,
-//                 duration: 3000,
-//                 close: true,
-//                 backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-//             }).showToast();
-//         }
-//     } catch (error) {
-//         console.error('Error changing email:', error);
-//         // Hier kannst du eine Fehlermeldung anzeigen
-//         Toastify({
-//             text: 'Error changing email: ' + error,
-//             duration: 3000,
-//             close: true,
-//             backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-//         }).showToast();
-//     }
+        // if (response.ok) {
+            // Toastify({
+                // text: 'Email changed successfully',
+                // duration: 3000,
+                // close: true,
+                // backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+            // }).showToast();
+            // document.getElementById('changeEmailOverlay').classList.add('hidden');
+        // } else {
+            // console.error('Failed to change email:', response.statusText);
+            // Hier kannst du eine Fehlermeldung anzeigen
+            // Toastify({
+                // text: 'Failed to change email: ' + response.statusText,
+                // duration: 3000,
+                // close: true,
+                // backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+            // }).showToast();
+        // }
+    // } catch (error) {
+        // console.error('Error changing email:', error);
+        // Hier kannst du eine Fehlermeldung anzeigen
+        // Toastify({
+            // text: 'Error changing email: ' + error,
+            // duration: 3000,
+            // close: true,
+            // backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+        // }).showToast();
+    // }
 // });
 
 // Delete User Account
@@ -458,6 +462,14 @@ if (savedMode === 'dark') {
     document.body.classList.add('dark-mode');
 }
 document.getElementById('mode-toggle').textContent = savedMode === 'dark' ? '🌞 Light Mode' : '🌑 Dark Mode';
+
+function redirectToPreferences() {
+    window.location.href = "/preferences";
+}
+
+function redirectToHome() {
+    window.location.href = "/home";
+}
 
 console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
 console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

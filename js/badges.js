@@ -2,11 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBadgeButton = document.getElementById('add-badge-button');
     const addBadgeOverlay = document.getElementById('add-badge-overlay');
     const closeOverlayButton = document.getElementById('close-overlay-button');
-    const badgeForm = document.getElementById('badge-form');
-    const assignBadgeButton = document.getElementById('assign-badge-button');
     const assignBadgeOverlay = document.getElementById('assign-badge-overlay');
     const closeAssignOverlayButton = document.getElementById('close-assign-overlay-button');
-    const assignBadgeForm = document.getElementById('assign-badge-form');
 
     // Event-Listener für den Add Badge Button
     addBadgeButton.addEventListener('click', () => {
@@ -25,10 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('badge-form').addEventListener('submit', async (event) => {
         event.preventDefault();
-
-        document.getElementById('badge-name').value = '';
-        document.getElementById('badge-image').value = '';
-        document.getElementById('badge-description').value = '';
     
         // Badge-Daten aus dem Formular abrufen
         const name = document.getElementById('badge-name').value;
@@ -353,7 +346,7 @@ function openOverlay(content) {
 
     const closeButton = document.createElement('span');
     closeButton.classList.add('close-button');
-    closeButton.innerHTML = '&times;';
+    closeButton.innerHTML = '✖';
     closeButton.addEventListener('click', function() {
         closeOverlay(overlay);
     });
@@ -376,7 +369,7 @@ async function fetchAndDisplayBadgeUsers(badgeName) {
             throw new Error('Fehler beim Laden der Benutzerdaten');
         }
         const userData = await response.json();
-        const badgeUsers = userData.users.filter(user => user.badges.some(b => b.name === badgeName));
+        const badgeUsers = userData.users.filter(user => user.badges && user.badges.some(b => b.name === badgeName)); // Add a check for user.badges
         if (badgeUsers.length > 0) {
             const overlay = document.querySelector('.overlay-content');
             displayBadgeUsers(badgeUsers, overlay);
@@ -497,8 +490,8 @@ function showEditBadgeOverlay(badge) {
                 <label for="edit-badge-description">Description:</label>
                 <textarea style="font-family: 'Cascadia Code',  sans-serif;" id="edit-badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required>${badge.description}</textarea>
                 <div class="button-group">
-                    <button onclick="handleEditFormSubmit(event, '${badge.name}');" type="submit" class="neumorphism-button">Save Changes</button>
-                    <button type="button" onclick="location.reload();" class="neumorphism-button">Close</button>
+                    <button style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; font-family: 'Cascadia Code',  sans-serif;" onclick="handleEditFormSubmit(event, '${badge.name}');" type="submit" class="neumorphism-button">Save Changes</button>
+                    <button style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; font-family: 'Cascadia Code',  sans-serif;" type="button" onclick="location.reload();" class="neumorphism-button">Close</button>
                 </div>
                 <p class="small-text" style="font-size: 0.8em; color: gold;">⚠️ You need to reassign the Badges for the Users if the update is NEEDED!</p>
             </form>

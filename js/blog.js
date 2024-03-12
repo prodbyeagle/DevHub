@@ -115,7 +115,7 @@ async function renderBlogPosts() {
     // Überprüfen, ob Blog-Beiträge vorhanden sind
     if (blogPosts.length === 0) {
         const noPostsMessage = document.createElement('p');
-        noPostsMessage.textContent = 'Keine Blog-Beiträge gefunden.';
+        noPostsMessage.textContent = '🥺 No blog posts!';
         blogPostsContainer.appendChild(noPostsMessage);
         return;
     }
