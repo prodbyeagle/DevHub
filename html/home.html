@@ -5,23 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
     <div class="title-container">
-        <h1 class="text-3xl font-bold mb-8">Devolution</h1>
+        <h1 class="mb-8 text-4xl font-bold">devolution.</h1>
     </div>
-    <title>Devolution</title>
+    <title>devolution.</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
     <link rel="stylesheet" href="/css/home.css">
+    <style>
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+            min-width: 100vw;
+            min-height: 100vh;
+            width: var(--size);
+            filter: blur(150px);
+            height: var(--size);
+            animation: moveGradient 10s linear infinite alternate infinite;
+            --size: 250px;
+            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+
+        @keyframes moveGradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+    </style>
 </head>
 <body class="dark-mode">
     <div class="container mx-auto">
+        <div class="gradient"></div>
         <div class="sidebar">
-            <h2 class="text-lg font-semibold mb-4">👋 Welcome, <span id="username"></span>!</h2>
+            <h2 class="mb-4 text-lg font-semibold">👋 Welcome, <span id="username"></span>!</h2>
             <h2></h2>
             <ul>
-                <li><a id="search-btn" class="search-btn">🔍 Search User</a></li>
+                <li><a id="search-btn" class="search-btn">🔍 Search</a></li>
                 <li><a href="/explore">🌐 Explore</a></li>
                 <li><a href="/profile">👤 Profile</a></li>
                 <li><a href="/settings">⚙️ Settings</a></li>
@@ -29,7 +60,7 @@
                 <li id="loginLink"><a href="/login">🔑 Login</a></li>
                 <li id="signupLink"><a href="/signup">✍️ Sign-Up</a></li>
                 <li id="signoutLink"><a href="#" id="signoutBtn">🚪 Sign Out</a></li>
-                <h2 id="devHeader" class="text-lg font-semibold mb-4">DEV</h2>
+                <h2 id="devHeader" class="mb-4 text-lg font-semibold">DEV</h2>
                 <li id="adminLink"><a href="/admin">📊 Dashboard</a></li>
                 <li id="badgesLink"><a href="/admin/badges">🎖️ Badges</a></li>
                 <li id="preferencesLink"><a href="/preferences">⚙️ Preferences</a></li>
@@ -37,10 +68,10 @@
                 <li id="postsLink"><a href="/api/posts">📝 Posts API</a></li>
                 <li id="usernameLink"><a href="/api/username">👤 Users API</a></li>
                 <li id="badgesapiLink"><a href="/api/admin/badges">🎖️ Badges API</a></li>
-                <h2 class="text-lg font-semibold mb-4">👤 Followers</h2>
+                <h2 class="mb-4 text-lg font-semibold">👤 Followers</h2>
                 <ul id="follower-list"></ul>
             </ul>
-            <button id="generatePostsBtn" class="neumorphism-button w-full mt-4">Generate Posts</button>
+            <button id="generatePostsBtn" class="w-full mt-4 neumorphism-button">Generate Posts</button>
         </div>
 
 
@@ -49,27 +80,27 @@
 <form id="postForm" class="mb-8">
     <div class="mb-4">
         <label for="postDescription" class="block text-sm font-medium text-gray-400">📝 Description</label>
-        <textarea id="postDescription" name="postDescription" rows="1" cols="50" maxlength="100" placeholder="Describe your code!" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white" style="resize: none;"></textarea>
+        <textarea id="postDescription" name="postDescription" rows="1" cols="50" maxlength="100" placeholder="Describe your code!" class="block w-full px-3 py-2 mt-1 text-white bg-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500" style="resize: none;"></textarea>
     </div>
     <div class="mb-4">
         <label for="postContent" class="block text-sm font-medium text-gray-400">💻 Code Snippet</label>
-        <textarea id="postContent" name="postContent" rows="3" cols="50" maxlength="3000" placeholder="Paste your code in!" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 bg-gray-800 text-white" style="resize: none; max-width: 100%;"></textarea>
+        <textarea id="postContent" name="postContent" rows="3" cols="50" maxlength="3000" placeholder="Paste your code in!" class="block w-full px-3 py-2 mt-1 text-white bg-gray-800 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500" style="resize: none; max-width: 100%;"></textarea>
     </div>                                                 
-    <button type="submit" class="neumorphism-button text-white py-2 px-4 rounded">Send</button>
+    <button type="submit" class="px-4 py-2 text-white rounded neumorphism-button">Send</button>
 </form>
 
 
     <div id="latestPosts"></div>
-    <div id="loadingCircle" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2">
-        <div class="border border-t-4 border-gray-200 rounded-full w-12 h-12 animate-spin"></div>
+    <div id="loadingCircle" class="fixed hidden transform -translate-x-1/2 bottom-4 left-1/2">
+        <div class="w-12 h-12 border border-t-4 border-gray-200 rounded-full animate-spin"></div>
     </div>
 </div>
 
 <div class="search-overlay" id="searchOverlay">
-        <div class="search-bar mb-4 neumorphism-input">
-            <input type="text" id="searchInput" placeholder="Search for a username..." class="search-input">
-            <button id="searchButton" class="neumorphism-button text-blue-600 search-button">Search</button>
-            <button id="closeButton" class="neumorphism-button text-red-600 close-button">Close</button> <!-- Close-Button hinzugefügt -->
+        <div class="mb-4 search-bar neumorphism-input">
+            <input type="text" id="searchInput" placeholder="Search..." class="search-input">
+            <button id="searchButton" class="text-blue-600 neumorphism-button search-button">Search</button>
+            <button id="closeButton" class="text-red-600 neumorphism-button close-button">Close</button> <!-- Close-Button hinzugefügt -->
         </div>
         <div id="searchResults" class="neumorphism-input"></div>
 </div>

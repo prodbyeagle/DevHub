@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devolution: Badges</title>
+    <title>devolution. Badges</title>
     <link rel="stylesheet" href="/css/badges.css">
     <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
+    <link rel="stylesheet" href="/assets/CascadiaCode-Regular.woff2" type="font/woff2">
 </head>
 <body>
 
     <div class="container">
         <h1>🏅 Badges</h1>
-        <button id="add-badge-button" class="neumorphism-button">➕ Add Badge</button>
+        <button style="margin: 5px; font-family: 'Cascadia Code',  sans-serif;" id="add-badge-button" class="neumorphism-button">➕ Add Badge</button>
         <div id="badges-container" class="badges-grid"></div>
     </div>
 
@@ -24,14 +25,14 @@
             <h2>➕ Add Badge</h2>
             <form id="badge-form">
                 <label for="badge-name">🎖️ Name:</label>
-                <input type="text" id="badge-name" placeholder="Whats the Name of the Badge?" name="name" class="neumorphism-input" rows="1" cols="1" maxlength="32" style="resize: none; font-family: 'Cascadia Code',  sans-serif;" required>
+                <input type="text" style="font-family: 'Cascadia Code',  sans-serif;" id="badge-name" placeholder="Whats the Name of the Badge?" name="name" class="neumorphism-input" rows="1" cols="1" maxlength="32" style="resize: none; font-family: 'Cascadia Code',  sans-serif;" required>
                 <label for="badge-image">🖼️ Picture:</label>
                 <input type="file" style="font-family: 'Cascadia Code',  sans-serif;" id="badge-image" name="image" class="neumorphism-input" accept="image/* "  required>
                 <label for="badge-description">📝 Description:</label>
                 <textarea id="badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required></textarea>
                 <div class="button-group">
-                    <button type="submit" class="neumorphism-button">✅ Add</button>
-                    <button type="button" id="close-overlay-button" class="neumorphism-button">❌ Close</button>
+                    <button type="submit" style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; font-family: 'Cascadia Code',  sans-serif;" class="neumorphism-button">✅ Add</button>
+                    <button type="button" style="margin: 10px; font-family: 'Cascadia Code',  sans-serif;" id="close-overlay-button" class="neumorphism-button">❌ Close</button>
                 </div>
             </form>
             <div id="error-message" class="error-message"></div>
@@ -47,8 +48,8 @@
                 <label for="username">👤  Username:</label>
                 <input style="font-family: 'Cascadia Code',  sans-serif;" type="text" id="username" name="username" class="neumorphism-input" required>
                 <div class="button-group">
-                    <button type="submit" class="neumorphism-button">✅ Assign</button>
-                    <button type="button" id="close-assign-overlay-button" class="neumorphism-button">❌ Close</button>
+                    <button type="submit" style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; font-family: 'Cascadia Code',  sans-serif;" class="neumorphism-button">✅ Assign</button>
+                    <button type="button" style="margin: 10px; font-family: 'Cascadia Code',  sans-serif;" id="close-assign-overlay-button" class="neumorphism-button">❌ Close</button>
                 </div>
             </form>
             <div id="assign-error-message" class="error-message"></div>

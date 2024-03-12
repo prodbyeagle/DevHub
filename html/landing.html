@@ -3,55 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devolution</title>
+    <title>devolution.</title>
     <link rel="stylesheet" href="/css/landing.css">
     <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
+    <link rel="stylesheet" href="/css/home.css">
     <style>
-.gradient {
-    /* Füge hier deine CSS-Stile für den Gradienten ein */
-    background: linear-gradient(to left, #ff416c, #ff4b2b);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
-    min-width: 100vw;
-    min-height: 100vh;
-    width: var(--size);
-    height: var(--size);
-    animation: dynamicSize var(--speed) var(--easing) alternate infinite, rotate var(--speed) var(--easing) alternate infinite;
-    --size: 250px;
-    --speed: 180s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
-    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-}
+        /* CSS für den animierten Gradienten-Hintergrund */
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
-@keyframes dynamicSize {
-    0% {
-        width: 50vw;
-        height: 50vh;
-    }
-    50% {
-        width: 100vw;
-        height: 100vh;
-    }
-    100% {
-        width: 50vw;
-        height: 50vh;
-    }
-}
+        .gradient {
+            --min-size: 200px;
+            --max-size: 400px;
+            --size: 250px;
+            --speed: 50s;
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        
+            width: calc(var(--min-size) + (var(--max-size) - var(--min-size)) * var(--size));
+            height: calc(var(--min-size) + (var(--max-size) - var(--min-size)) * var(--size));
+            filter: blur(150px);
+            animation: rotate var(--speed) var(--easing) alternate infinite;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
-@keyframes rotate {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
+        body {
+            font-family: 'Cascadia Code',  sans-serif;
+            background-color: #222;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            place-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* This is just to transition when you change the viewport size. */
+        * {
+            transition: all 0.25s ease-out;
+        }
+
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+        }
 
         .dev-hub-text {
-            /* Füge hier deine CSS-Stile für den "Devolution"-Text ein */
+            /* Füge hier deine CSS-Stile für den "devolution."-Text ein */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -76,16 +111,11 @@
             margin-bottom: 1rem;
         }
 
-        .button-container {
-            display: flex;
-            justify-content: center;
-        }
-
         .signin-button, .login-button {
             /* Füge hier deine CSS-Stile für die Buttons ein */
             padding: 0.5rem 1rem;
             margin: 0 0.5rem;
-            background-color: #af3131;
+            background-color: #ff7e7e;
             color: white;
             border: none;
             border-radius: 4px;
@@ -97,13 +127,13 @@
         .signin-button:hover,
         .login-button:hover {
             background-color: rgba(255, 255, 255, 0.192); /* Transparente Hintergrundfarbe */
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Unschärfeeffekt */
+            box-shadow: 0 0 10px rgba(167, 167, 167, 0.3); /* Unschärfeeffekt */
         }
     </style>
 </head>
 <body>
     <div class="gradient"></div>
-    <div class="dev-hub-text">Devolution</div>
+    <div class="dev-hub-text">devolution.</div>
 
     <div class="slogan">
         <h2>The Social Media for Coders</h2>
