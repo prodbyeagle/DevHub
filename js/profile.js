@@ -260,6 +260,14 @@ try {
             const newBio = document.getElementById('bio-input').value;
 
             if (newBio.trim() === '') {
+                Toastify({
+                    text: 'You are very funny! but type something!!!',
+                    duration: 3000,
+                    close: false,
+                    gravity: 'top', // Optionen: 'top', 'bottom', 'center'
+                    position: 'right', // Optionen: 'left', 'right', 'center'
+                    backgroundColor: 'linear-gradient(to right, #e74c3c, #e67e22)',
+                }).showToast();
                 return;
             }
 
@@ -284,6 +292,15 @@ try {
                 },
                 body: JSON.stringify({ username, newBio })
             });
+
+            Toastify({
+                text: 'Bio was updated successfully',
+                duration: 3000,
+                close: true,
+                gravity: 'top', // Optionen: 'top', 'bottom', 'center'
+                position: 'right', // Optionen: 'left', 'right', 'center'
+                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+            }).showToast();
     
             if (!response.ok) {
                 throw new Error('Failed to update bio.');
@@ -386,11 +403,11 @@ return new Promise((resolve, reject) => {
 
             // Überprüfen, ob das Bild größer als maxSize x maxSize ist
             if (img.width > maxSize || img.height > maxSize) {
-                Toastify({
-                    text: `Das Bild wird auf ${maxSize}x${maxSize} skaliert.`,
-                    backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-                    className: 'info-toast'
-                }).showToast();
+                // Toastify({
+                //     text: `Das Bild wird auf ${maxSize}x${maxSize} skaliert.`,
+                //     backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                //     className: 'info-toast'
+                // }).showToast();
 
                 let width = img.width;
                 let height = img.height;
@@ -467,7 +484,7 @@ try {
             duration: 3000,
             close: true,
             gravity: 'top', // Optionen: 'top', 'bottom', 'center'
-            position: 'center', // Optionen: 'left', 'right', 'center'
+            position: 'right', // Optionen: 'left', 'right', 'center'
             backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
         }).showToast();
 
@@ -480,7 +497,7 @@ try {
         duration: 3000,
         close: true,
         gravity: 'top', // Optionen: 'top', 'bottom', 'center'
-        position: 'center', // Optionen: 'left', 'right', 'center'
+        position: 'right', // Optionen: 'left', 'right', 'center'
         backgroundColor: 'linear-gradient(to right, #e74c3c, #e67e22)',
     }).showToast();
 }
@@ -852,7 +869,23 @@ function displayBadges(badges) {
         const badgeElement = document.createElement('img');
         badgeElement.src = badge.image;
         badgeElement.alt = badge.name;
+        badgeElement.title = badge.name; // Setzen Sie den Namen als Titel-Attribut
+        badgeElement.style.borderRadius = '25%';
+        badgeElement.style.cursor = 'pointer';
+        badgeElement.style.margin = '10px';
+        badgeElement.style.boxSizing = 'border-box'; // Berücksichtigt die Border-Größe in der Elementgröße
+        badgeElement.style.border = '1px solid transparent'; // Anfangs keine Umrandung
         badgeElement.classList.add('badge');
+    
+        badgeElement.addEventListener('mouseenter', () => {
+            badgeElement.style.borderColor = '#ffffff'; // Ändere die Farbe der Umrandung beim Überfahren
+            badgeElement.style.boxShadow = '0 0 0 1px #ffffff'; // Füge einen Schatten hinzu, um die Auswahl zu zeigen
+        });
+    
+        badgeElement.addEventListener('mouseleave', () => {
+            badgeElement.style.borderColor = 'transparent'; // Setze die Umrandung zurück, wenn die Maus das Badge verlässt
+            badgeElement.style.boxShadow = 'none'; // Entferne den Schatten beim Verlassen des Badges
+        });
 
         if (badge.active) {
             badgeElement.classList.add('active');
@@ -883,7 +916,6 @@ async function changeActiveBadge(badgeName) {
         }
 
         const deactivateData = await deactivateResponse.json();
-        console.log(deactivateData.message); // Optional: Konsolenausgabe der Serverantwort
 
         // Aktiviere den ausgewählten Badge des Benutzers
         const activateResponse = await fetch(`/api/${username}/badges/${badgeName}/activate`, {
@@ -899,7 +931,16 @@ async function changeActiveBadge(badgeName) {
         }
 
         const activateData = await activateResponse.json();
-        console.log(activateData.message);
+
+        Toastify({
+            text: `${badgeName} was Activated!`,
+            duration: 3000,
+            close: true,
+            gravity: 'top', // Optionen: 'top', 'bottom', 'center'
+            position: 'right', // Optionen: 'left', 'right', 'center'
+            backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+        }).showToast();
+
 
         // Aktualisiere die Badges nach der Aktivierung
         loadBadges();
