@@ -7,20 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Diagrammdaten abrufen und aktualisieren
         await fetchDataAndRenderChart();
         startChartRefreshTimer();
-
-        // Interval für das Abrufen von Fehlerprotokollen festlegen
-        setInterval(fetchErrorLogAndUpdate, 2500);
-
-        // console.error umleiten, um es im Fehlerprotokollbereich anzuzeigen
-        const originalConsoleError = console.error;
-        console.error = function(...args) {
-            originalConsoleError.apply(console, args);
-            const errorMessage = args.join(' '); // Fehlermeldung aus den Argumenten zusammensetzen
-            console.error(errorMessage); // Fehler an das Fehlerprotokoll senden
-        };
-
-        // Fetch-Fehlerprotokoll sofort beim Laden der Seite
-        await fetchErrorLogAndUpdate();
+   
     } catch (error) {
         console.error('There was a problem with your fetch operation:', error);
     }
@@ -101,7 +88,7 @@ async function updateUserData(userData) {
                 </div>
                 <div class="ml-auto">
                     <button onclick="toggleBan('${user.username}', ${user.banned}, this)" class="neumorphism-button text-blue-600">${user.banned ? 'Unban' : 'Ban'}</button>
-                    <button onclick="toggleAdmin('${user.username}', ${user.admin}, this)" class="neumorphism-button text-blue-600">${user.admin ? 'True' : 'False'}</button>
+                    <button onclick="toggleAdmin('${user.username}', ${user.admin}, this)" class="neumorphism-button text-blue-600">${user.admin ? 'False' : 'True'}</button>
                 </div>
             `;
 
@@ -421,7 +408,6 @@ deletePostsButton.addEventListener('click', async () => {
 function loadModePreference() {
     // Lade den gespeicherten Moduswert aus dem Local Storage
     const mode = localStorage.getItem('mode');
-    console.log('Mode: ' + mode);
     if (mode === 'light') {
         // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
         document.body.classList.remove('dark-mode');

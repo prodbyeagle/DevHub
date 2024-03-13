@@ -899,23 +899,23 @@ app.post('/posts/:username/:postId/like', async (req, res) => {
   try {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
     if (!post) {
+      console.error('Post not found');
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Überprüfen, ob das liked-Feld vorhanden und ein Array ist
-    if (!Array.isArray(post.liked)) {
-      post.liked = []; // Wenn nicht, initialisieren Sie es mit einem leeren Array
+    // Überprüfen, ob das Feld 'liked' definiert ist und ein Array ist
+    if (!post.hasOwnProperty('liked') || !Array.isArray(post.liked)) {
+      post.liked = [];
     }
 
-    // Überprüfen, ob der Benutzer bereits den Post gelikt hat
     if (!post.liked.includes(username)) {
-      post.liked.push(username); // Benutzername zum Array der gelikten Benutzer hinzufügen
+      post.liked.push(username);
       post.likes++;
       await postsCollection.updateOne(
         { _id: new ObjectId(postId) },
-        { $set: { likes: post.likes } },
-        { $set: { liked: post.liked } }, // Aktualisieren Sie das liked-Array im Post-Dokument
+        { $set: { likes: post.likes, liked: post.liked } }
       );
+      console.log(`Post liked by ${username}`);
     }
 
     res.json({ message: 'Post liked successfully' });
@@ -925,7 +925,6 @@ app.post('/posts/:username/:postId/like', async (req, res) => {
   }
 });
 
-// Route zum Entliken eines Posts
 app.post('/posts/:username/:postId/unlike', async (req, res) => {
   const postsCollection = db.collection("posts");
   const { postId, username } = req.params;
@@ -933,32 +932,68 @@ app.post('/posts/:username/:postId/unlike', async (req, res) => {
   try {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
     if (!post) {
+      console.error('Post not found');
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Überprüfen, ob das liked-Feld vorhanden und ein Array ist
     if (!Array.isArray(post.liked)) {
-      post.liked = []; // Wenn nicht, initialisieren Sie es mit einem leeren Array
+      post.liked = [];
     }
 
     const index = post.liked.indexOf(username);
     if (index !== -1) {
-      post.liked.splice(index, 1); // Benutzername aus dem Array der gelikten Benutzer entfernen
-      post.likes--; // Anzahl der Likes verringern
+      post.liked.splice(index, 1);
+      post.likes--;
 
-      // Dokument in der Datenbank aktualisieren
       await postsCollection.updateOne(
         { _id: new ObjectId(postId) },
         { $set: { likes: post.likes, liked: post.liked } }
       );
+      console.log(`Post unliked by ${username}`);
     }
     res.json({ message: 'Post unliked successfully' });
   } catch (error) {
     console.error('Error unliking post:', error);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
+  
 });
 
+app.get('/posts/:postId/likes', async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    res.json({ likes: post.likes });
+  } catch (error) {
+    console.error('Error getting likes:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get('/posts/:username/:postId/check-like', async (req, res) => {
+  const { postId, username } = req.params;
+  console.log("Check was succesfully loaded")
+
+  try {
+    const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+    if (!post) {
+      console.error('Post not found');
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    if (post.liked.includes(username)) {
+      res.json({ liked: true });
+    } else {
+      res.json({ liked: false });
+    }
+  } catch (error) {
+    console.error('Error checking if liked:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 app.get("/posts/:postId", async (req, res) => {
   try {
@@ -1037,15 +1072,19 @@ app.post("/api/admin/badges", async (req, res) => {
 app.post("/api/admin/assign-badge", async (req, res) => {
   const { badgeName, badgeImage, badgeDescription, username } = req.body;
   try {
-    
-    const userExists = await db
-      .collection("users")
-      .findOne({ username: username });
+    // Überprüfen, ob der Benutzer existiert
+    const userExists = await db.collection("users").findOne({ username: username });
     if (!userExists) {
       throw new Error("Benutzer nicht gefunden");
     }
 
-    
+    // Überprüfen, ob der Benutzer bereits das Badge hat
+    const hasBadge = userExists.badges.some(badge => badge.name === badgeName);
+    if (hasBadge) {
+      return res.status(400).json({ error: "Benutzer hat das Badge bereits" });
+    }
+
+    // Badge dem Benutzer hinzufügen
     const result = await db.collection("users").findOneAndUpdate(
       { username: username },
       {
@@ -1061,7 +1100,7 @@ app.post("/api/admin/assign-badge", async (req, res) => {
       { returnOriginal: false }
     );
 
-    res.json(result.value); 
+    res.json(result.value); // Gibt den aktualisierten Benutzer zurück
   } catch (error) {
     console.error("Fehler beim Zuweisen des Badges zum Benutzer:", error);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
@@ -1143,18 +1182,15 @@ app.put("/api/:username/badges/:name/activate", async (req, res) => {
   const { active } = req.body;
 
   try {
-    console.log(`Aktiviere Badge ${name} für Benutzer ${username}`);
-
     const badge = await usersCollection.findOne({ username: username, "badges.name": name });
 
     if (badge) {
-      // Aktiviere das ausgewählte Badge des Benutzers
+      // Aktualisieren Sie das aktive Badge des Benutzers entsprechend
       await usersCollection.updateOne(
-        { name: name, username: username },
-        { $set: { active: active } }
+        { username: username, "badges.name": name },
+        { $set: { "badges.$.active": active } }
       );
 
-      console.log(`Badge ${name} erfolgreich ${active ? "aktiviert" : "deaktiviert"}`);
       
       res.status(200).json({
         message: `Badge "${name}" erfolgreich ${active ? "aktiviert" : "deaktiviert"}`,
@@ -1175,8 +1211,6 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
   let skippedBadgeName = null; // Variable zum Speichern des Namens des übersprungenen Badges
 
   try {
-    console.log(`Deaktiviere alle Badges außer dem ausgewählten Badge für Benutzer ${username}`);
-    console.log("------");
 
     // Holen Sie sich den Benutzer und seine Badges
     const user = await usersCollection.findOne({ username: username });
@@ -1191,17 +1225,12 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
       }
     
       if (badges[i].active === true) {
-        console.log(`Deaktiviere Badge "${badges[i].name}"`);
         await usersCollection.updateOne(
           { username: username, "badges.name": badges[i].name },
           { $set: { "badges.$.active": false } }
         );
-        console.log(`Badge "${badges[i].name}" erfolgreich deaktiviert`);
       }
     }
-
-    console.log(`Alle Badges außer dem ausgewählten Badge erfolgreich deaktiviert. Übersprungenes Badge: ${skippedBadgeName}`);
-    console.log("------");
 
     res.status(200).json({ message: `Alle Badges außer dem ausgewählten Badge erfolgreich deaktiviert. Übersprungenes Badge: ${skippedBadgeName}` });
   } catch (error) {

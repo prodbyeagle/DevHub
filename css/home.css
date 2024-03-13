@@ -26,8 +26,7 @@
         }
 
         .sidebar:hover {
-            box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
-            transform: scale(1.05);
+            transform: scale(1.03);
             transition: all 0.3s ease;
         }
 
@@ -62,7 +61,7 @@
         }
         
         .sidebar a:hover {
-            color: #ff285a;
+            color: #7c7c7cdb;
         }
         
         .sidebar a::before {
@@ -72,7 +71,7 @@
             left: 0;
             width: 0%;
             height: 2px;
-            background-color: #ff285a;
+            background-color: #2222228e;
             transition: width 0.3s ease;
         }
         
@@ -153,8 +152,7 @@
         }
         
         body.dark-mode .sidebar:hover {
-            box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
-            transform: scale(1.05);
+            transform: scale(1.03);
             transition: all 0.3s ease;
         }
 
@@ -236,7 +234,7 @@
         }
     
         #postForm button:hover {
-            background-color: #ff285a;
+            background-color: #7c7c7cdb;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.3); /* verstärkter Schatten beim Hover */
         }
     
@@ -248,13 +246,13 @@
         }
     
         body.dark-mode #postForm button:hover {
-            background-color: #ff285a;
+            background-color: #7c7c7cdb;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* verstärkter Schatten beim Hover */
         }
         
         /* Dark Mode styles for the button */
         body.dark-mode .create-post-form button {
-            background-color: #ff285a;
+            background-color: #7c7c7cdb;
             color: #eee;
             box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
         }
@@ -322,7 +320,7 @@
         }
 
         .scroll-to-top:hover {
-            background-color: #ff285a;
+            background-color: #7c7c7cdb;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
         }
 
@@ -333,7 +331,7 @@
         }
 
         body.dark-mode .scroll-to-top:hover {
-            background-color: #ff285ac0;
+            background-color: #7c7c7cdb;
         }
 
                 /* Neumorphism styles for the input fields */

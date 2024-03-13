@@ -257,13 +257,39 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
+// Zählen der Klicks und Anzeigen des "Easter Egg"
+let clickCount = 0;
+let easterEggEnabled = true;
+let maxClicks = Math.floor(Math.random() * 50) + 1;
+
 async function createPost(event) {
   event.preventDefault(); // Verhindert das Standardformularverhalten
+
+  // Definition der handleClick-Funktion
+  function handleClick() {
+    clickCount++;
+
+    if (clickCount === maxClicks) { 
+      Toastify({
+        text: "💀",
+        style: {
+          background: "linear-gradient(to right, #D7D7D7, #969696)",
+        },
+        className: "rounded", // Abgerundete Ecken hinzufügen
+        duration: 10000,
+      }).showToast();
+      //TODO: Maybe ein Badge vergeben? 
+      easterEggEnabled = false;
+    }
+  }
 
   const postContent = document.getElementById("postContent").value;
   const postDescription = document.getElementById("postDescription").value;
 
   if (!postContent.trim()) {
+    if (easterEggEnabled) {
+      handleClick();
+    }
     return;
   }
 
@@ -768,22 +794,19 @@ displayFollowersWithPictures();
 
 async function toggleLike(postId) {
   const likesButton = document.getElementById(`likesButton_${postId}`);
-  if (!likesButton) return; // Wenn der Button nicht gefunden wird, abbrechen
+  if (!likesButton) return;
 
   try {
+    const isLiked = likesButton.classList.contains("liked");
 
-    const updatedLikesCount = await getLikes(postId); // Aktuelle Anzahl der Likes abrufen
-    updateLikesElement(postId, updatedLikesCount); // Anzahl der Likes aktualisieren
-
-    // Überprüfen, ob der Benutzer bereits gelikt hat
-    const isUserLiked = updatedLikesCount.liked.includes(currentUser); // currentUser ist der aktuelle Benutzer
-
-    if (isUserLiked) {
-      await removeLike(postId); // Wenn der Benutzer bereits gelikt hat, den Like entfernen
+    if (isLiked) {
+      await removeLike(postId);
       likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+      likesButton.classList.remove("liked");
     } else {
-      await saveLike(postId); // Wenn der Benutzer noch nicht gelikt hat, den Like speichern
+      await saveLike(postId);
       likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+      likesButton.classList.add("liked");
     }
 
     // Füge die Pop-Animation-Klasse hinzu
@@ -858,27 +881,46 @@ async function removeLike(postId) {
   }
 }
 
-async function getLikes(postId) {
+// Funktion zum Überprüfen, ob der Benutzer den Beitrag bereits mag
+document.addEventListener('DOMContentLoaded', function() {
+  async function checkIfLiked(postId, username) {
   try {
-    postId;
-    const response = await fetch(`/posts/${postId}`);
-    if (!response.ok) {
-      throw new Error("Fehler beim Abrufen der Likes");
-    }
+    const response = await fetch(`/posts/${username}/${postId}/check-like`);
     const data = await response.json();
-    return data.likes;
+    return data.liked;
   } catch (error) {
-    console.error("Fehler:", error);
-    return 0; // Standardwert, falls ein Fehler auftritt
+    console.error('Error checking if liked:', error);
+    return false;
   }
 }
 
-function updateLikesElement(postId, updatedLikesCount) {
-  const likesElement = document.getElementById(`likesCount_${postId}`);
-  if (likesElement) {
-    likesElement.textContent = `Likes: ${updatedLikesCount}`;
+async function displayLikeStatus(postId, username) {
+  console.log(postId, username)
+  const likesButton = document.getElementById(`likesButton_${postId}`);
+  if (!likesButton) return;
+  const isLiked = await checkIfLiked(postId, username);
+  if (isLiked) {
+    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+  } else {
+    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
   }
 }
+});
+
+async function updateLikes(postId) {
+  try {
+    const response = await fetch(`/posts/${postId}/likes`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch likes');
+    }
+    const { likes } = await response.json();
+    const likesElement = document.getElementById(`likesCount_${postId}`);
+    likesElement.textContent = `Likes: ${likes}`;
+  } catch (error) {
+    console.error('Error updating likes:', error);
+  }
+}
+
 
 // IEFHIEFH
 
