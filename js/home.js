@@ -1,6 +1,23 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const username = localStorage.getItem("user");
+  const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
 
+  if (token) {
+    const jwtToken = token.split('=')[1].trim();
+    try {
+      const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+      const username = decodedToken.username;
+      checkUserBanStatus(username);
+      localStorage.setItem('user', JSON.stringify({ identifier: username }));
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+    }
+  } else {
+    console.error('JWT token not found in cookie');
+  }
+
+  // Überprüfe, ob der Benutzer angemeldet ist, und passe die Anzeige entsprechend an
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const username = userData ? userData.identifier : null;
   if (username) {
     document.getElementById("loginLink").style.display = "none";
     document.getElementById("signupLink").style.display = "none";
@@ -11,49 +28,61 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById("signoutLink").style.display = "none";
   }
 
+  // Weitere Funktionen aufrufen
   getPosts();
   fetchAdminUserData();
 });
 
 async function fetchAdminUserData() {
-  const response = await fetch("/api/username");
-  if (!response.ok) {
-    throw new Error("Failed to fetch user data");
+  const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+  if (!token) {
+    console.error("JWT token not found in cookie");
+    return;
   }
-  const userData = await response.json();
 
-  // Überprüfen, ob der Benutzer ein Administrator ist
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = userData.users.find(
-    (user) => user.username === currentUser.identifier && user.admin
-  );
+  const jwtToken = token.split('=')[1].trim();
 
-  if (isAdmin) {
-    document.getElementById("adminLink").style.display = "block";
-    document.getElementById("usernameLink").style.display = "block";
-    document.getElementById("preferencesLink").style.display = "block";
-    document.getElementById("postsLink").style.display = "block";
-    document.getElementById("badgesLink").style.display = "block";
-    document.getElementById("badgesapiLink").style.display = "block";
-    devHeader.style.display = "block";
-  } else {
-    document.getElementById("adminLink").style.display = "none";
-    document.getElementById("usernameLink").style.display = "none";
-    document.getElementById("preferencesLink").style.display = "none";
-    document.getElementById("postsLink").style.display = "none";
-    document.getElementById("badgesLink").style.display = "none";
-    document.getElementById("badgesapiLink").style.display = "none";
-    devHeader.style.display = "none";
+  try {
+    const response = await fetch("/api/username", {
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user data");
+    }
+
+    const userData = await response.json();
+
+    // Überprüfen, ob der Benutzer ein Administrator ist
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const isAdmin = userData.users.find(
+      (user) => user.username === currentUser.identifier && user.admin
+    );
+
+    if (isAdmin) {
+      document.getElementById("adminLink").style.display = "block";
+      document.getElementById("usernameLink").style.display = "block";
+      document.getElementById("preferencesLink").style.display = "block";
+      document.getElementById("postsLink").style.display = "block";
+      document.getElementById("badgesLink").style.display = "block";
+      document.getElementById("badgesapiLink").style.display = "block";
+      document.getElementById("landingLink").style.display = "block";
+      devHeader.style.display = "block";
+    } else {
+      document.getElementById("adminLink").style.display = "none";
+      document.getElementById("usernameLink").style.display = "none";
+      document.getElementById("preferencesLink").style.display = "none";
+      document.getElementById("postsLink").style.display = "none";
+      document.getElementById("badgesLink").style.display = "none";
+      document.getElementById("badgesapiLink").style.display = "none";
+      document.getElementById("landingLink").style.display = "none";
+      devHeader.style.display = "none";
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
   }
-}
-
-// Überprüfen Sie die Benutzersperrstatus
-const userData = JSON.parse(localStorage.getItem("user"));
-if (!userData || !userData.identifier) {
-  console.error("User identifier not found in local storage");
-} else {
-  const username = userData.identifier;
-  checkUserBanStatus(username);
 }
 
 async function checkUserBanStatus(username) {
@@ -63,7 +92,7 @@ async function checkUserBanStatus(username) {
     if (userDataResponse.banned) {
       alert("You are Suspended from this Platform. ~ @admin");
       localStorage.clear();
-      window.location.href = "/login";
+      // window.location.href = "/login";
     } else {
       document.body.classList.add("content-container");
     }
@@ -107,7 +136,7 @@ async function showWelcomeMessage() {
       }
     } else {
       // Benutzer ist nicht authentifiziert, leite ihn auf die Login-Seite weiter
-      window.location.href = "/login";
+      // window.location.href = "/login";
     }
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -298,7 +327,7 @@ async function createPost(event) {
       }
     } else {
       // Benutzerdaten sind nicht im lokalen Speicher gespeichert
-      window.location.href = "/login";
+      // window.location.href = "/login";
     }
   } catch (error) {
     console.error("Error creating post:", error);
@@ -331,7 +360,7 @@ async function getPosts() {
 
     responseData.posts.forEach(async (post) => {
       const postElement = document.createElement("div");
-      postElement.classList.add("post", "p-4", "rounded", "shadow", "mb-4");
+      postElement.classList.add("post", "p-4", "rounded", "shadow", "mb-4", "font-bold");
 
       const username = post.username;
 
@@ -359,7 +388,7 @@ async function getPosts() {
       const codeSnippetElement = document.createElement("pre");
       const codeSnippetText = post.codesnippet;
       codeSnippetElement.classList.add(
-        "bg-gray-800",
+        "bg-slate",
         "text-white",
         "p-4",
         "rounded",
@@ -524,11 +553,12 @@ window.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("scroll", lazyLoadHandler); // Füge ein Scroll-Event hinzu, um beim Scrollen weitere Posts zu laden
 });
 
-// Funktion zum Abmelden des Benutzers
 document.getElementById("signoutBtn").addEventListener("click", () => {
+  // Benutzer aus dem localStorage entfernen
   localStorage.removeItem("user");
   localStorage.removeItem("mode");
-  window.location.href = "/login"; // Auf die Login-Seite weiterleiten
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = "/login";
 });
 
 document.getElementById("postForm").addEventListener("submit", createPost);
@@ -666,12 +696,17 @@ async function fetchFollowers(username) {
 }
 
 async function displayFollowersWithPictures() {
-  const savedUser = localStorage.getItem("user");
+  const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
   let username = null;
 
-  if (savedUser) {
-    const { identifier } = JSON.parse(savedUser);
-    username = identifier;
+  if (token) {
+    const jwtToken = token.split('=')[1].trim();
+    try {
+      const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+      username = decodedToken.username;
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+    }
   }
 
   if (username) {
@@ -733,25 +768,23 @@ displayFollowersWithPictures();
 
 async function toggleLike(postId) {
   const likesButton = document.getElementById(`likesButton_${postId}`);
-  if (!likesButton) return; // Wenn der Button nicht gefunden wird, brechen Sie ab
-
-  let isLiked = localStorage.getItem(`liked_${postId}`) === "true";
+  if (!likesButton) return; // Wenn der Button nicht gefunden wird, abbrechen
 
   try {
-    if (isLiked) {
-      await removeLike(postId);
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
-      isLiked = false;
-      localStorage.removeItem(`liked_${postId}`);
-    } else {
-      await saveLike(postId);
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-      isLiked = true;
-      localStorage.setItem(`liked_${postId}`, true);
-    }
 
-    const updatedLikesCount = await getLikes(postId);
-    updateLikesElement(postId, updatedLikesCount);
+    const updatedLikesCount = await getLikes(postId); // Aktuelle Anzahl der Likes abrufen
+    updateLikesElement(postId, updatedLikesCount); // Anzahl der Likes aktualisieren
+
+    // Überprüfen, ob der Benutzer bereits gelikt hat
+    const isUserLiked = updatedLikesCount.liked.includes(currentUser); // currentUser ist der aktuelle Benutzer
+
+    if (isUserLiked) {
+      await removeLike(postId); // Wenn der Benutzer bereits gelikt hat, den Like entfernen
+      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+    } else {
+      await saveLike(postId); // Wenn der Benutzer noch nicht gelikt hat, den Like speichern
+      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+    }
 
     // Füge die Pop-Animation-Klasse hinzu
     likesButton.classList.add("pop");
@@ -776,8 +809,16 @@ document.addEventListener("click", function (event) {
 });
 
 async function saveLike(postId) {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  if (!userData) {
+      console.error('User data not found in localStorage.');
+      return;
+  }
+
+  const username = userData.identifier;
+
   try {
-    const response = await fetch(`/posts/${postId}/like`, {
+    const response = await fetch(`/posts/${username}/${postId}/like`, {
       method: "POST",
     });
 
@@ -793,8 +834,16 @@ async function saveLike(postId) {
 }
 
 async function removeLike(postId) {
+  const userData = JSON.parse(localStorage.getItem('user'));
+  if (!userData) {
+      console.error('User data not found in localStorage.');
+      return;
+  }
+
+  const username = userData.identifier;
+
   try {
-    const response = await fetch(`/posts/${postId}/unlike`, {
+    const response = await fetch(`/posts/${username}/${postId}/unlike`, {
       method: "POST",
     });
 
@@ -968,23 +1017,5 @@ async function fetchAllUserBadges() {
 // Aufruf der Funktion zum Abrufen aller Benutzer und ihrer Badges
 fetchAllUserBadges();
 
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING: Unauthorized access detected! The console has been disabled to prevent unauthorized data access.', 'color: red; font-weight: bold;');
-console.log('%cAny attempt to access sensitive information via the console is being monitored and reported to the administrator.', 'color: red;');
-console.log('%cPlease close the developer tools and proceed with authorized actions only.', 'color: red;');
-console.log('----------------------------------------------------------------');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING: Unauthorized access detected! The console has been disabled to prevent unauthorized data access.', 'color: red; font-weight: bold;');
-console.log('%cAny attempt to access sensitive information via the console is being monitored and reported to the administrator.', 'color: red;');
-console.log('%cPlease close the developer tools and proceed with authorized actions only.', 'color: red;');
-console.log('----------------------------------------------------------------');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING: Unauthorized access detected! The console has been disabled to prevent unauthorized data access.', 'color: red; font-weight: bold;');
-console.log('%cAny attempt to access sensitive information via the console is being monitored and reported to the administrator.', 'color: red;');
-console.log('%cPlease close the developer tools and proceed with authorized actions only.', 'color: red;');
-console.log('----------------------------------------------------------------');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING: Unauthorized access detected! The console has been disabled to prevent unauthorized data access.', 'color: red; font-weight: bold;');
-console.log('%cAny attempt to access sensitive information via the console is being monitored and reported to the administrator.', 'color: red;');
-console.log('%cPlease close the developer tools and proceed with authorized actions only.', 'color: red;');
-console.log('----------------------------------------------------------------');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');

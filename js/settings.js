@@ -1,17 +1,28 @@
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        const savedUser = localStorage.getItem('user');
-        if (!savedUser) {
-            console.error('User not found in local storage');
+        const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+        let username = null;
+
+        if (token) {
+            const jwtToken = token.split('=')[1].trim();
+            try {
+                const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+                username = decodedToken.username;
+            } catch (error) {
+                console.error('Error decoding JWT token:', error);
+            }
+        }
+
+        if (!username) {
+            console.error('User identifier not found in JWT token');
             return;
         }
-        const { identifier, password, email } = JSON.parse(savedUser);
 
         const response = await fetch('/api/username');
         const userData = await response.json();
 
         // Find the user that matches the stored user data
-        const matchedUser = userData.users.find(user => (user.username === identifier || user.email === identifier) && user.password === password);
+        const matchedUser = userData.users.find(user => (user.username === username || user.email === username));
 
         if (matchedUser) {
             // Check if the user is banned
@@ -36,12 +47,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // Überprüfen Sie die Benutzersperrstatus
-const userData = JSON.parse(localStorage.getItem('user'));
-if (!userData || !userData.identifier) {
-    console.error('User identifier not found in local storage');
+const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+if (token) {
+    const jwtToken = token.split('=')[1].trim();
+    try {
+        const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+        const username = decodedToken.username;
+        checkUserBanStatus(username);
+    } catch (error) {
+        console.error('Error decoding JWT token:', error);
+    }
 } else {
-    const username = userData.identifier;
-    checkUserBanStatus(username);
+    console.error('JWT token not found in cookie');
 }
 
 async function checkUserBanStatus(username) {
@@ -471,7 +488,5 @@ function redirectToHome() {
     window.location.href = "/home";
 }
 
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste code here, it could be a scammer or hacker attempting to exploit your system.', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
