@@ -836,15 +836,6 @@ async function loadBadges() {
 
         if (response.ok) {
             displayBadges(data.badges);
-
-            // Überprüfen, ob der Benutzer Abzeichen hat
-            if (data.badges.length > 0) {
-                // Benutzer hat Abzeichen, den Button zum Ändern anzeigen
-                document.querySelector('.change-badge button').style.display = 'block';
-            } else {
-                // Benutzer hat keine Abzeichen, den Button zum Ändern ausblenden
-                document.querySelector('.change-badge button').style.display = 'none';
-            }
         } else {
             throw new Error(data.error || 'Failed to load badges');
         }
