@@ -11,6 +11,9 @@ const { ObjectId } = require('mongodb');
 const objectId = new ObjectId();
 const socketIo = require('socket.io');
 const http = require('http');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +32,7 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(cors());
 app.use(
   session({
@@ -393,29 +397,62 @@ app.post("/api/posts", async (req, res) => {
   }
 });
 
+// Funktion zum Erstellen eines JWT-Tokens
+function createToken(username) {
+  const token = jwt.sign({ username: username }, process.env.SECRET, { expiresIn: '12h' });
+  console.log(token);
+  return token;
+}
+
+// Middleware zum Überprüfen des JWT-Tokens
+function verifyToken(req, res, next) {
+  const token = req.cookies.token; // Annahme: Token im Cookie mit dem Namen "token"
+  if (!token) {
+    console.log("Kein Token gefunden. Weiterleitung zum Login.");
+    return res.redirect("/login"); // Weiterleitung zum Login, wenn kein Token vorhanden ist
+  }
+
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      // Fehler beim Verifizieren des Tokens
+      console.error("Fehler beim Verifizieren des Tokens:", err.message);
+      res.clearCookie('token'); // Löschen des Tokens im Cookie
+      console.log("Ungültiger oder abgelaufener Token. Weiterleitung zum Login.");
+      return res.redirect("/login"); // Weiterleitung zum Login
+    }
+    req.username = decoded.username; // Extrahieren des Benutzernamens aus dem Token
+    next(); // Weiterleitung an die nächste Middleware oder den nächsten Handler
+  });
+}
+
 app.post("/login", async (req, res) => {
-  const { identifier, password } = req.body; 
+  const { identifier, password } = req.body;
 
   try {
-    
-    const user = await usersCollection.findOne({
-      $or: [{ username: identifier }],
-    });
 
-    if (user && user.password === password) {
-      
-      console.log(
-        `Successful login for user: ${identifier} at ${new Date().toISOString()}`
-      );
-      req.session.userId = user._id;
-      return res.redirect("/home");
-    } else {
+    // Fetch user from database
+    const user = await usersCollection.findOne({ $or: [{ username: identifier }, { email: identifier }] });
+
+    // Check if user exists
+    if (!user) {
+      console.log(`Benutzer mit dem Identifier ${identifier} nicht gefunden`);
+      return res.status(401).send("Invalid credentials");
+    }
+
+    if (password !== user.password) {
+      console.log(`Incorrect password for user with identifier ${identifier} ${user.password}`);
       return res.status(401).send("Invalid email or password");
     }
+
+    // Generate JWT token
+    const token = createToken(user.username);
+    res.cookie('devolution_token', token, { httpOnly: true });
+
+    // Return token and user details
+    res.json({ token: token, user: { username: user.username, email: user.email } });
   } catch (error) {
-    
-    console.error("Error during Login:", error);
-    return res.status(500).send("Internal Server Error");
+    console.error("Fehler während des Logins:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -424,9 +461,9 @@ app.post("/signup", async (req, res) => {
 
   try {
     const existingUserByUsername = await usersCollection.findOne({ username });
-
+  
     if (existingUserByUsername) {
-      return res.status(400).send("Username already taken");
+      return res.status(400).send(`${existingUserByUsername.username} Username already taken`);
     }
 
     
@@ -1576,13 +1613,19 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'html', 'landing.html'));
 });
 
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'html', 'login.html'));
+});
+
+app.get('/signup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'html', 'signup.html'));
+});
+
 const pages = [
   "home",
   "explore",
   "settings",
   "profile",
-  "login",
-  "signup",
   "preferences",
   "admin",
   "blog",
@@ -1599,14 +1642,14 @@ const errorPages = [
 ];
 
 errorPages.forEach((errorCode) => {
-  app.get(`/${errorCode}`, (req, res) => {
+  app.get(`/${errorCode}`, verifyToken, (req, res) => {
     res.sendFile(path.join(__dirname, "html", `${errorCode}.html`));
   });
 });
 const adminpages = ["badges"];
 
 pages.forEach((page) => {
-  app.get(`/${page}`, (req, res) => {
+  app.get(`/${page}`, verifyToken, (req, res) => {
     res.sendFile(path.join(__dirname, "html", `${page}.html`));
   });
 });
