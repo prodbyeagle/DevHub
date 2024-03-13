@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // JWT-Token decodieren, um Benutzerinformationen zu erhalten
             const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
             const username = decodedToken.username;
-            loggedInStatus.textContent = `⚠️ Already logged in with: ${username}`;
+            loggedInStatus.textContent = ` Already logged in with: ${username}`;
         } catch (error) {
             console.error('Error decoding JWT token:', error);
         }

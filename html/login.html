@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link rel="stylesheet" href="/css/login.css">
-    <link rel="stylesheet" href="/css/home.css">
     <style>
         .gradient {
             /* Füge hier deine CSS-Stile für den Gradienten ein */
@@ -41,10 +40,10 @@
     }
     </style>
 </head>
-<div class="gradient"></div>
 <body class="bg-gray-100 dark-mode">
+<div class="gradient"></div>
 <div class="container py-8 mx-auto">
-    <h1 class="justify-center mb-8 text-3xl font-bold text-center ">devolution. Login</h1>
+    <h1 class="justify-center mb-8 text-3xl font-bold text-center ">Login</h1>
     <p class="mb-4 text-center">🤔 Dont Have an Account? <a href="/signup" class="text-blue-500 hover:underline">Signup</a></p>
     <p id="loggedInStatus" class="mb-4 text-sm text-center"></p>
     <div class="max-w-md mx-auto neumorphism-form">
@@ -59,22 +58,18 @@
                 <input type="password" id="password" name="password" required autocomplete="password"
                        class="block w-full mt-1 neumorphism-input">
             </div>
-            <div class="flex items-center">
-                <input type="checkbox" id="rememberMe" name="rememberMe" class="neumorphism-checkbox">
-                <label for="rememberMe" class="switch-label">Remember me</label>
-            </div>
-            <button type="submit" class="w-full neumorphism-button">✅ Login</button>
+            <button type="submit" class="w-full neumorphism-button">Login</button>
         </form>
     </div>
 </div>
-<div class="fixed inset-x-0 flex items-center justify-center top-120">
+<!-- <div class="fixed inset-x-0 flex items-center justify-center top-120">
     <a href="/auth/google" class="mr-3 neumorphism-button">
         <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/google-logo.png" alt="google-logo"/>
     </a>
     <a href="/auth/github" class="neumorphism-button">
         <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/github.png" alt="GitHub-Logo" class="mr-2"/>
     </a>
-</div>
+</div> -->
 <script src="/js/login.js"></script>
 </body>
 </html>

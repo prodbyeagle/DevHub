@@ -1,7 +1,7 @@
 body {
     font-family: 'Cascadia Code',  sans-serif;
     background-color: #f0f0f0;
-    color: #333;
+    color: #33333300;
     transition: all 0.3s ease;
 }
 
@@ -23,7 +23,8 @@ max-height: 200px; /* Begrenzen Sie die Höhe des Posts */
 overflow: hidden; /* Verstecken Sie den überlaufenden Inhalt */
 margin-bottom: 1rem;
 padding: 1rem;
-background-color: #f0f0f0;
+background-color: #4d4d4d7c;
+color: #eee;
 border: 1px solid #ccc;
 border-radius: 16px;
 box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
@@ -46,7 +47,7 @@ body.dark-mode {
 }
 
 body.dark-mode .post {
-    background-color: #222;
+    background-color: #4d4d4d7c;
     border-color: #333;
     color: #eee;
     box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
@@ -59,7 +60,7 @@ body.dark-mode .post:hover {
 /* Neumorphism styles for title and content */
 .title-container {
     padding: 1rem;
-    background-color: #f0f0f0;
+    background-color: #4d4d4d7c;
     color: #333;
     border-radius: 16px;
     margin-bottom: 20px;
@@ -70,7 +71,7 @@ body.dark-mode .post:hover {
 
 body.dark-mode .title-container {
     padding: 1rem;
-    background-color: #222;
+    background-color: #4d4d4d7c;
     color: #eee;
     margin-bottom: 20px;
     text-align: center;

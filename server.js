@@ -14,6 +14,7 @@ const http = require('http');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -69,7 +70,6 @@ async function run() {
   }
 }
 
-
 function formatDateForDisplay(date) {
   const options = {
     hour: "2-digit",
@@ -91,7 +91,7 @@ app.get("/u/:username", async (req, res) => {
 
     if (!user) {
       
-      return res.status(404).send("Benutzer nicht gefunden");
+      return res.status(404).sendFile(path.join(__dirname, "html", "404.html"));
     }
 
     
@@ -99,7 +99,7 @@ app.get("/u/:username", async (req, res) => {
   } catch (error) {
     console.error("Fehler beim Laden des Benutzerprofils:", error);
     
-    res.status(500).send("Interner Serverfehler");
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -115,7 +115,7 @@ app.get("/api/profile/:username", async (req, res) => {
     res.json(user); 
   } catch (error) {
     console.error("Fehler beim Abrufen der Benutzerdaten:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -128,8 +128,7 @@ app.post("/profile/:username/pin-post/:postId", (req, res) => {
     (err, result) => {
       if (err) {
         console.error("Failed to pin post:", err);
-        res.status(500).send("Failed to pin post");
-        return;
+        return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
       }
       res.status(200).send("Post pinned successfully.");
     }
@@ -153,7 +152,7 @@ app.put("/api/profile/:username/ban", async (req, res) => {
       .json({ message: `Benutzer ${username} erfolgreich gebannt` });
   } catch (error) {
     console.error("Fehler beim Bannen des Benutzers:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -174,7 +173,7 @@ app.put("/api/profile/:username/unban", async (req, res) => {
       .json({ message: `Ban für Benutzer ${username} erfolgreich aufgehoben` });
   } catch (error) {
     console.error("Fehler beim Aufheben des Bans des Benutzers:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -195,7 +194,7 @@ app.put("/api/profile/:username/true", async (req, res) => {
       .json({ message: `Benutzer ${username} erfolgreich zum Admin ernannt` });
   } catch (error) {
     console.error("Fehler beim Hinzufügen von Admin des Benutzers:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -216,7 +215,7 @@ app.put("/api/profile/:username/false", async (req, res) => {
       .json({ message: `Benutzer ${username} erfolgreich Admin entfernt` });
   } catch (error) {
     console.error("Fehler beim Entfernen von Admin des Benutzers:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -245,7 +244,7 @@ app.get("/api/:username/posts", async (req, res) => {
     res.status(200).json(postsWithFormattedData);
   } catch (error) {
     console.error("Fehler beim Abrufen der Beiträge:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -260,7 +259,7 @@ app.post("/profile/:username/pin-post/:postId", (req, res) => {
     (err, result) => {
       if (err) {
         console.error("Failed to pin post:", err);
-        res.status(500).send("Failed to pin post");
+        return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
         return;
       }
       res.status(200).send("Post pinned successfully.");
@@ -274,7 +273,7 @@ app.get("/profile/:postId", (req, res) => {
   postsCollection.findOne({ _id: postId }, (err, post) => {
     if (err) {
       console.error("Failed to fetch post:", err);
-      res.status(500).send("Failed to fetch post");
+      return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
       return;
     }
     if (!post) {
@@ -299,7 +298,7 @@ app.put("/edit-post/:postId", (req, res) => {
     (err, result) => {
       if (err) {
         console.error("Failed to edit post:", err);
-        res.status(500).send("Failed to edit post");
+        return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
         return;
       }
       res.status(200).send("Post edited successfully.");
@@ -317,7 +316,7 @@ app.delete("/api/:username/posts", async (req, res) => {
     res.status(200).json({ message: "All user posts deleted successfully" });
   } catch (error) {
     console.error("Fehler beim Löschen der Beiträge:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -361,7 +360,7 @@ app.get("/api/posts", async (req, res) => {
     });
   } catch (error) {
     console.error("Fehler beim Abrufen der Beiträge:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -393,14 +392,94 @@ app.post("/api/posts", async (req, res) => {
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Error creating new post:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
+
+// // server secure
+
+// // Middleware zum Überprüfen des Server-Tokens
+// function verifyServerToken(req, res, next) {
+//   let token = null;
+
+//   // Überprüfe, ob ein Token im Cookie vorhanden ist
+//   if (req.cookies && (req.cookies.token || req.cookies.devolution_token)) {
+//     token = req.cookies.token || req.cookies.devolution_token;
+//   } else {
+//     // Wenn kein Cookie vorhanden ist, verwende den Server-Token
+//     token = process.env.SERVER_TOKEN;
+//   }
+
+//   // Überprüfe, ob ein Token vorhanden ist
+//   if (!token) {
+//     console.error("Ungültiger oder fehlender Token");
+//     return res.status(403).sendFile(path.join(__dirname, "html", "403.html"));
+//   }
+
+//   try {
+//     // Überprüfe das Token
+//     const decoded = jwt.verify(token, process.env.SERVER_SECRET);
+//     if (decoded.server !== true) {
+//       console.error("Ungültiges Token: Server-Berechtigung fehlt");
+//       return res.status(403).sendFile(path.join(__dirname, "html", "403.html"));
+//     }
+//     console.log("Server-Token erfolgreich überprüft");
+//     console.log("Decodierte Token-Daten:", decoded);
+//     next();
+//   } catch (error) {
+//     console.error("Fehler beim Überprüfen des Tokens:", error.message);
+//     // Wenn ein Fehler beim Überprüfen des Tokens auftritt, sende 403
+//     return res.status(403).sendFile(path.join(__dirname, "html", "403.html"));
+//   }
+// }
+
+// // Pfad zur .env-Datei
+// const envFilePath = path.resolve(__dirname, '.env');
+
+// // Funktion zum Aktualisieren des Tokens in der .env-Datei
+// function updateEnvFile(token) {
+//   try {
+//     // Lese den aktuellen Inhalt der .env-Datei
+//     let envContent = fs.readFileSync(envFilePath, 'utf8');
+    
+//     // Ersetze den aktuellen Token-Wert mit dem neuen Token
+//     envContent = envContent.replace(/SERVER_TOKEN=(.*)/, `SERVER_TOKEN=${token}`);
+
+//     // Schreibe den aktualisierten Inhalt zurück in die .env-Datei
+//     fs.writeFileSync(envFilePath, envContent, 'utf8');
+    
+//     console.log('Server-Token in der .env-Datei aktualisiert');
+//   } catch (error) {
+//     console.error('Fehler beim Aktualisieren des Server-Tokens in der .env-Datei:', error);
+//   }
+// }
+
+// // Generiere einen neuen Server-Token und setze ihn in den Environment-Variablen alle 2 Stunden
+// setInterval(() => {
+//   const newToken = generateServerToken();
+//   updateEnvFile(newToken);
+// }, 2 * 60 * 60 * 1000); // Alle 2 Stunden
+
+// // Initialisiere den Server-Token
+// const initialToken = generateServerToken();
+// updateEnvFile(initialToken);
+
+// // Generiere einen neuen Server-Token
+// function generateServerToken() {
+//   // Generiere den Token
+//   const token = jwt.sign({ server: true }, process.env.SERVER_SECRET, { expiresIn: '2h' });
+
+//   // Speichere den Token in der globalen Variable
+//   serverToken = token;
+//   console.log(serverToken);
+//   return token;
+// }
+
+//userlogin
 
 // Funktion zum Erstellen eines JWT-Tokens
 function createToken(username) {
   const token = jwt.sign({ username: username }, process.env.SECRET, { expiresIn: '12h' });
-  console.log(token);
   return token;
 }
 
@@ -452,7 +531,7 @@ app.post("/login", async (req, res) => {
     res.json({ token: token, user: { username: user.username, email: user.email } });
   } catch (error) {
     console.error("Fehler während des Logins:", error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -485,7 +564,7 @@ app.post("/signup", async (req, res) => {
     res.status(201).send("User created successfully");
   } catch (error) {
     console.error("Error during sign up:", error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -514,7 +593,7 @@ app.post("/api/update", async (req, res) => {
       });
   } catch (err) {
     console.error("Fehler beim Aktualisieren der Benutzervorlieben:", err);
-    res.status(500).json({ message: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -538,7 +617,7 @@ app.post("/admin", async (req, res) => {
     }
   } catch (err) {
     console.error("Fehler beim Überprüfen des Benutzers:", err);
-    res.status(500).json({ message: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -550,7 +629,7 @@ app.delete("/admin/delete-posts", async (req, res) => {
     res.status(200).json({ message: "Posts collection deleted successfully" });
   } catch (error) {
     console.error("Error deleting posts collection:", error);
-    res.status(500).json({ message: "Failed to delete posts collection" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -573,7 +652,7 @@ app.get("/api/username", async (req, res) => {
     
     res.json({ users: userData });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -594,7 +673,7 @@ app.post("/api/update/bio", async (req, res) => {
     await collection.updateOne({ username }, { $set: { bio: newBio } });
     return res.status(200).json({ message: "Bio updated successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -614,7 +693,7 @@ app.post("/api/update/pb", async (req, res) => {
 
     return res.status(200).json({ message: "PB updated successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -657,7 +736,7 @@ app.post("/api/update/follower", async (req, res) => {
     }
   } catch (error) {
     console.error("Fehler beim Ändern des Follow-Status:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -687,7 +766,7 @@ app.post("/api/profile/change/passwort", async (req, res) => {
     return res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
     console.error("Error processing request:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -714,7 +793,7 @@ app.post("/api/profile/change/email", async (req, res) => {
     return res.status(200).json({ message: "Email changed successfully" });
   } catch (error) {
     console.error("Error processing request:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -752,7 +831,7 @@ app.post("/api/profile/change/username", async (req, res) => {
     return res.status(200).json({ message: "Username changed successfully" });
   } catch (error) {
     console.error("Error processing request:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -779,7 +858,7 @@ app.delete("/api/profile/delete/:username", async (req, res) => {
     res.status(200).send("Account successfully deleted");
   } catch (error) {
     console.error("Error deleting account:", error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -808,7 +887,7 @@ app.delete("/api/posts/delete/:postId", async (req, res) => {
     res.status(200).send("Post successfully deleted");
   } catch (error) {
     console.error("Error deleting post:", error);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -842,7 +921,7 @@ app.post('/posts/:username/:postId/like', async (req, res) => {
     res.json({ message: 'Post liked successfully' });
   } catch (error) {
     console.error('Error liking post:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -876,7 +955,7 @@ app.post('/posts/:username/:postId/unlike', async (req, res) => {
     res.json({ message: 'Post unliked successfully' });
   } catch (error) {
     console.error('Error unliking post:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -895,326 +974,11 @@ app.get("/posts/:postId", async (req, res) => {
     res.json({ likes: post.likes });
   } catch (error) {
     console.error("Fehler beim Abrufen des Beitrags:", error);
-    res.status(500).json({ message: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
-
-function generateRandomPassword() {
-  const length = 10; 
-  return crypto
-    .randomBytes(Math.ceil(length / 2))
-    .toString("hex") 
-    .slice(0, length); 
-}
-
-
-function sanitizeUsername(username) {
-  const regex = /^[a-zA-Z0-9_]+$/;
-  if (!regex.test(username)) {
-    username = username.replace(/[^a-zA-Z0-9_]/g, "_");
-  }
-  return username;
-}
-
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const collection = db.collection("users");
-
-      try {
-        const userEmail =
-          profile.emails && profile.emails.length > 0
-            ? profile.emails[0].value
-            : null;
-        const userPhoto =
-          profile.photos && profile.photos.length > 0
-            ? profile.photos[0].value
-            : null;
-
-        let username = sanitizeUsername(profile.displayName);
-
-        const randomPassword = generateRandomPassword();
-        const newUser = {
-          username: username,
-          email: userEmail,
-          password: randomPassword,
-          follower: 0,
-          pb: userPhoto,
-          bio: "Hello, I'm New here!",
-          admin: false,
-          googlelogin: true,
-          githubLogin: false,
-          banned: false,
-          followers: [],
-          badges: [],
-        };
-
-        await collection.insertOne(newUser);
-        return done(null, newUser);
-      } catch (error) {
-        console.error("Error processing Google authentication:", error);
-        return done(error, null);
-      }
-    }
-  )
-);
-
-app.post(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
-  (req, res) => {
-    res.status(200).json({
-      username: req.user.username,
-      password: req.user.password,
-    });
-  }
-);
-
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
-  (req, res) => {
-    if (req.user && req.user.username && req.user.password) {
-      
-      const user = {
-        identifier: req.user.username,
-        password: req.user.password,
-      };
-      res.redirect("/login?user=" + encodeURIComponent(JSON.stringify(user)));
-    } else {
-      console.error("Error: User username or password not found.");
-      res.redirect("/login"); 
-    }
-  }
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-
-
-
-const { v4: uuidv4 } = require("uuid");
-const GitHubStrategy = require("passport-github2").Strategy;
-
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: process.env.GITHUB_CALLBACK_URL,
-      scope: ["user:email"],
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const collection = db.collection("users");
-
-      try {
-        const userEmail = profile.emails ? profile.emails[0].value : null;
-        const userPhoto = profile.photos ? profile.photos[0].value : null;
-
-        let existingUser = await collection.findOne({ email: userEmail });
-
-        if (existingUser) {
-          if (existingUser.githubUsername === profile.username) {
-            console.log('Logging in with existing user:', existingUser);
-            return done(null, existingUser);
-          } else {
-            // Wenn der GitHub-Benutzername mit einem anderen Konto verknüpft ist,
-            // können Sie ihn hier behandeln, z.B. eine Nachricht zurückgeben
-            console.log('GitHub username already associated with another account');
-            return done(null, false, { message: 'GitHub username already associated with another account' });
-          }
-        } else {
-          const randomPassword = uuidv4();
-          const newUser = {
-            username: profile.username || profile.displayName,
-            email: userEmail,
-            password: randomPassword,
-            pb: userPhoto,
-            bio: "Hello, I'm New here!",
-            admin: false,
-            googlelogin: false,
-            githubLogin: true,
-            banned: false,
-            followers: [],
-            badges: [],
-          };
-
-          await collection.insertOne(newUser);
-          return done(null, newUser);
-        }
-      } catch (error) {
-        console.error("Error processing GitHub authentication:", error);
-        return done(error, null);
-      }
-    }
-  )
-);
-
-app.post(
-  "/auth/github/callback",
-  passport.authenticate("github", { failureRedirect: "/login" }),
-  (req, res) => {
-    // Benutzerdaten aus der Anfrage abrufen
-    const { username, password } = req.user;
-
-    // Benutzerdaten an das Frontend senden
-    res.status(200).json({ username, password });
-  }
-);
-
-app.get(
-  "/auth/github/callback",
-  passport.authenticate("github", { failureRedirect: "/login" }),
-  async (req, res) => {
-    if (req.user && req.user.username && req.user.password) {
-      const user = {
-        identifier: req.user.username,
-        password: req.user.password,
-      };
-
-      try {
-        // Überprüfen, ob der Benutzername bereits vorhanden ist
-        const existingUser = await db.collection("users").findOne({ username: user.identifier });
-
-        if (existingUser) {
-          console.log(`User ${user.identifier} already exists`);
-          // Benutzername bereits vorhanden, also vorhandenen Benutzer einloggen
-          res.redirect("/login?user=" + encodeURIComponent(JSON.stringify(user)));
-        } else {
-          // Benutzername nicht vorhanden, neuen Benutzer hinzufügen
-          await db.collection("users").insertOne({
-            username: user.identifier,
-            password: user.password,
-            // Andere Benutzerdaten hier hinzufügen
-          });
-
-          // Neue Benutzerdaten einloggen
-          res.redirect("/login?user=" + encodeURIComponent(JSON.stringify(user)));
-        }
-      } catch (error) {
-        console.error("Error checking username or adding new user:", error);
-        res.redirect("/login");
-      }
-    } else {
-      console.error("Error: User username or password not found.");
-      res.redirect("/login"); 
-    }
-  }
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
-app.get("/auth/github", passport.authenticate("github"));
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-
-
-let errorList = [];
-let errorIdCounter = 1;
-
-
-app.post("/api/admin/error", (req, res) => {
-  try {
-    const { message } = req.body;
-
-    if (!message) {
-      throw new Error("Message is required");
-    }
-
-    
-    const existingError = errorList.find((error) => error.message === message);
-
-    if (existingError) {
-      existingError.count++; 
-      console.log("Error message stacked:", message);
-    } else {
-      
-      const errorId = generateErrorId();
-
-      
-      errorList.push({ id: errorId, message, count: 1, timestamp: new Date() });
-      console.log("New error message received:", message);
-    }
-
-    res.status(201).json({ success: true });
-  } catch (error) {
-    console.error("Error receiving error message:", error.message);
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-
-function generateErrorId() {
-  return errorIdCounter++;
-}
-
-
-app.delete("/api/admin/errors/:errorId", (req, res) => {
-  try {
-    const errorId = req.params.errorId;
-
-    
-    if (!errorId || isNaN(errorId)) {
-      throw new Error("Invalid Error ID");
-    }
-
-    
-    const index = errorList.findIndex((error) => error.id == errorId);
-
-    
-    if (index !== -1) {
-      errorList.splice(index, 1);
-      res.status(200).json({ success: true });
-    } else {
-      
-      res.status(404).json({ success: false, error: "Error not found" });
-    }
-  } catch (error) {
-    console.error("Error deleting error:", error.message);
-    res.status(400).json({ success: false, error: error.message });
-  }
-});
-
-
-app.get("/api/admin/errors", (req, res) => {
-  try {
-    res.json(errorList);
-  } catch (error) {
-    console.error("Error retrieving error log:", error.message);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
-  }
-});
-
+//BADGES
 
 app.get("/api/admin/badges", async (req, res) => {
   try {
@@ -1223,7 +987,7 @@ app.get("/api/admin/badges", async (req, res) => {
     res.json(badges);
   } catch (error) {
     console.error("Fehler beim Abrufen der Badges:", error);
-    res.status(500).json({ error: "Fehler beim Abrufen der Badges" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1243,7 +1007,7 @@ app.get("/api/:username/badges", async (req, res) => {
     res.json({ badges: userBadges });
   } catch (error) {
     console.error("Fehler beim Abrufen der Badges:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1266,7 +1030,7 @@ app.post("/api/admin/badges", async (req, res) => {
     });
   } catch (error) {
     console.error("Fehler beim Hinzufügen des Badges:", error);
-    res.status(500).json({ error: "Fehler beim Hinzufügen des Badges" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1300,10 +1064,9 @@ app.post("/api/admin/assign-badge", async (req, res) => {
     res.json(result.value); 
   } catch (error) {
     console.error("Fehler beim Zuweisen des Badges zum Benutzer:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
-
 
 app.delete("/api/admin/badges/:name", async (req, res) => {
   const badgeName = req.params.name;
@@ -1338,10 +1101,9 @@ app.delete("/api/admin/badges/:name", async (req, res) => {
     }
   } catch (error) {
     console.error("Fehler beim Löschen des Badges:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
-
 
 app.put("/api/admin/badges/:name", async (req, res) => {
   const badgeName = req.params.name;
@@ -1372,10 +1134,9 @@ app.put("/api/admin/badges/:name", async (req, res) => {
     }
   } catch (error) {
     console.error("Fehler beim Aktualisieren des Badges:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
-
 
 app.put("/api/:username/badges/:name/activate", async (req, res) => {
   const { username, name } = req.params;
@@ -1405,7 +1166,7 @@ app.put("/api/:username/badges/:name/activate", async (req, res) => {
     }
   } catch (error) {
     console.error("Fehler beim Aktivieren oder Deaktivieren des Badges:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1445,7 +1206,7 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
     res.status(200).json({ message: `Alle Badges außer dem ausgewählten Badge erfolgreich deaktiviert. Übersprungenes Badge: ${skippedBadgeName}` });
   } catch (error) {
     console.error("Fehler beim Deaktivieren aller Badges außer dem ausgewählten Badge:", error);
-    res.status(500).json({ error: "Interner Serverfehler" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1457,10 +1218,11 @@ app.get("/api/badges/active", async (req, res) => {
     res.json(activeBadges);
   } catch (error) {
     console.error("Fehler beim Abrufen der aktiven Badges:", error);
-    res.status(500).json({ error: "Fehler beim Abrufen der aktiven Badges" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
+//BLOGS
 
 app.post("/api/blogs", async (req, res) => {
   const { title, content, author, date, reactions, image } = req.body;
@@ -1473,10 +1235,9 @@ app.post("/api/blogs", async (req, res) => {
     res.status(201).json(newPost);
   } catch (error) {
     console.error("Fehler beim Hinzufügen des Blog-Beitrags:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
-
 
 app.get("/api/blogs", async (req, res) => {
   try {
@@ -1484,7 +1245,7 @@ app.get("/api/blogs", async (req, res) => {
     res.status(200).json(blogPosts);
   } catch (error) {
     console.error("Fehler beim Abrufen der Blog-Beiträge:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1504,7 +1265,7 @@ app.get("/api/blogs/:postId/reactions", async (req, res) => {
     res.status(200).json({ reactions });
   } catch (error) {
     console.error("Error getting reactions:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1528,7 +1289,7 @@ app.post("/api/blogs/:postId/reactions", async (req, res) => {
     }
   } catch (error) {
     console.error("Error adding reaction:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1551,7 +1312,7 @@ app.post("/api/blogs/:postId/reactions/remove", async (req, res) => {
     }
   } catch (error) {
     console.error("Error removing reaction:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1572,7 +1333,7 @@ app.post("/api/blogs/:postId/reactions", async (req, res) => {
     }
   } catch (error) {
     console.error("Error adding reaction:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1594,7 +1355,7 @@ app.delete("/api/blogs/:postId/reactions/:emoji", async (req, res) => {
     }
   } catch (error) {
     console.error("Error removing reaction:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
@@ -1605,9 +1366,11 @@ app.get("/api/blogs/:postId", async (req, res) => {
     res.status(200).json(blogPost);
   } catch (error) {
     console.error("Fehler beim Abrufen des Blog-Beitrags:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
+
+// Just the Sites
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'html', 'landing.html'));
@@ -1646,6 +1409,7 @@ errorPages.forEach((errorCode) => {
     res.sendFile(path.join(__dirname, "html", `${errorCode}.html`));
   });
 });
+
 const adminpages = ["badges"];
 
 pages.forEach((page) => {
@@ -1666,7 +1430,6 @@ const sendErrorPage = (statusCode, fileName) => {
   };
 };
 
-// Verwenden Sie die Middleware für Fehlerseiten für verschiedene Statuscodes
 app.use(sendErrorPage(404, "404.html"));
 app.use(sendErrorPage(400, "400.html"));
 app.use(sendErrorPage(401, "401.html"));

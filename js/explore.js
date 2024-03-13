@@ -44,7 +44,7 @@ async function fetchAndDisplayPosts() {
                     postElement.appendChild(contentParagraph);
 
                     const codesnippetParagraph = document.createElement('p');
-                    codesnippetParagraph.textContent = truncateText(post.codesnippet, 200);
+                    codesnippetParagraph.textContent = truncateText(post.codesnippet, 125);
                     contentParagraph.style.fontSize = '20px'; 
                     contentParagraph.style.fontWeight = 'bold';
                     postElement.appendChild(codesnippetParagraph);

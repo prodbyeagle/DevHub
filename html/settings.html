@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="/css/settings.css">
     <style>
-        .gradient {
+        body.dark-mode .gradient {
             /* Füge hier deine CSS-Stile für den Gradienten ein */
             background: linear-gradient(to left, #ff416c, #ff4b2b);
             position: fixed;
@@ -23,25 +23,35 @@
             width: var(--size);
             filter: blur(150px);
             height: var(--size);
-            animation: moveGradient 10s linear infinite alternate infinite;
             --size: 250px;
             --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
             --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
         }
 
-        @keyframes moveGradient {
-        0% {
-            background-position: 0% 50%;
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff5a81, #ff6549);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+            min-width: 100vw;
+            min-height: 100vh;
+            width: var(--size);
+            filter: blur(150px);
+            height: var(--size);
+            --size: 250px;
+            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
         }
-        100% {
-            background-position: 100% 50%;
-        }
-    }
     </style>
 </head>
 <body class="dark-mode">
     <div class="container py-8 mx-auto" id="container">
+        <div class="gradient"></div>
         <div class="max-w-md mx-auto neumorphism-form">
             <h1 class="mb-8 text-3xl font-bold text-center">Settings</h1>
             <div class="p-4">
@@ -81,7 +91,7 @@
                 </div>
             </div>
 
-            <div id="changePasswordOverlay" class="fixed top-0 left-0 flex items-center justify-center hidden w-full h-full bg-gray-800 bg-opacity-50" style="z-index: 1000;">
+            <div id="changePasswordOverlay" class="fixed top-0 left-0 items-center justify-center hidden w-full h-full bg-gray-800 bg-opacity-50" style="z-index: 1000;">
                 <div class="max-w-md p-8 mx-auto neumorphism-form">
                     <h1 class="mb-8 text-3xl font-bold text-center">Change Password</h1>
                     <form id="changePasswordForm">
@@ -109,7 +119,7 @@
                 </div>
             </div>
 
-            <div id="changeUsernameOverlay" class="fixed top-0 left-0 flex items-center justify-center hidden w-full h-full bg-gray-800 bg-opacity-50" style="z-index: 1000;">
+            <div id="changeUsernameOverlay" class="fixed top-0 left-0 items-center justify-center hidden w-full h-full bg-gray-800 bg-opacity-50" style="z-index: 1000;">
                 <div class="max-w-md p-8 mx-auto neumorphism-form">
                     <h1 class="mb-8 text-3xl font-bold text-center">Change Username</h1>
                     <form id="changeUsernameForm">
