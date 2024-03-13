@@ -12,10 +12,42 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/assets/CascadiaCode-Regular.woff2" type="font/woff2">
+    <style>
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+            min-width: 100vw;
+            min-height: 100vh;
+            width: var(--size);
+            filter: blur(150px);
+            height: var(--size);
+            animation: moveGradient 10s linear infinite alternate infinite;
+            --size: 250px;
+            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+
+        @keyframes moveGradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+    </style>
 </head>
+
 
 <body class="bg-gray-100 dark-mode">
     <div class="container py-8 mx-auto">
+        <div class="gradient"></div>
         <h1 class="mb-8 text-3xl font-bold text-center panel">Admin Dashboard</h1>
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div class="col-span-2">

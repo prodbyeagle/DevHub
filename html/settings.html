@@ -9,20 +9,49 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="/css/settings.css">
-    <link rel="stylesheet" href="/assets/CascadiaCode-Regular.woff2" type="font/woff2">
+    <style>
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+            min-width: 100vw;
+            min-height: 100vh;
+            width: var(--size);
+            filter: blur(150px);
+            height: var(--size);
+            animation: moveGradient 10s linear infinite alternate infinite;
+            --size: 250px;
+            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+
+        @keyframes moveGradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+    </style>
 </head>
 <body class="dark-mode">
-    <div class="container mx-auto py-8" id="container">
-        <div class="neumorphism-form max-w-md mx-auto">
-            <h1 class="text-3xl font-bold text-center mb-8">Settings</h1>
+    <div class="container py-8 mx-auto" id="container">
+        <div class="max-w-md mx-auto neumorphism-form">
+            <h1 class="mb-8 text-3xl font-bold text-center">Settings</h1>
             <div class="p-4">
-                <label class="block text-sm font-bold mb-2" for="username">
+                <label class="block mb-2 text-sm font-bold" for="username">
                     👤 Username
                 </label>
                 <p class="text-lg" id="username"></p> <!-- Hier wird der Benutzername angezeigt -->
             </div>
             <div class="p-4 border-t border-gray-200">
-                <label class="block text-sm font-bold mb-2" for="email">
+                <label class="block mb-2 text-sm font-bold" for="email">
                     📧 Email
                 </label>
                 <!-- Passwort anzeigen, aber unkenntlich machen -->
@@ -30,7 +59,7 @@
                     <p class="text-lg" id="email">******</p>
                     <div class="ml-auto">
                         <!-- SVG-Symbol für das Auge zum Anzeigen/Verbergen des Passworts -->
-                        <svg id="toggleEmailVisibility" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg id="toggleEmailVisibility" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-6 10-6 10 6 10 6-3 6-10 6-10-6-10-6z" />
                         </svg>
@@ -38,13 +67,13 @@
                 </div>
             </div>
             <div class="p-4 border-t border-gray-200">
-                <label class="block text-sm font-bold mb-2" for="password">
+                <label class="block mb-2 text-sm font-bold" for="password">
                     🔑 Password
                 </label>
                 <div class="flex items-center">
                     <p class="text-lg" id="password">******</p>
                     <div class="ml-auto">
-                        <svg id="togglePasswordVisibility" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg id="togglePasswordVisibility" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-6 10-6 10 6 10 6-3 6-10 6-10-6-10-6z" />
                         </svg>
@@ -52,75 +81,75 @@
                 </div>
             </div>
 
-            <div id="changePasswordOverlay" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center hidden" style="z-index: 1000;">
-                <div class="neumorphism-form max-w-md mx-auto p-8">
-                    <h1 class="text-3xl font-bold text-center mb-8">Change Password</h1>
+            <div id="changePasswordOverlay" class="fixed top-0 left-0 flex items-center justify-center hidden w-full h-full bg-gray-800 bg-opacity-50" style="z-index: 1000;">
+                <div class="max-w-md p-8 mx-auto neumorphism-form">
+                    <h1 class="mb-8 text-3xl font-bold text-center">Change Password</h1>
                     <form id="changePasswordForm">
                         <div class="mb-4">
-                            <label class="block text-sm font-bold mb-2" for="currentPassword">
+                            <label class="block mb-2 text-sm font-bold" for="currentPassword">
                                 🔑 Current Password
                             </label>
                             <input type="password" id="currentPassword" name="currentPassword" class="neumorphism-input" autocomplete>
                         </div>
                         <div class="mb-4">
-                            <label class="block text-sm font-bold mb-2" for="newPassword">
+                            <label class="block mb-2 text-sm font-bold" for="newPassword">
                                 🔑 New Password
                             </label>
                             <input type="password" id="newPassword" name="newPassword" class="neumorphism-input" autocomplete>
                         </div>
                         <div class="mb-4">
-                            <label class="block text-sm font-bold mb-2" for="confirmPassword">
+                            <label class="block mb-2 text-sm font-bold" for="confirmPassword">
                                 ✅ Confirm New Password
                             </label>
                             <input type="password" id="confirmPassword" name="confirmPassword" class="neumorphism-input" autocomplete>
                         </div>
-                        <button id="submitPasswordChange" class="neumorphism-button w-full mt-4">Change Password</button>
+                        <button id="submitPasswordChange" class="w-full mt-4 neumorphism-button">Change Password</button>
                     </form>
-                    <button id="closePasswordOverlay" class="neumorphism-button w-full mt-4">Close</button>
+                    <button id="closePasswordOverlay" class="w-full mt-4 neumorphism-button">Close</button>
                 </div>
             </div>
 
-            <div id="changeUsernameOverlay" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center hidden" style="z-index: 1000;">
-                <div class="neumorphism-form max-w-md mx-auto p-8">
-                    <h1 class="text-3xl font-bold text-center mb-8">Change Username</h1>
+            <div id="changeUsernameOverlay" class="fixed top-0 left-0 flex items-center justify-center hidden w-full h-full bg-gray-800 bg-opacity-50" style="z-index: 1000;">
+                <div class="max-w-md p-8 mx-auto neumorphism-form">
+                    <h1 class="mb-8 text-3xl font-bold text-center">Change Username</h1>
                     <form id="changeUsernameForm">
                         <div class="mb-4">
-                            <label class="block text-sm font-bold mb-2" for="currentUsername">
+                            <label class="block mb-2 text-sm font-bold" for="currentUsername">
                                 👤 Current Username
                             </label>
                             <input type="text" id="currentUsername" name="currentUsername" class="neumorphism-input" autocomplete>
                         </div>
                         <div class="mb-4">
-                            <label class="block text-sm font-bold mb-2" for="newUsername">
+                            <label class="block mb-2 text-sm font-bold" for="newUsername">
                                 👤 New Username
                             </label>
                             <input type="text" id="newUsername" name="newUsername" class="neumorphism-input" autocomplete>
                         </div>
                         <div class="mb-4">
-                            <label class="block text-sm font-bold mb-2" for="confirmUsername">
+                            <label class="block mb-2 text-sm font-bold" for="confirmUsername">
                                 ✅ Confirm New Username
                             </label>
                             <input type="text" id="confirmUsername" name="confirmUsername" class="neumorphism-input" autocomplete>
                         </div>
-                        <button id="submitUsernameChange" class="neumorphism-button w-full mt-4">Change Username</button>
+                        <button id="submitUsernameChange" class="w-full mt-4 neumorphism-button">Change Username</button>
                     </form>
-                    <button id="closeUsernameOverlay" class="neumorphism-button w-full mt-4">Close</button>
+                    <button id="closeUsernameOverlay" class="w-full mt-4 neumorphism-button">Close</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="flex justify-center items-center fixed inset-x-0 top-120" style="z-index: 999;">
-        <div class="switch-container mr-4">
+    <div class="fixed inset-x-0 flex items-center justify-center top-120" style="z-index: 999;">
+        <div class="mr-4 switch-container">
         </div>
         <div class="mr-4">
             <button id="openChangePasswordOverlayBtn" class="neumorphism-button" style="font-size: 16px;">🔑 Change Password</button>
             <button id="openChangePasswordOverlayBtn" class="neumorphism-button" style="font-size: 16px;" onclick="redirectToPreferences()">⚙️ Change Preferences</button>
             <button id="openChangeUsernameOverlayBtn" class="neumorphism-button" style="font-size: 16px;">👤 Change Username</button>
-            <button id="deleteAccountBtn" class="neumorphism-button text-blue-600 h-full delete-button">🚮 Delete Account</button>
+            <button id="deleteAccountBtn" class="h-full text-blue-600 neumorphism-button delete-button">🚮 Delete Account</button>
             <label class="switch">
                 <input id="modeSwitch" type="checkbox" style="display: none;">
-                <button id="mode-toggle" class="neumorphism-button h-full text-blue-600">🌑 Dark Mode</button>
+                <button id="mode-toggle" class="h-full text-blue-600 neumorphism-button">🌑 Dark Mode</button>
             </label>
             <button id="openChangePasswordOverlayBtn" class="neumorphism-button" style="font-size: 16px;" onclick="redirectToHome()">🏠 Home</button>
         </div> 

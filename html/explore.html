@@ -5,11 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/explore.css">
-    <link rel="stylesheet" href="/assets/CascadiaCode-Regular.woff2" type="font/woff2">
+    <style>
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+            min-width: 100vw;
+            min-height: 100vh;
+            width: var(--size);
+            filter: blur(150px);
+            height: var(--size);
+            animation: moveGradient 10s linear infinite alternate infinite;
+            --size: 250px;
+            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+
+        @keyframes moveGradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+    </style>
 </head>
 <body>
+    <div class="gradient"></div>
     <div class="title-container">
-        <h1 class="text-3xl font-bold mb-8">Explore</h1>
+        <h1 class="mb-8 text-3xl font-bold">Explore</h1>
     </div>
 
     <div id="suspendedUser">
@@ -21,8 +51,8 @@
         </div>
     </div>
 
-    <div class="action-buttons mt-8 flex justify-center gap-4">
-        <a href="/home" class="neumorphism-button text-blue-600">🏠 Home</a>
+    <div class="flex justify-center gap-4 mt-8 action-buttons">
+        <a href="/home" class="text-blue-600 neumorphism-button">🏠 Home</a>
     </div>
     
     <script src="/js/explore.js"></script>

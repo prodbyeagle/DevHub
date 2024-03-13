@@ -7,41 +7,71 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/signup.css">
     <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
-    <link rel="stylesheet" href="/assets/CascadiaCode-Regular.woff2" type="font/woff2">
+    <style>
+        .gradient {
+            /* Füge hier deine CSS-Stile für den Gradienten ein */
+            background: linear-gradient(to left, #ff416c, #ff4b2b);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+            min-width: 100vw;
+            min-height: 100vh;
+            width: var(--size);
+            filter: blur(150px);
+            height: var(--size);
+            animation: moveGradient 10s linear infinite alternate infinite;
+            --size: 250px;
+            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+
+        @keyframes moveGradient {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+    </style>
 </head>
 <body class="dark-mode">
 <body class="bg-gray-100 dark-mode">
-<div class="container mx-auto py-8">
-    <h1 class="text-3xl font-bold text-center mb-8">devolution. Sign Up</h1>
-    <p class="text-center mb-4">Already have an account? <a href="/login" class="text-blue-500 hover:underline">Login</a></p>
+<div class="gradient"></div>
+<div class="container py-8 mx-auto">
+    <h1 class="mb-8 text-3xl font-bold text-center">devolution. Sign Up</h1>
+    <p class="mb-4 text-center">Already have an account? <a href="/login" class="text-blue-500 hover:underline">Login</a></p>
     <div class="max-w-md mx-auto neumorphism-form">
         <form id="signupForm" class="space-y-4">
             <div>
                 <label for="username" class="block text-sm font-medium">Username:</label>
                 <input type="text" id="username" name="username"minlength="4" maxlength="12" required autocomplete="username"
-                       class="mt-1 block w-full neumorphism-input">
+                       class="block w-full mt-1 neumorphism-input">
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium">Email:</label>
                 <input type="email" id="email" name="email" required autocomplete="email"
-                       class="mt-1 block w-full neumorphism-input">
+                       class="block w-full mt-1 neumorphism-input">
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium">Password:</label>
                 <input type="password" id="password" name="password"minlength="8" maxlength="48" required autocomplete="new-password"
-                       class="mt-1 block w-full neumorphism-input">
+                       class="block w-full mt-1 neumorphism-input">
             </div>
             <div>
                 <label for="confirmPassword" class="block text-sm font-medium">Confirm Password:</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required autocomplete="new-password"
-                       class="mt-1 block w-full neumorphism-input">
+                       class="block w-full mt-1 neumorphism-input">
             </div>
-            <button type="submit" class="neumorphism-button w-full">Sign Up</button>
+            <button type="submit" class="w-full neumorphism-button">Sign Up</button>
         </form>
     </div>
 </div>
-<div class="flex justify-center items-center fixed inset-x-0 top-120">
-    <a href="/auth/google" class="neumorphism-button mr-3">
+<div class="fixed inset-x-0 flex items-center justify-center top-120">
+    <a href="/auth/google" class="mr-3 neumorphism-button">
         <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/google-logo.png" alt="google-logo"/>
     </a>
     <a href="/auth/github" class="neumorphism-button">
