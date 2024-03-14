@@ -184,7 +184,7 @@ async function loadBadges() {
             imageElement.alt = badge.name;
             imageElement.style.maxWidth = '100px';
             imageElement.style.maxHeight = '100px';
-            imageElement.style.borderRadius = '50%';
+            imageElement.style.borderRadius = '25%';
         
             // Erstelle ein p-Element für die Beschreibung des Badges
             const descriptionParagraph = document.createElement('p');
