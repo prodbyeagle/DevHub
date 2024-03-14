@@ -22,7 +22,7 @@ body.dark-mode {
 }
 
 body.dark-mode .neumorphism-form {
-    background-color: #222;
+    background-color: #00000098;
     box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
@@ -192,6 +192,17 @@ transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hove
 /* Stil für das Feld im Overlay */
 .overlay-content {
     background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 80%; /* Maximale Breite des Inhalts */
+    max-height: 80%; /* Maximale Höhe des Inhalts */
+    overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
+}
+
+/* Stil für das Feld im Overlay */
+.overlay-content {
+    background-color: rgba(100, 100, 100, 0.651);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -510,4 +521,19 @@ body.dark-mode .radio-buttons input[type="radio"]:checked + label {
     display: flex;
     flex-wrap: wrap;
     justify-content: center; /* Zentriert die Badges horizontal */
+}
+
+/* Standard-Styling für das Overlay */
+#full-post-content {
+    background-color: rgba(100, 100, 100, 0.651); /* Standard-Hintergrundfarbe */
+    color: black; /* Standard-Schriftfarbe */
+    border-radius: 10px; /* Rundung der Ecken */
+    padding: 20px; /* Innenabstand */
+    margin: 10px; /* Außenabstand */
+}
+
+/* Dark-Mode-Styling für das Overlay */
+body.dark-mode #full-post-content {
+    background-color: rgba(100, 100, 100, 0.274); /* Dunkler Hintergrund im Dark-Mode */
+    color: whitesmoke; /* Standard-Schriftfarbe */
 }
