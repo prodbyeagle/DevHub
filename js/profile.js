@@ -63,20 +63,23 @@ function showNormalContent() {
             usernameElement.textContent = `@${post.username} (${post.date})`;
         
             const contentElement = document.createElement('p');
-            contentElement.textContent = truncateText(post.content, 100); // Nutzen Sie die truncateText Funktion, um den Text auf 100 Zeichen zu kürzen
+            contentElement.textContent = post.content; // Den gesamten Post-Text einfügen
             contentElement.setAttribute('id', 'content_' + post._id);
+            contentElement.style.overflowWrap = 'break-word'; // CSS-Eigenschaft für das Umbruchverhalten
         
             const codeSnippetElement = document.createElement('pre');
-            codeSnippetElement.textContent = truncateText(post.codesnippet, 100); // Nutzen Sie die truncateText Funktion, um den Text auf 100 Zeichen zu kürzen
+            codeSnippetElement.textContent = post.codesnippet; // Den gesamten Code-Schnipsel einfügen
             codeSnippetElement.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
             codeSnippetElement.style.maxWidth = '100%';
             codeSnippetElement.setAttribute('id', 'codesnippet_' + post._id);
+            codeSnippetElement.style.overflowWrap = 'break-word'; // CSS-Eigenschaft für das Umbruchverhalten
+            
         
             if (post.codesnippet.length > 100) {
                 const formattedCodeSnippet = post.codesnippet.substring(0, 100) + '...'; // Nur die ersten 100 Zeichen des Codeausschnitts anzeigen
+                codeSnippetElement.style.overflowWrap = 'break-word'; // CSS-Eigenschaft für das Umbruchverhalten
                 codeSnippetElement.textContent = formattedCodeSnippet;
             }
-    
             const threeDotMenu = document.createElement('div');
             threeDotMenu.classList.add('absolute', 'top-0', 'right-0');
     
@@ -90,7 +93,7 @@ function showNormalContent() {
             threeDotButton.appendChild(menuIcon);
     
             threeDotButton.setAttribute('id', 'ham-burger-menu-btn');
-            threeDotButton.setAttribute('onclick', `togglePostMenu('${post._id}')`);
+            threeDotButton.setAttribute('onclick', `togglePostMenu('${post._id}', event)`);
             threeDotMenu.setAttribute('id', 'ham-burger-menu-' + post._id);
     
             const threeDotMenuContent = document.createElement('div');
@@ -134,16 +137,43 @@ function showNormalContent() {
             threeDotMenu.appendChild(threeDotButton);
             threeDotMenu.appendChild(threeDotMenuContent);
     
-            // Add click event to show overlay
             postElement.addEventListener('click', function() {
-                const overlayContent = document.getElementById('overlay-content');
-                overlayContent.innerHTML = `
-                    <h3>@${post.username} (${post.date})</h3>
-                    <p>${post.content}</p>
-                    <pre class="bg-gray-800 text-white p-4 rounded text-xs">${post.codesnippet}</pre>
-                `;
-                document.getElementById('post-overlay').classList.remove('hidden');
+                const overlayContent = document.getElementById('full-post-content');
+                overlayContent.innerHTML = ''; // Löschen des vorherigen Inhalts
+            
+                // Erstellen von HTML-Elementen für den Post-Inhalt
+                const usernameHeader = document.createElement('h3');
+                usernameHeader.textContent = `@${post.username} (${post.date})`;
+            
+                const contentParagraph = document.createElement('p');
+                contentParagraph.textContent = post.content;
+            
+                const codeSnippetPre = document.createElement('pre');
+                codeSnippetPre.classList.add('bg-gray-800', 'text-white', 'p-4', 'rounded', 'text-xs');
+                codeSnippetPre.textContent = post.codesnippet;
+            
+                // Hinzufügen der HTML-Elemente zum Overlay-Inhalt
+                overlayContent.appendChild(usernameHeader);
+                overlayContent.appendChild(contentParagraph);
+                overlayContent.appendChild(codeSnippetPre);
+            
+                // Anzeigen des Overlays
+                const postOverlay = document.getElementById('post-overlay');
+                postOverlay.classList.remove('hidden');
+            
+                // Scrollen der Seite deaktivieren
+                document.body.style.overflow = 'hidden';
+            
+                // Event-Listener hinzufügen, um das Overlay zu schließen, wenn darauf geklickt wird
+                postOverlay.addEventListener('click', function(event) {
+                    if (event.target === postOverlay) {
+                        postOverlay.classList.add('hidden');
+                        // Scrollen der Seite wieder aktivieren
+                        document.body.style.overflow = 'auto';
+                    }
+                });
             });
+            
     
             postElement.appendChild(usernameElement);
             postElement.appendChild(contentElement);
@@ -198,49 +228,76 @@ function showNormalContent() {
     loadModePreference();
 
     window.onload = async function() {
-try {
-    const userDataString = localStorage.getItem('user');
-    if (!userDataString) {
-        console.error('User data not found in localStorage.');
-        return;
-    }
-
-    const userData = JSON.parse(userDataString);
-    const identifier = userData.identifier;
-
-    const response = await fetch(`/api/username`);
-    const data = await response.json();
-    const users = data.users;
-    let currentUser = null;
-
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].username === identifier) {
-            currentUser = users[i];
-            break;
+        try {
+            const userDataString = localStorage.getItem('user');
+            if (!userDataString) {
+                console.error('User data not found in localStorage.');
+                return;
+            }
+    
+            const userData = JSON.parse(userDataString);
+            const identifier = userData.identifier;
+    
+            const response = await fetch(`/api/${identifier}/badges`);
+            const data = await response.json();
+            const badges = data.badges;
+    
+            let activeBadge = null;
+    
+            // Suche nach dem aktiven Badge
+            for (let i = 0; i < badges.length; i++) {
+                if (badges[i].active === true) {
+                    activeBadge = badges[i];
+                    break;
+                }
+            }
+    
+            const responseUser = await fetch(`/api/username`);
+            const userDataResponse = await responseUser.json();
+            const users = userDataResponse.users;
+            let currentUser = null;
+    
+            for (let i = 0; i < users.length; i++) {
+                if (users[i].username === identifier) {
+                    currentUser = users[i];
+                    break;
+                }
+            }
+    
+            if (!currentUser) {
+                console.error('User not found in the database.');
+                return;
+            }
+    
+            document.getElementById('profile-picture').src = currentUser.pb;
+            document.getElementById('profile-username').innerText = currentUser.username;
+            const profileUsernameElement = document.getElementById('profile-username');
+            profileUsernameElement.textContent = `@${currentUser.username}`;
+    
+            // Anzeigen der Biografie im Profil
+            const profileDescriptionElement = document.getElementById('profile-description');
+            if (currentUser.bio) {
+                profileDescriptionElement.innerText = currentUser.bio;
+            } else {
+                profileDescriptionElement.innerText = "❌ Bio not available";
+            }
+    
+            // Anzeigen des aktiven Abzeichens neben dem Benutzernamen
+            if (activeBadge && activeBadge.image) {
+                const badgeImageElement = document.createElement('img');
+                badgeImageElement.src = activeBadge.image;
+                badgeImageElement.classList.add('badge-image'); // Sie können auch eine CSS-Klasse hinzufügen, um das Badge zu stylen
+                badgeImageElement.width = 15;
+                badgeImageElement.height = 15;
+                badgeImageElement.style.marginLeft = "10px";
+                badgeImageElement.style.borderRadius = "25%";
+                profileUsernameElement.appendChild(badgeImageElement);
+            }
+    
+        } catch (error) {
+            console.error("Error fetching user data:", error);
         }
-    }
-
-    if (!currentUser) {
-        console.error('User not found in the database.');
-        return;
-    }
-
-    document.getElementById('profile-picture').src = currentUser.pb;
-    document.getElementById('profile-username').innerText = currentUser.username;
-    const profileUsernameElement = document.getElementById('profile-username');
-    profileUsernameElement.textContent = `@${currentUser.username}`;
-
-    // Anzeigen der Biografie im Profil
-    const profileDescriptionElement = document.getElementById('profile-description');
-    if (currentUser.bio) {
-        profileDescriptionElement.innerText = currentUser.bio;
-    } else {
-        profileDescriptionElement.innerText = "❌ Bio not available";
-    }
-} catch (error) {
-    console.error("Error fetching user data:", error);
-}
-};
+    };
 
     // Funktion zum Anzeigen des Overlays
     function showOverlay() {
@@ -262,7 +319,7 @@ try {
             if (newBio.trim() === '') {
                 Toastify({
                     text: 'You are very funny! but type something!!!',
-                    duration: 3000,
+                    duration: 1000,
                     close: false,
                     gravity: 'top', // Optionen: 'top', 'bottom', 'center'
                     position: 'right', // Optionen: 'left', 'right', 'center'
@@ -505,55 +562,33 @@ try {
 
 // Funktion zum Abrufen und Anzeigen der Anzahl der Follower für einen bestimmten Benutzer
 async function fetchAndDisplayFollowerCount(username) {
-try {
+    try {
+        
+        // URL-decodierten Benutzernamen erstellen
+        const decodedUsername = decodeURIComponent(username);
     
-    // URL-decodierten Benutzernamen erstellen
-    const decodedUsername = decodeURIComponent(username);
-
-    // API-Antwort mit den Benutzerdaten abrufen
-    const response = await fetch(`/api/profile/${decodedUsername}`);
-
-    const data = await response.json();
-
-    // Überprüfen, ob die API-Antwort gültige Daten enthält
-    if (!data || !data.follower) {
-        console.error('Ungültige API-Antwort:', data);
-        return;
-    }
-
-    // Anzahl der Follower des Benutzers abrufen und anzeigen
-    let followerCount = data.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
-    if (followerCount < 0) {
-        followerCount = 0; // Sicherstellen, dass die Anzahl nicht negativ ist
-    }
-
-    // Anzahl der Benutzer, denen der aktuelle Benutzer folgt, abrufen
-    const followingList = data.followers || []; // Liste der Benutzer, denen der aktuelle Benutzer folgt
-    const followingCount = followingList.length; // Anzahl der Benutzer, denen der aktuelle Benutzer folgt
+        // API-Antwort mit den Benutzerdaten abrufen
+        const response = await fetch(`/api/profile/${decodedUsername}`);
     
-    // Namen der Benutzer, denen der aktuelle Benutzer folgt, anzeigen
-    let followingNames = "";
-    if (followingCount === 0) {
-        followingNames = "😭 No Followers!";
-    } else if (followingCount <= 3) {
-        // Wenn es drei oder weniger Benutzer gibt, alle Namen anzeigen
-        followingNames = followingList.join(", ");
-    } else {
-        // Wenn es mehr als drei Benutzer gibt, nur die ersten drei Namen anzeigen, gefolgt von "+10 andere"
-        const firstThreeNames = followingList.slice(0, 3).join(", ");
-        const remainingCount = followingCount - 3;
-        followingNames = `${firstThreeNames} +${remainingCount} other`;
-    }
+        const data = await response.json();
     
-    // Die angezeigten Namen in das HTML-Element einfügen
-    const followingNamesElement = document.getElementById('following-names');
-    followingNamesElement.textContent = followingNames;
-
-    const followerCountElement = document.getElementById('follower-count');
-    followerCountElement.textContent = followerCount;
-} catch (error) {
-    console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
-}
+        // Überprüfen, ob die API-Antwort gültige Daten enthält
+        if (!data || !data.follower) {
+            console.error('Ungültige API-Antwort:', data);
+            return;
+        }
+    
+        // Anzahl der Follower des Benutzers abrufen und anzeigen
+        let followerCount = data.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
+        if (followerCount < 0) {
+            followerCount = 0; // Sicherstellen, dass die Anzahl nicht negativ ist
+        }
+    
+        const followerCountElement = document.getElementById('follower-count');
+        followerCountElement.textContent = followerCount;
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Anzahl der Follower:', error);
+    }
 }
 
 function deletePost(postId) {
@@ -645,14 +680,18 @@ try {
 }
 }
 
-function togglePostMenu(postId) {
+function togglePostMenu(postId, event) {
     const menu = document.getElementById(`ham-burger-menu-content-${postId}`);
 
     if (!menu) {
-        console.log(`Menu nicht gefunden`)
-    };
+        console.log(`Menu nicht gefunden`);
+        return;
+    }
 
     menu.classList.toggle('hidden');
+
+    // Verhindern, dass das Klick-Event sich auf übergeordnete Elemente ausbreitet
+    event.stopPropagation();
 }
 
 // Fügen Sie den Event-Listener für das Burger-Menü hinzu
@@ -915,8 +954,6 @@ async function changeActiveBadge(badgeName) {
             throw new Error('Failed to deactivate badges');
         }
 
-        const deactivateData = await deactivateResponse.json();
-
         // Aktiviere den ausgewählten Badge des Benutzers
         const activateResponse = await fetch(`/api/${username}/badges/${badgeName}/activate`, {
             method: 'PUT',
@@ -930,8 +967,6 @@ async function changeActiveBadge(badgeName) {
             throw new Error('Failed to activate badge');
         }
 
-        const activateData = await activateResponse.json();
-
         Toastify({
             text: `${badgeName} was Activated!`,
             duration: 3000,
@@ -941,8 +976,6 @@ async function changeActiveBadge(badgeName) {
             backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
         }).showToast();
 
-
-        // Aktualisiere die Badges nach der Aktivierung
         loadBadges();
         closeBadgeOverlay();
     } catch (error) {
