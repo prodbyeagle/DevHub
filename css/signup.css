@@ -1,72 +1,74 @@
 body {
-    font-family: Cascadia Code, sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: all 0.3s ease;
+  font-family: Cascadia Code, sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  transition: all 0.3s ease;
 }
 
 /* Neumorphism styles for Dark Mode */
 body.dark-mode {
-background-color: #222;
-color: #eee;
-transition: all 0.3s ease;
+  background-color: #222;
+  color: #eee;
+  transition: all 0.3s ease;
 }
 
 /* Neumorphism styles for the form */
 .neumorphism-form {
-    background-color: #f0f0f0;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #f0f0f0;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 body.dark-mode .neumorphism-form {
-    background-color: #222;
-    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+  background-color: #222;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
 /* Neumorphism styles for the input fields */
 .neumorphism-input {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 body.dark-mode .neumorphism-input {
-    border-color: #555;
-    background-color: #333;
-    color: #eee;
+  border-color: #555;
+  background-color: #333;
+  color: #eee;
 }
 
-        /* Neumorphism styles for the submit button */
-        .neumorphism-button {
-            background-color: #33333350;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
+/* Neumorphism styles for the submit button */
+.neumorphism-button {
+  background-color: #33333350;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .neumorphism-button:hover {
-            background-color: #aaaaaa44;
-        }
+.neumorphism-button:hover {
+  background-color: #aaaaaa44;
+}
 
-        body.dark-mode .neumorphism-button {
-            background-color: #67676788;
-            color: #eee;
-        }
+body.dark-mode .neumorphism-button {
+  background-color: #67676788;
+  color: #eee;
+}
 
-        body.dark-mode .neumorphism-button:hover {
-            background-color: #7c7c7cdb;
-        }
+body.dark-mode .neumorphism-button:hover {
+  background-color: #7c7c7cdb;
+}
 
 ::-webkit-scrollbar {
-width: 12px;
-background-color: transparent;
-transition: all 0.3s ease;
+  width: 12px;
+  background-color: transparent;
+  transition: all 0.3s ease;
 }

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>devolution. Dev-Blogs</title>
-  <link rel="stylesheet" href="css/blog.css">
-  <link rel="icon" href="/assets/icon-white.png">
-  <style>
-    .gradient {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>devolution. Dev-Blogs</title>
+    <link rel="stylesheet" href="css/blog.css" />
+    <link rel="icon" href="/assets/icon-white.png" />
+    <style>
+      .gradient {
         /* Füge hier deine CSS-Stile für den Gradienten ein */
         background: linear-gradient(to left, #ff416c, #ff4b2b);
         position: fixed;
@@ -25,48 +25,79 @@
         --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
         --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
         border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-    }
+      }
 
-    @keyframes moveGradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 100% 50%;
-    }
-}
-</style>
-</head>
-<body>
-  <div class="gradient"></div>
-  <header>
-    <h1>devolution. Dev-Blogs</h1>
-    <button style="background-color: #ff285a;" class="neumorphism-button" id="new-blog-btn">NEW POST</button> 
-  </header>
+      @keyframes moveGradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="gradient"></div>
+    <header>
+      <h1>devolution. Dev-Blogs</h1>
+      <button
+        style="background-color: #ff285a"
+        class="neumorphism-button"
+        id="new-blog-btn"
+      >
+        NEW POST
+      </button>
+    </header>
 
-  <main id="blog-posts">
-  </main>
+    <main id="blog-posts"></main>
 
-  <div class="overlay" id="neumorphism-form" style="display: none;">
-    <div class="overlay-content" id="new-blog-form">
-      <h2>New Blog Post:</h2>
-      <label for="title">Title:</label>
-      <input rows="1" cols="1" maxlength="64" style="resize: none;" type="text" id="title" name="title" class="neumorphism-input">
-      <label for="content">Content:</label>
-      <textarea class="neumorphism-input" id="content" name="content" rows="5" cols="1" maxlength="5000" style="resize: none;"></textarea>
-      <!-- Bildauswahl -->
-      <label for="image">Image:</label>
-      <input type="file" id="image" name="image" accept="image/*">
-      <!-- Ende der Bildauswahl -->
-      <button type="submit" class="neumorphism-button" id="send-blog-btn">Send</button>
-      <button type="button" style="margin-top: 10px;" class="neumorphism-button" id="cancel-btn">Cancel</button>
+    <div class="overlay" id="neumorphism-form" style="display: none">
+      <div class="overlay-content" id="new-blog-form">
+        <h2>New Blog Post:</h2>
+        <label for="title">Title:</label>
+        <input
+          rows="1"
+          cols="1"
+          maxlength="64"
+          style="resize: none"
+          type="text"
+          id="title"
+          name="title"
+          class="neumorphism-input"
+        />
+        <label for="content">Content:</label>
+        <textarea
+          class="neumorphism-input"
+          id="content"
+          name="content"
+          rows="5"
+          cols="1"
+          maxlength="5000"
+          style="resize: none"
+        ></textarea>
+        <!-- Bildauswahl -->
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" />
+        <!-- Ende der Bildauswahl -->
+        <button type="submit" class="neumorphism-button" id="send-blog-btn">
+          Send
+        </button>
+        <button
+          type="button"
+          style="margin-top: 10px"
+          class="neumorphism-button"
+          id="cancel-btn"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div class="flex justify-center gap-4 mt-8 action-buttons">
-    <a href="/home" class="text-blue-600 neumorphism-button">🏠 Home</a>
-  </div>
-    
-  <script src="js/blog.js"></script>
-</body>
+    <div class="flex justify-center gap-4 mt-8 action-buttons">
+      <a href="/home" class="text-blue-600 neumorphism-button">🏠 Home</a>
+    </div>
+
+    <script src="js/blog.js"></script>
+  </body>
 </html>

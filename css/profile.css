@@ -1,539 +1,558 @@
 body {
-    font-family: 'Cascadia Code',  sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: all 0.3s ease;
+  font-family: "Cascadia Code", sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  transition: all 0.3s ease;
+  user-select: none;
 }
 
 /* Neumorphism styles for Dark Mode */
 body.dark-mode {
-    background-color: #222;
-    color: #eee;
-    transition: all 0.3s ease;
+  background-color: #222;
+  color: #eee;
+  transition: all 0.3s ease;
 }
 
 /* Neumorphism styles for the form */
 .neumorphism-form {
-    background-color: #f0f0f0;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #f0f0f0;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 body.dark-mode .neumorphism-form {
-    background-color: #00000098;
-    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+  background-color: #00000098;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
 /* Neumorphism styles for the input fields */
 .neumorphism-input {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 body.dark-mode .neumorphism-input {
-    border-color: #555;
-    background-color: #333;
-    color: #eee;
+  border-color: #555;
+  background-color: #333;
+  color: #eee;
 }
 
-        /* Neumorphism styles for the submit button */
-        .neumorphism-button {
-            background-color: #33333350;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
+/* Neumorphism styles for the submit button */
+.neumorphism-button {
+  background-color: #33333350;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .neumorphism-button:hover {
-            background-color: #aaaaaa44;
-        }
+.neumorphism-button:hover {
+  background-color: #aaaaaa44;
+}
 
-        body.dark-mode .neumorphism-button {
-            background-color: #67676788;
-            color: #eee;
-        }
+body.dark-mode .neumorphism-button {
+  background-color: #67676788;
+  color: #eee;
+}
 
-        body.dark-mode .neumorphism-button:hover {
-            background-color: #7c7c7cdb;
-        }
+body.dark-mode .neumorphism-button:hover {
+  background-color: #7c7c7cdb;
+}
 
 /* Dark Mode styles for the checkbox */
 .neumorphism-checkbox {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 1.4em;
-    height: 1.4em;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    outline: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 1.4em;
+  height: 1.4em;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .neumorphism-checkbox:checked {
-    background-color: #007bff;
-    border-color: #007bff;
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
 /* Custom styles for the switch label */
 .switch-label {
-    margin-left: 0.5rem;
-    font-size: 0.875rem;
-    color: #333;
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: #333;
 }
 
 /* Dark Mode styles for the switch label */
 body.dark-mode .switch-label {
-    color: #eee;
+  color: #eee;
 }
 
 /* Overlay styles */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-    transition: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: all 0.3s ease;
 }
 
 .overlay-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 /* Hidden class */
 .hidden {
-    display: none;
-    transition: all 0.3s ease;
+  display: none;
+  transition: all 0.3s ease;
 }
 
 .content-container {
-    padding: 1rem;
-    background-color: #f0f0f0;
-    color: #333;
-    border-radius: 16px;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
+  padding: 1rem;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 16px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
 }
 
 body.dark-mode .content-container {
-    padding: 1rem;
-    background-color: #222;
-    color: #eee;
-    border-radius: 16px;
-    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-    margin-bottom: 20px;
-    
+  padding: 1rem;
+  background-color: #222;
+  color: #eee;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+  margin-bottom: 20px;
 }
 
-    /* Neumorphism styles for the posts */
+/* Neumorphism styles for the posts */
 .post {
-background-color: #f0f0f0;
-border: 1px solid #ccc;
-padding: 1rem;
-margin-bottom: 1rem;
-color: #333;
-border-radius: 16px;
-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #333;
+  border-radius: 16px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+  text-overflow: clip;
 }
 
 .post-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(200px, 1fr)
+  ); /* Hier können Sie die Größe der Spalten anpassen */
+  gap: 20px; /* Hier können Sie den Abstand zwischen den Posts anpassen */
+  text-overflow: clip;
 }
 
 .post {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    color: #333;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
-    overflow: hidden;
-    }
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #333;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+  text-overflow: clip;
+}
 
 /* Stil für das Overlay */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Hintergrundfarbe mit Transparenz */
-    display: flex;
-    justify-content: center; /* Zentrieren des Inhalts horizontal */
-    align-items: center; /* Zentrieren des Inhalts vertikal */
-    z-index: 1000; /* Z-Index, um das Overlay über anderen Inhalten zu platzieren */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Hintergrundfarbe mit Transparenz */
+  display: flex;
+  justify-content: center; /* Zentrieren des Inhalts horizontal */
+  align-items: center; /* Zentrieren des Inhalts vertikal */
+  z-index: 1000; /* Z-Index, um das Overlay über anderen Inhalten zu platzieren */
 }
 
 /* Stil für das Feld im Overlay */
 .overlay-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    max-width: 80%; /* Maximale Breite des Inhalts */
-    max-height: 80%; /* Maximale Höhe des Inhalts */
-    overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  max-width: 80%; /* Maximale Breite des Inhalts */
+  max-height: 80%; /* Maximale Höhe des Inhalts */
+  overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
 }
 
 /* Stil für das Feld im Overlay */
 .overlay-content {
-    background-color: rgba(100, 100, 100, 0.651);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    max-width: 80%; /* Maximale Breite des Inhalts */
-    max-height: 80%; /* Maximale Höhe des Inhalts */
-    overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
+  background-color: rgba(100, 100, 100, 0.651);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  max-width: 80%; /* Maximale Breite des Inhalts */
+  max-height: 80%; /* Maximale Höhe des Inhalts */
+  overflow-y: auto; /* Scrollen, wenn der Inhalt zu groß ist */
 }
 
 /* Stil für den Schließen-Button */
 .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-family: 'Cascadia Code',  sans-serif;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-family: "Cascadia Code", sans-serif;
 }
 
 /* Stil für den Schließen-Button */
 body.dark-mode .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-family: 'Cascadia Code',  sans-serif;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-family: "Cascadia Code", sans-serif;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .post:hover {
-transform: scale(1.02); /* Vergrößern des Posts beim Hover */
-box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
+  transform: scale(1.02); /* Vergrößern des Posts beim Hover */
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
 }
 
 /* Neumorphism styles for dark mode */
 body.dark-mode .post {
-background-color: #222;
-border: 1px solid #333;
-color: #eee;
-box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+  background-color: #222;
+  border: 1px solid #333;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
 body.dark-mode .post:hover {
-box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
-transform: scale(1.02);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
+  transform: scale(1.02);
 }
 
 .scroll-to-top {
-    position: fixed;
-    bottom: 20px; /* Adjust as needed */
-    right: 20px; /* Adjust as needed */
-    z-index: 9999;
-    display: none; /* Hide by default */
-    width: 60px;
-    height: 60px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+  position: fixed;
+  bottom: 20px; /* Adjust as needed */
+  right: 20px; /* Adjust as needed */
+  z-index: 9999;
+  display: none; /* Hide by default */
+  width: 60px;
+  height: 60px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
 }
 
 .scroll-to-top:hover {
-    background-color: #0056b3;
-    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+  background-color: #0056b3;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-mode .scroll-to-top {
-    background-color: #222;
-    color: #eee;
-    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
+  background-color: #222;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
 body.dark-mode .scroll-to-top:hover {
-    background-color: #333;
+  background-color: #333;
 }
 
 ::-webkit-scrollbar {
-width: 12px;
-background-color: transparent;
-transition: all 0.3s ease;
+  width: 12px;
+  background-color: transparent;
+  transition: all 0.3s ease;
 }
 
 /* Scrollbalkengriff */
 ::-webkit-scrollbar-thumb {
-background-color: rgba(0, 0, 0, 0.2);
-border-radius: 10px;
-border: 3px solid transparent;
-background-clip: content-box;
-
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
 
 /* Hover-Stil für den Scrollbalkengriff */
 ::-webkit-scrollbar-thumb:hover {
-background-color: rgba(0, 0, 0, 0.3);
-cursor: all-scroll    
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: all-scroll;
 }
 
 /* Track (nicht scrollbarer Bereich) */
 ::-webkit-scrollbar-track {
-background-color: transparent;
+  background-color: transparent;
 }
 
 /* Track-Farbe beim Hover */
 ::-webkit-scrollbar-track:hover {
-background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Scrollbalkenpfeil-Buttons */
 ::-webkit-scrollbar-button {
-display: none; /* Ausblenden der Scrollbar-Pfeil-Buttons */
+  display: none; /* Ausblenden der Scrollbar-Pfeil-Buttons */
 }
 
 /* Ecken der Scrollleiste */
 ::-webkit-scrollbar-corner {
-background-color: transparent;
+  background-color: transparent;
 }
 
 /* Neumorphismus-Stil für den Dark/White Mode Switch */
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
 }
 
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+  transform: translateX(26px);
 }
 
 .profile-container {
-    margin-bottom: 30px; /* Add margin at the bottom of the profile container */
+  margin-bottom: 30px; /* Add margin at the bottom of the profile container */
 }
 .content-container {
-    padding: 0 20px; /* Add padding to the content container */
+  padding: 0 20px; /* Add padding to the content container */
 }
 
 .action-buttons {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .action-buttons a {
-    margin: 0 10px;
+  margin: 0 10px;
 }
 
 /* Hintergrundbild für die Profilkarte */
 .profile-card {
-    position: relative;
-    max-width: 600px;
-    justify-content: center;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #333;
+  position: relative;
+  max-width: 600px;
+  justify-content: center;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #333;
 }
 
 /* Dunkler Modus für die Profilkarte */
 body.dark-mode .profile-card {
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten für Dark Mode */
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten für Dark Mode */
 }
 
 /* Dunkler Modus für den verschwommenen Hintergrund */
 body.dark-mode .profile-card::before {
-    background-image: url(''); /* Dunkles Hintergrundbild für den Dark Mode */
+  background-image: url(""); /* Dunkles Hintergrundbild für den Dark Mode */
 }
 
 /* Profilbild-Stile */
 .profile-picture {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin: -60px auto 20px auto;
-    border: 5px solid #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: -60px auto 20px auto;
+  border: 5px solid #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Dunkler Modus für das Profilbild */
 body.dark-mode .profile-picture {
-    border: 5px solid #333; /* Dunkler Rand */
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten */
+  border: 5px solid #333; /* Dunkler Rand */
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Umgekehrter Schatten */
 }
 
 /* Profilinformationen */
 .profile-info {
-    text-align: center;
-    margin-bottom: 20px;
-    position: relative; /* Relative Positionierung für den Text */
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative; /* Relative Positionierung für den Text */
 }
 
 /* Dunkler Modus für Profilinformationen */
 body.dark-mode .profile-info {
-    color: #eee; /* Hellere Textfarbe */
+  color: #eee; /* Hellere Textfarbe */
 }
 
 /* Neumorphismus-Stil für den Text */
 .profile-info h1 {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    position: relative; /* Relative Positionierung für Textschatten */
-    z-index: 1; /* Text über dem verschwommenen Hintergrund */
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  position: relative; /* Relative Positionierung für Textschatten */
+  z-index: 1; /* Text über dem verschwommenen Hintergrund */
 }
 
 /* Dunkler Modus für den Titel */
 body.dark-mode .profile-info h1 {
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
 }
 
 /* Beschreibung */
 .profile-info p {
-    color: #777;
-    font-size: 16px;
-    position: relative; /* Relative Positionierung für Textschatten */
-    z-index: 1; /* Text über dem verschwommenen Hintergrund */
+  color: #777;
+  font-size: 16px;
+  position: relative; /* Relative Positionierung für Textschatten */
+  z-index: 1; /* Text über dem verschwommenen Hintergrund */
 }
 
 /* Dunkler Modus für die Beschreibung */
 body.dark-mode .profile-info p {
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Dunkler Textschatten */
 }
 
 /* Follower- und Folgende-Sektion */
 .follower-following-section {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.follower-section, .following-section {
-    text-align: center;
-    margin: 0 10px;
+.follower-section,
+.following-section {
+  text-align: center;
+  margin: 0 10px;
 }
 
 /* Light Mode */
 .radio-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 10px;
 }
 
 .radio-buttons input[type="radio"] {
-    display: none;
+  display: none;
 }
 
 .radio-buttons label {
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    color: #333;
-    transition: background-color 0.3s, color 0.3s;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .radio-buttons label:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 .radio-buttons input[type="radio"]:checked + label {
-    background-color: #007bff;
-    color: #fff;
+  background-color: #007bff;
+  color: #fff;
 }
 
 /* Dark Mode */
 body.dark-mode .radio-buttons label {
-    background-color: #222;
-    color: #fff;
+  background-color: #222;
+  color: #fff;
 }
 
 body.dark-mode .radio-buttons label:hover {
-    background-color: #444;
+  background-color: #444;
 }
 
 body.dark-mode .radio-buttons input[type="radio"]:checked + label {
-    background-color: #7bdd67;
-    color: #fff;
+  background-color: #7bdd67;
+  color: #fff;
 }
 
 .badges-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* Zentriert die Badges horizontal */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Zentriert die Badges horizontal */
 }
 
 /* Standard-Styling für das Overlay */
 #full-post-content {
-    background-color: rgba(100, 100, 100, 0.651); /* Standard-Hintergrundfarbe */
-    color: black; /* Standard-Schriftfarbe */
-    border-radius: 10px; /* Rundung der Ecken */
-    padding: 20px; /* Innenabstand */
-    margin: 10px; /* Außenabstand */
+  background-color: rgba(100, 100, 100, 0.651); /* Standard-Hintergrundfarbe */
+  color: black; /* Standard-Schriftfarbe */
+  border-radius: 10px; /* Rundung der Ecken */
+  padding: 20px; /* Innenabstand */
+  margin: 10px; /* Außenabstand */
 }
 
 /* Dark-Mode-Styling für das Overlay */
 body.dark-mode #full-post-content {
-    background-color: rgba(100, 100, 100, 0.274); /* Dunkler Hintergrund im Dark-Mode */
-    color: whitesmoke; /* Standard-Schriftfarbe */
+  background-color: rgba(
+    100,
+    100,
+    100,
+    0.274
+  ); /* Dunkler Hintergrund im Dark-Mode */
+  color: whitesmoke; /* Standard-Schriftfarbe */
 }

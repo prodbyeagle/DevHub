@@ -396,6 +396,17 @@ app.post("/api/posts", async (req, res) => {
   }
 });
 
+app.get('/api/posts/all', async (req, res) => {
+  try {
+    const postsCollection = db.collection("posts");
+    const allPosts = await postsCollection.find({}).toArray();
+    res.json(allPosts);
+  } catch (error) {
+    console.error('Fehler beim Abrufen aller Posts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // // server secure
 
 // // Middleware zum Überprüfen des Server-Tokens
@@ -620,7 +631,6 @@ app.post("/admin", async (req, res) => {
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
-
 
 app.delete("/admin/delete-posts", async (req, res) => {
   try {
@@ -977,13 +987,18 @@ app.get('/posts/:postId/likes', async (req, res) => {
 
 app.get('/posts/:username/:postId/check-like', async (req, res) => {
   const { postId, username } = req.params;
-  console.log("Check was succesfully loaded")
-
+  
   try {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
     if (!post) {
       console.error('Post not found');
       return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Überprüfen, ob das liked-Feld vorhanden und ein Array ist
+    if (!Array.isArray(post.liked)) {
+      console.error('Liked field is not an array');
+      return res.status(500).json({ message: 'Internal server error' });
     }
 
     if (post.liked.includes(username)) {

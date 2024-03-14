@@ -1,18 +1,20 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+  const token = document.cookie
+    .split(";")
+    .find((cookie) => cookie.trim().startsWith("token="));
 
   if (token) {
-    const jwtToken = token.split('=')[1].trim();
+    const jwtToken = token.split("=")[1].trim();
     try {
-      const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+      const decodedToken = JSON.parse(atob(jwtToken.split(".")[1]));
       const username = decodedToken.username;
       checkUserBanStatus(username);
-      localStorage.setItem('user', JSON.stringify({ identifier: username }));
+      localStorage.setItem("user", JSON.stringify({ identifier: username }));
     } catch (error) {
-      console.error('Error decoding JWT token:', error);
+      console.error("Error decoding JWT token:", error);
     }
   } else {
-    console.error('JWT token not found in cookie');
+    console.error("JWT token not found in cookie");
   }
 
   // Überprüfe, ob der Benutzer angemeldet ist, und passe die Anzeige entsprechend an
@@ -34,19 +36,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 async function fetchAdminUserData() {
-  const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+  const token = document.cookie
+    .split(";")
+    .find((cookie) => cookie.trim().startsWith("token="));
   if (!token) {
     console.error("JWT token not found in cookie");
     return;
   }
 
-  const jwtToken = token.split('=')[1].trim();
+  const jwtToken = token.split("=")[1].trim();
 
   try {
     const response = await fetch("/api/username", {
       headers: {
-        'Authorization': `Bearer ${jwtToken}`
-      }
+        Authorization: `Bearer ${jwtToken}`,
+      },
     });
 
     if (!response.ok) {
@@ -115,7 +119,7 @@ async function showWelcomeMessage() {
       // Überprüfen, ob der Identifier eine E-Mail-Adresse ist
       if (isValidEmail(identifier)) {
         // Wenn ja, die E-Mail-Adresse verwenden, um den Benutzernamen zu finden
-        const response = await fetch("/api/username");
+        const response = await fetch(`/api/profile/${identifier}`);
         const userData = await response.json();
 
         // Finde den Benutzer, der die angegebene E-Mail-Adresse hat
@@ -269,7 +273,7 @@ async function createPost(event) {
   function handleClick() {
     clickCount++;
 
-    if (clickCount === maxClicks) { 
+    if (clickCount === maxClicks) {
       Toastify({
         text: "💀",
         style: {
@@ -278,7 +282,7 @@ async function createPost(event) {
         className: "rounded", // Abgerundete Ecken hinzufügen
         duration: 10000,
       }).showToast();
-      //TODO: Maybe ein Badge vergeben? 
+      //TODO: Maybe ein Badge vergeben?
       easterEggEnabled = false;
     }
   }
@@ -386,7 +390,14 @@ async function getPosts() {
 
     responseData.posts.forEach(async (post) => {
       const postElement = document.createElement("div");
-      postElement.classList.add("post", "p-4", "rounded", "shadow", "mb-4", "font-bold");
+      postElement.classList.add(
+        "post",
+        "p-4",
+        "rounded",
+        "shadow",
+        "mb-4",
+        "font-bold"
+      );
 
       const username = post.username;
 
@@ -406,7 +417,16 @@ async function getPosts() {
         profileImageElement.style.marginRight = "5px";
         postElement.appendChild(profileImageElement);
       }
-      usernameElement.textContent = ` @${username} (${dateElement.textContent})`;
+
+      // Erstellen eines anklickbaren Benutzernamen-Elements, das zum Profil des Benutzers führt
+      const usernameLinkElement = document.createElement("a");
+      const usernameText = `@${username} `;
+      const dateText = `(${dateElement.textContent})`;
+      usernameLinkElement.innerHTML = usernameText + dateText;
+      usernameLinkElement.href = `/u/${username}`; // Hier die URL zum Profil des Benutzers einfügen
+      usernameLinkElement.style.textDecoration = "none";
+      usernameLinkElement.classList.add("username"); // Fügen Sie die CSS-Klasse hinzu
+      usernameElement.appendChild(usernameLinkElement);
 
       const contentElement = document.createElement("p");
       contentElement.textContent = post.content;
@@ -446,38 +466,42 @@ async function getPosts() {
       try {
         const badgeResponse = await fetch(`/api/${username}/badges`);
         const badgeData = await badgeResponse.json();
-      
+
         // Überprüfen, ob die Antwort erfolgreich war
         if (badgeResponse.ok) {
-            const badges = badgeData.badges;
-        
-            // Überprüfen, ob badges definiert ist und ein Array ist
-            if (badges && Array.isArray(badges)) {
-                // Filtern der aktiven Badges
-                const activeBadges = badges.filter((badge) => badge.active);
-            
-                // Überprüfen, ob der Benutzer aktive Badges hat
-                if (activeBadges.length > 0) {
-                    // Nur das letzte aktive Badge des Benutzers verwenden
-                    const lastActiveBadge = activeBadges[activeBadges.length - 1];
-                    const badgeIcon = document.createElement("img");
-                    badgeIcon.src = lastActiveBadge.image;
-                    badgeIcon.alt = "badge-icon";
-                    badgeIcon.width = 15;
-                    badgeIcon.height = 15;
-                    badgeIcon.style.borderRadius = "25%";
-                    badgeIcon.style.float = "right"; // Das Badge rechts ausrichten
-                    usernameElement.appendChild(badgeIcon);
-                }
-            } else {
-                console.error(`Keine Badges gefunden für Benutzer ${username}.`);
+          const badges = badgeData.badges;
+
+          // Überprüfen, ob badges definiert ist und ein Array ist
+          if (badges && Array.isArray(badges)) {
+            // Filtern der aktiven Badges
+            const activeBadges = badges.filter((badge) => badge.active);
+
+            // Überprüfen, ob der Benutzer aktive Badges hat
+            if (activeBadges.length > 0) {
+              // Nur das letzte aktive Badge des Benutzers verwenden
+              const lastActiveBadge = activeBadges[activeBadges.length - 1];
+              const badgeIcon = document.createElement("img");
+              badgeIcon.src = lastActiveBadge.image;
+              badgeIcon.alt = "badge-icon";
+              badgeIcon.width = 15;
+              badgeIcon.height = 15;
+              badgeIcon.style.borderRadius = "25%";
+              badgeIcon.style.float = "right"; // Das Badge rechts ausrichten
+              usernameElement.appendChild(badgeIcon);
             }
+          } else {
+            console.error(`Keine Badges gefunden für Benutzer ${username}.`);
+          }
         } else {
-            console.error(`Fehler beim Abrufen der Badges für Benutzer ${username}: ${badgeData.error}`);
+          console.error(
+            `Fehler beim Abrufen der Badges für Benutzer ${username}: ${badgeData.error}`
+          );
         }
       } catch (error) {
-        console.error(`Fehler beim Abrufen der Badges für Benutzer ${username}: ${error.message}`);
-}
+        console.error(
+          `Fehler beim Abrufen der Badges für Benutzer ${username}: ${error.message}`
+        );
+      }
 
       let isLiked = localStorage.getItem(`liked_${post._id}`);
 
@@ -722,16 +746,18 @@ async function fetchFollowers(username) {
 }
 
 async function displayFollowersWithPictures() {
-  const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+  const token = document.cookie
+    .split(";")
+    .find((cookie) => cookie.trim().startsWith("token="));
   let username = null;
 
   if (token) {
-    const jwtToken = token.split('=')[1].trim();
+    const jwtToken = token.split("=")[1].trim();
     try {
-      const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+      const decodedToken = JSON.parse(atob(jwtToken.split(".")[1]));
       username = decodedToken.username;
     } catch (error) {
-      console.error('Error decoding JWT token:', error);
+      console.error("Error decoding JWT token:", error);
     }
   }
 
@@ -797,84 +823,72 @@ async function toggleLike(postId) {
   if (!likesButton) return;
 
   try {
-      const isLiked = likesButton.classList.contains("liked");
-      const userData = JSON.parse(localStorage.getItem('user'));
-      if (!userData) {
-          console.error('Benutzerdaten nicht im Local Storage gefunden.');
-          return;
-      }
-      const username = userData.identifier;
+    const isLiked = likesButton.classList.contains("liked");
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData) {
+      console.error("Benutzerdaten nicht im Local Storage gefunden.");
+      return;
+    }
+    const username = userData.identifier;
 
-      if (isLiked) {
-          await removeLike(username, postId);
-          likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
-          likesButton.classList.remove("liked");
-      } else {
-          await saveLike(username, postId);
-          likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-          likesButton.classList.add("liked");
-      }
+    if (isLiked) {
+      await removeLike(username, postId);
+      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+      likesButton.classList.remove("liked");
+    } else {
+      await saveLike(username, postId);
+      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+      likesButton.classList.add("liked");
+    }
 
-      // Füge die Pop-Animation-Klasse hinzu
-      likesButton.classList.add("pop");
+    // Füge die Pop-Animation-Klasse hinzu
+    likesButton.classList.add("pop");
 
-      // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
-      setTimeout(() => {
-          likesButton.classList.remove("pop");
-      }, 300);
+    // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
+    setTimeout(() => {
+      likesButton.classList.remove("pop");
+    }, 300);
 
-      // Aktualisiere die Likes-Anzeige
-      updateLikes(postId);
+    // Aktualisiere die Likes-Anzeige
+    updateLikes(postId);
   } catch (error) {
-      console.error("Fehler:", error);
-  }
-}
-
-// Überprüfe, ob der Benutzer den Beitrag bereits geliked hat
-async function checkIfLiked(username, postId) {
-  try {
-      const response = await fetch(`/posts/${username}/${postId}/check-like`);
-      const data = await response.json();
-      return data.liked;
-  } catch (error) {
-      console.error('Fehler beim Überprüfen des Likes:', error);
-      return false;
+    console.error("Fehler:", error);
   }
 }
 
 // Funktion zum Speichern eines Likes
 async function saveLike(username, postId) {
   try {
-      const response = await fetch(`/posts/${username}/${postId}/like`, {
-          method: "POST",
-      });
+    const response = await fetch(`/posts/${username}/${postId}/like`, {
+      method: "POST",
+    });
 
-      if (!response.ok) {
-          throw new Error("Fehler beim Speichern des Likes");
-      }
+    if (!response.ok) {
+      throw new Error("Fehler beim Speichern des Likes");
+    }
 
-      const data = await response.json();
-      data.message; // Erfolgsmeldung vom Server
+    const data = await response.json();
+    data.message; // Erfolgsmeldung vom Server
   } catch (error) {
-      console.error("Fehler:", error);
+    console.error("Fehler:", error);
   }
 }
 
 // Funktion zum Entfernen eines Likes
 async function removeLike(username, postId) {
   try {
-      const response = await fetch(`/posts/${username}/${postId}/unlike`, {
-          method: "POST",
-      });
+    const response = await fetch(`/posts/${username}/${postId}/unlike`, {
+      method: "POST",
+    });
 
-      if (!response.ok) {
-          throw new Error("Fehler beim Entfernen des Likes");
-      }
+    if (!response.ok) {
+      throw new Error("Fehler beim Entfernen des Likes");
+    }
 
-      const data = await response.json();
-      data.message; // Erfolgsmeldung vom Server
+    const data = await response.json();
+    data.message; // Erfolgsmeldung vom Server
   } catch (error) {
-      console.error("Fehler:", error);
+    console.error("Fehler:", error);
   }
 }
 
@@ -882,13 +896,56 @@ async function updateLikes(postId) {
   try {
     const response = await fetch(`/posts/${postId}/likes`);
     if (!response.ok) {
-      throw new Error('Failed to fetch likes');
+      throw new Error("Failed to fetch likes");
     }
     const { likes } = await response.json();
     const likesElement = document.getElementById(`likesCount_${postId}`);
     likesElement.textContent = `Likes: ${likes}`;
   } catch (error) {
-    console.error('Error updating likes:', error);
+    console.error("Error updating likes:", error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const currentUsername = JSON.parse(localStorage.getItem("user"));
+
+  fetch("/api/posts/all")
+    .then((response) => response.json())
+    .then((allPosts) => {
+      // Iteriere durch alle erhaltenen Posts
+      allPosts.forEach((post) => {
+        const postId = post._id; // Definiere postId innerhalb des forEach-Blocks
+        displayLikeStatus(postId, currentUsername);
+      });
+    })
+    .catch((error) => {
+      console.error("Fehler beim Abrufen aller Posts:", error);
+    });
+});
+
+async function displayLikeStatus(postId, currentUsername) {
+  const likesButton = document.getElementById(`likesButton_${postId}`);
+  if (!likesButton) return;
+
+  const isLiked = await checkIfLiked(postId, currentUsername);
+
+  if (isLiked) {
+    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+  } else {
+    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+  }
+}
+
+async function checkIfLiked(postId, currentUsername) {
+  try {
+    const response = await fetch(
+      `/posts/${currentUsername}/${postId}/check-like`
+    );
+    const data = await response.json();
+    return data.liked;
+  } catch (error) {
+    console.error("Fehler beim Überprüfen des Likes:", error);
+    return false;
   }
 }
 
@@ -996,7 +1053,8 @@ async function fetchAllUserBadges() {
         const badges = badgeData.badges;
 
         // Überprüfen, ob der Benutzer Badges hat
-        if (badges && badges.length > 1) { // Überprüfen, ob 'badges' definiert ist und eine Länge größer als 1 hat
+        if (badges && badges.length > 1) {
+          // Überprüfen, ob 'badges' definiert ist und eine Länge größer als 1 hat
           // Nur das letzte Badge des Benutzers verwenden
           const lastBadge = badges[badges.length - 1];
           const badgeElement = document.createElement("img");
@@ -1029,5 +1087,13 @@ async function fetchAllUserBadges() {
 // Aufruf der Funktion zum Abrufen aller Benutzer und ihrer Badges
 fetchAllUserBadges();
 
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log(
+  "%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!",
+  "font-size: 20px; color: yellow;",
+  "font-size: 14px; color: white;"
+);
+console.log(
+  "%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!",
+  "font-size: 20px; color: yellow;",
+  "font-size: 14px; color: white;"
+);

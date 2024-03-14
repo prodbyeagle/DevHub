@@ -118,16 +118,16 @@
         </div> 
         
         <div id="likes-content" class="hidden">
-            <!-- Hier wird der Inhalt für Likes angezeigt -->
+            <h2>likes</h2>
         </div>
         
         <div id="favorites-content" class="hidden">
-            <!-- Hier wird der Inhalt für Favoriten angezeigt -->
+            <h2>favorites</h2>
         </div>
     </div>
     
 
-    <div id="post-overlay" class="hidden overlay">
+    <div id="post-overlay-content" class="hidden overlay">
         <div class="p-4 rounded shadow-lg overlay-content" id="overlay-content"></div>
     </div>
 
@@ -157,7 +157,7 @@
     document.querySelectorAll('input[name="section"]').forEach(radio => {
     radio.addEventListener('change', (event) => {
         const section = event.target.value;
-        console.log('Selected section:', section);
+        
         // Zeige den entsprechenden Inhalt basierend auf dem ausgewählten Abschnitt
         document.querySelectorAll('.content-container > div').forEach(content => {
             if (content.id === section + '-content') {
@@ -166,6 +166,16 @@
                 content.classList.add('hidden');
             }
         });
+
+        // Hinzufügen oder Entfernen der Klasse "post-grid" basierend auf dem ausgewählten Abschnitt
+        const postsContainer = document.getElementById('user-posts');
+        if (section === 'posts') {
+            postsContainer.classList.remove('hidden');
+            postsContainer.classList.add('post-grid');
+        } else {
+            postsContainer.classList.remove('post-grid');
+            postsContainer.classList.add('hidden');
+        }
     });
 });
     </script>

@@ -1,6 +1,6 @@
 /* Gemeinsame Stile für den Body */
 body {
-  font-family: 'Cascadia Code',  sans-serif;
+  font-family: "Cascadia Code", sans-serif;
   background-color: #f0f0f0;
   color: #333;
   transition: all 0.3s ease;
@@ -130,29 +130,29 @@ body.dark-mode .neumorphism-input {
   resize: none;
 }
 
-        /* Neumorphism styles for the submit button */
-        .neumorphism-button {
-          background-color: #33333350;
-          color: #fff;
-          padding: 0.5rem 1rem;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      }
+/* Neumorphism styles for the submit button */
+.neumorphism-button {
+  background-color: #33333350;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-      .neumorphism-button:hover {
-          background-color: #aaaaaa44;
-      }
+.neumorphism-button:hover {
+  background-color: #aaaaaa44;
+}
 
-      body.dark-mode .neumorphism-button {
-          background-color: #67676788;
-          color: #eee;
-      }
+body.dark-mode .neumorphism-button {
+  background-color: #67676788;
+  color: #eee;
+}
 
-      body.dark-mode .neumorphism-button:hover {
-          background-color: #7c7c7cdb;
-      }
+body.dark-mode .neumorphism-button:hover {
+  background-color: #7c7c7cdb;
+}
 
 /* Neumorphism-Stil für das Formular */
 .neumorphism-form {
@@ -232,7 +232,6 @@ body.dark-mode .emoji {
 body.dark-mode .emoji:hover {
   background-color: #444;
 }
-
 
 body.dark-mode .emoji.reacted,
 .emoji.reacted {

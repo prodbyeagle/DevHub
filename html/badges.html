@@ -1,94 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>devolution. Badges</title>
-    <link rel="stylesheet" href="/css/badges.css">
-    <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
-    <link rel="stylesheet" href="/assets/CascadiaCode-Regular.woff2" type="font/woff2">
+    <link rel="stylesheet" href="/css/badges.css" />
+    <link
+      type="image/png"
+      sizes="16x16"
+      rel="icon"
+      href="/assets/icon-white.png"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/CascadiaCode-Regular.woff2"
+      type="font/woff2"
+    />
     <style>
-        .gradient {
-            /* Füge hier deine CSS-Stile für den Gradienten ein */
-            background: linear-gradient(to left, #B69FD5, #F4DAF9);
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
-            min-width: 100vw;
-            min-height: 100vh;
-            width: var(--size);
-            filter: blur(150px);
-            height: var(--size);
-            animation: moveGradient 10s linear infinite alternate infinite;
-            --size: 250px;
-            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
-            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        }
+      .gradient {
+        /* Füge hier deine CSS-Stile für den Gradienten ein */
+        background: linear-gradient(to left, #b69fd5, #f4daf9);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+        min-width: 100vw;
+        min-height: 100vh;
+        width: var(--size);
+        filter: blur(150px);
+        height: var(--size);
+        animation: moveGradient 10s linear infinite alternate infinite;
+        --size: 250px;
+        --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+        --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      }
 
-        @keyframes moveGradient {
+      @keyframes moveGradient {
         0% {
-            background-position: 0% 50%;
+          background-position: 0% 50%;
         }
         100% {
-            background-position: 100% 50%;
+          background-position: 100% 50%;
         }
-    }
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="container">
-        <div class="gradient"></div>
-        <h1>🏅 Badges</h1>
-        <button style="margin: 5px; font-family: 'Cascadia Code',  sans-serif;" id="add-badge-button" class="neumorphism-button">➕ Add Badge</button>
-        <div id="badges-container" class="badges-grid"></div>
+      <div class="gradient"></div>
+      <h1>🏅 Badges</h1>
+      <button
+        style="margin: 5px; font-family: 'Cascadia Code', sans-serif"
+        id="add-badge-button"
+        class="neumorphism-button"
+      >
+        ➕ Add Badge
+      </button>
+      <div id="badges-container" class="badges-grid"></div>
     </div>
 
     <div class="flex justify-center gap-4 mt-8 action-buttons">
-        <a href="/home" class="text-blue-600 neumorphism-button">🏠 Home</a>
+      <a href="/home" class="text-blue-600 neumorphism-button">🏠 Home</a>
     </div>
 
     <div id="add-badge-overlay" class="banned-overlay">
-        <div id="add-badge-form" class="neumorphism-form">
-            <h2>➕ Add Badge</h2>
-            <form id="badge-form">
-                <label for="badge-name">🎖️ Name:</label>
-                <input type="text" style="font-family: 'Cascadia Code',  sans-serif;" id="badge-name" placeholder="Whats the Name of the Badge?" name="name" class="neumorphism-input" rows="1" cols="1" maxlength="32" style="resize: none; font-family: 'Cascadia Code',  sans-serif;" required>
-                <label for="badge-image">🖼️ Picture:</label>
-                <input type="file" style="font-family: 'Cascadia Code',  sans-serif;" id="badge-image" name="image" class="neumorphism-input" accept="image/* "  required>
-                <label for="badge-description">📝 Description:</label>
-                <textarea id="badge-description" placeholder="What should the Description be?" name="description" class="neumorphism-input" rows="3" cols="1" maxlength="64" style="resize: none;" required></textarea>
-                <div class="button-group">
-                    <button type="submit" style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; font-family: 'Cascadia Code',  sans-serif;" class="neumorphism-button">✅ Add</button>
-                    <button type="button" style="margin: 10px; font-family: 'Cascadia Code',  sans-serif;" id="close-overlay-button" class="neumorphism-button">❌ Close</button>
-                </div>
-            </form>
-            <div id="error-message" class="error-message"></div>
-        </div>
+      <div id="add-badge-form" class="neumorphism-form">
+        <h2>➕ Add Badge</h2>
+        <form id="badge-form">
+          <label for="badge-name">🎖️ Name:</label>
+          <input
+            type="text"
+            style="font-family: 'Cascadia Code', sans-serif"
+            id="badge-name"
+            placeholder="Whats the Name of the Badge?"
+            name="name"
+            class="neumorphism-input"
+            rows="1"
+            cols="1"
+            maxlength="32"
+            style="resize: none; font-family: 'Cascadia Code', sans-serif"
+            required
+          />
+          <label for="badge-image">🖼️ Picture:</label>
+          <input
+            type="file"
+            style="font-family: 'Cascadia Code', sans-serif"
+            id="badge-image"
+            name="image"
+            class="neumorphism-input"
+            accept="image/* "
+            required
+          />
+          <label for="badge-description">📝 Description:</label>
+          <textarea
+            id="badge-description"
+            placeholder="What should the Description be?"
+            name="description"
+            class="neumorphism-input"
+            rows="3"
+            cols="1"
+            maxlength="64"
+            style="resize: none"
+            required
+          ></textarea>
+          <div class="button-group">
+            <button
+              type="submit"
+              style="
+                margin-left: 10px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+                font-family: 'Cascadia Code', sans-serif;
+              "
+              class="neumorphism-button"
+            >
+              ✅ Add
+            </button>
+            <button
+              type="button"
+              style="margin: 10px; font-family: 'Cascadia Code', sans-serif"
+              id="close-overlay-button"
+              class="neumorphism-button"
+            >
+              ❌ Close
+            </button>
+          </div>
+        </form>
+        <div id="error-message" class="error-message"></div>
+      </div>
     </div>
 
     <div id="assign-badge-overlay" class="banned-overlay">
-        <div id="assign-badge-form-container" class="neumorphism-form" style="font-family: 'Cascadia Code',  sans-serif;">
-            <h2>🏅 Assign Badge</h2>
-            <form id="assign-badge-form">
-                <label for="badge-name">🎖️ Badge Name:</label>
-                <input style="font-family: 'Cascadia Code',  sans-serif;" type="text" id="badgename" name="badgeName" class="neumorphism-input" required>
-                <label for="username">👤  Username:</label>
-                <input style="font-family: 'Cascadia Code',  sans-serif;" type="username" id="username" name="username" class="neumorphism-input" required>
-                <div class="button-group">
-                    <button type="submit" style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px; font-family: 'Cascadia Code',  sans-serif;" class="neumorphism-button">✅ Assign</button>
-                    <button type="button" style="margin: 10px; font-family: 'Cascadia Code',  sans-serif;" id="close-assign-overlay-button" class="neumorphism-button">❌ Close</button>
-                </div>
-            </form>
-            <div id="assign-error-message" class="error-message"></div>
-        </div>
+      <div
+        id="assign-badge-form-container"
+        class="neumorphism-form"
+        style="font-family: 'Cascadia Code', sans-serif"
+      >
+        <h2>🏅 Assign Badge</h2>
+        <form id="assign-badge-form">
+          <label for="badge-name">🎖️ Badge Name:</label>
+          <input
+            style="font-family: 'Cascadia Code', sans-serif"
+            type="text"
+            id="badgename"
+            name="badgeName"
+            class="neumorphism-input"
+            required
+          />
+          <label for="username">👤 Username:</label>
+          <input
+            style="font-family: 'Cascadia Code', sans-serif"
+            type="username"
+            id="username"
+            name="username"
+            class="neumorphism-input"
+            required
+          />
+          <div class="button-group">
+            <button
+              type="submit"
+              style="
+                margin-left: 10px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+                font-family: 'Cascadia Code', sans-serif;
+              "
+              class="neumorphism-button"
+            >
+              ✅ Assign
+            </button>
+            <button
+              type="button"
+              style="margin: 10px; font-family: 'Cascadia Code', sans-serif"
+              id="close-assign-overlay-button"
+              class="neumorphism-button"
+            >
+              ❌ Close
+            </button>
+          </div>
+        </form>
+        <div id="assign-error-message" class="error-message"></div>
+      </div>
     </div>
-    
+
     <script src="/js/badges.js"></script>
-
-</body>
-
+  </body>
 </html>

@@ -1,492 +1,529 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    try {
-        const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
-        let username = null;
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    const token = document.cookie
+      .split(";")
+      .find((cookie) => cookie.trim().startsWith("token="));
+    let username = null;
 
-        if (token) {
-            const jwtToken = token.split('=')[1].trim();
-            try {
-                const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
-                username = decodedToken.username;
-            } catch (error) {
-                console.error('Error decoding JWT token:', error);
-            }
-        }
-
-        if (!username) {
-            console.error('User identifier not found in JWT token');
-            return;
-        }
-
-        const response = await fetch('/api/username');
-        const userData = await response.json();
-
-        // Find the user that matches the stored user data
-        const matchedUser = userData.users.find(user => (user.username === username || user.email === username));
-
-        if (matchedUser) {
-            // Check if the user is banned
-            if (matchedUser.banned) {
-                // The user is banned, show the banned overlay
-                showBannedOverlay(matchedUser.username);
-            } else {
-                // The user is not banned, display the user data
-                document.getElementById('username').textContent = matchedUser.username;
-                document.getElementById('email').textContent = '********************';
-                document.getElementById('password').textContent = '********************';
-                // Set the password in an attribute to restore it later
-                document.getElementById('password').setAttribute('data-real-password', matchedUser.password);
-                document.getElementById('email').setAttribute('data-real-email', matchedUser.email);
-            }
-        } else {
-            console.error('User data does not match stored user');
-        }
-    } catch (error) {
-        console.error('Error fetching user data:', error);
+    if (token) {
+      const jwtToken = token.split("=")[1].trim();
+      try {
+        const decodedToken = JSON.parse(atob(jwtToken.split(".")[1]));
+        username = decodedToken.username;
+      } catch (error) {
+        console.error("Error decoding JWT token:", error);
+      }
     }
+
+    if (!username) {
+      console.error("User identifier not found in JWT token");
+      return;
+    }
+
+    const response = await fetch("/api/username");
+    const userData = await response.json();
+
+    // Find the user that matches the stored user data
+    const matchedUser = userData.users.find(
+      (user) => user.username === username || user.email === username
+    );
+
+    if (matchedUser) {
+      // Check if the user is banned
+      if (matchedUser.banned) {
+        // The user is banned, show the banned overlay
+        showBannedOverlay(matchedUser.username);
+      } else {
+        // The user is not banned, display the user data
+        document.getElementById("username").textContent = matchedUser.username;
+        document.getElementById("email").textContent = "********************";
+        document.getElementById("password").textContent =
+          "********************";
+        // Set the password in an attribute to restore it later
+        document
+          .getElementById("password")
+          .setAttribute("data-real-password", matchedUser.password);
+        document
+          .getElementById("email")
+          .setAttribute("data-real-email", matchedUser.email);
+      }
+    } else {
+      console.error("User data does not match stored user");
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
 });
 
 // Überprüfen Sie die Benutzersperrstatus
-const token = document.cookie.split(';').find(cookie => cookie.trim().startsWith('token='));
+const token = document.cookie
+  .split(";")
+  .find((cookie) => cookie.trim().startsWith("token="));
 if (token) {
-    const jwtToken = token.split('=')[1].trim();
-    try {
-        const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
-        const username = decodedToken.username;
-        checkUserBanStatus(username);
-    } catch (error) {
-        console.error('Error decoding JWT token:', error);
-    }
+  const jwtToken = token.split("=")[1].trim();
+  try {
+    const decodedToken = JSON.parse(atob(jwtToken.split(".")[1]));
+    const username = decodedToken.username;
+    checkUserBanStatus(username);
+  } catch (error) {
+    console.error("Error decoding JWT token:", error);
+  }
 } else {
-    console.error('JWT token not found in cookie');
+  console.error("JWT token not found in cookie");
 }
 
 async function checkUserBanStatus(username) {
-    try {
-        const userResponse = await fetch(`/api/profile/${username}`);
-        const userDataResponse = await userResponse.json();
-        if (userDataResponse.banned) {
-            localStorage.clear();
-            window.location.href = '/login';
-        } else {
-        }
-    } catch (error) {
-        console.error('Error fetching user data:', error);
+  try {
+    const userResponse = await fetch(`/api/profile/${username}`);
+    const userDataResponse = await userResponse.json();
+    if (userDataResponse.banned) {
+      localStorage.clear();
+      window.location.href = "/login";
+    } else {
     }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
 }
 
 // JavaScript für das Anzeigen/Verbergen des Passworts
-document.getElementById('togglePasswordVisibility').addEventListener('click', function() {
-    const passwordField = document.getElementById('password');
-    const realPassword = passwordField.getAttribute('data-real-password');
+document
+  .getElementById("togglePasswordVisibility")
+  .addEventListener("click", function () {
+    const passwordField = document.getElementById("password");
+    const realPassword = passwordField.getAttribute("data-real-password");
 
     // Überprüfe, ob das Passwortfeld bereits sichtbar ist
     if (passwordField.textContent === realPassword) {
-        // Ändere den Text auf '******', um das Passwort zu verbergen
-        passwordField.textContent = '*****************';
+      // Ändere den Text auf '******', um das Passwort zu verbergen
+      passwordField.textContent = "*****************";
     } else {
-        // Zeige das echte Passwort an
-        passwordField.textContent = realPassword;
+      // Zeige das echte Passwort an
+      passwordField.textContent = realPassword;
     }
-});
+  });
 
 // JavaScript für das Anzeigen/Verbergen der E-Mail
-document.getElementById('toggleEmailVisibility').addEventListener('click', function() {
-    const emailField = document.getElementById('email');
-    const realEmail = emailField.getAttribute('data-real-email');
+document
+  .getElementById("toggleEmailVisibility")
+  .addEventListener("click", function () {
+    const emailField = document.getElementById("email");
+    const realEmail = emailField.getAttribute("data-real-email");
 
     // Überprüfe, ob das E-Mail-Feld bereits sichtbar ist
     if (emailField.textContent === realEmail) {
-        // Ändere den Text auf '******', um das E-Mail zu verbergen
-        emailField.textContent = '*****************';
+      // Ändere den Text auf '******', um das E-Mail zu verbergen
+      emailField.textContent = "*****************";
     } else {
-        // Zeige die echte E-Mail an
-        emailField.textContent = realEmail;
+      // Zeige die echte E-Mail an
+      emailField.textContent = realEmail;
     }
+  });
+
+// JavaScript für Dark/White Mode Switch und das Speichern des Moduswerts im Benutzerprofil
+const modeSwitch = document.getElementById("modeSwitch");
+modeSwitch.addEventListener("change", () => {
+  if (modeSwitch.checked) {
+    document.body.classList.remove("light-mode");
+    document.body.classList.add("dark-mode");
+    saveModePreference("dark");
+  } else {
+    document.body.classList.remove("dark-mode");
+    document.body.classList.add("light-mode");
+    saveModePreference("light");
+  }
 });
 
-    // JavaScript für Dark/White Mode Switch und das Speichern des Moduswerts im Benutzerprofil
-    const modeSwitch = document.getElementById('modeSwitch');
-    modeSwitch.addEventListener('change', () => {
-        if (modeSwitch.checked) {
-            document.body.classList.remove('light-mode');
-            document.body.classList.add('dark-mode');
-            saveModePreference('dark');
-        } else {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-            saveModePreference('light');
-        }
-    });
-    
-    function saveModePreference(mode) {
-        // Hier wird der Moduswert im Benutzerprofil gespeichert
-        localStorage.setItem('mode', mode);
-    }
-    
-    function loadModePreference() {
-            // Lade den gespeicherten Moduswert aus dem Local Storage
-            const mode = localStorage.getItem('mode');
-            if (mode === 'light') {
-                // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
-                document.body.classList.remove('dark-mode');
-                document.body.classList.add('light-mode');
-            } else {
-                // Andernfalls füge die Klasse für den hellen Modus hinzu
-                document.body.classList.remove('light-mode');
-                document.body.classList.add('dark-mode');
-            }
-        }
-        loadModePreference();
-    
+function saveModePreference(mode) {
+  // Hier wird der Moduswert im Benutzerprofil gespeichert
+  localStorage.setItem("mode", mode);
+}
+
+function loadModePreference() {
+  // Lade den gespeicherten Moduswert aus dem Local Storage
+  const mode = localStorage.getItem("mode");
+  if (mode === "light") {
+    // Wenn der Modus dunkel ist, füge die entsprechende Klasse hinzu
+    document.body.classList.remove("dark-mode");
+    document.body.classList.add("light-mode");
+  } else {
+    // Andernfalls füge die Klasse für den hellen Modus hinzu
+    document.body.classList.remove("light-mode");
+    document.body.classList.add("dark-mode");
+  }
+}
+loadModePreference();
+
 // JavaScript, um das Passwortänderungs-Overlay zu öffnen
-document.getElementById('openChangePasswordOverlayBtn').addEventListener('click', function() {
-    document.getElementById('changePasswordOverlay').classList.remove('hidden');
-});
+document
+  .getElementById("openChangePasswordOverlayBtn")
+  .addEventListener("click", function () {
+    document.getElementById("changePasswordOverlay").classList.remove("hidden");
+  });
 
 // JavaScript, um das Passwortänderungs-Overlay zu schließen
-document.getElementById('closePasswordOverlay').addEventListener('click', function() {
-    document.getElementById('changePasswordOverlay').classList.add('hidden');
-});
+document
+  .getElementById("closePasswordOverlay")
+  .addEventListener("click", function () {
+    document.getElementById("changePasswordOverlay").classList.add("hidden");
+  });
 
-const changePasswordForm = document.getElementById('changePasswordForm'); // Ändern Sie die ID hier
-changePasswordForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+const changePasswordForm = document.getElementById("changePasswordForm"); // Ändern Sie die ID hier
+changePasswordForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
 
-    const currentPassword = document.getElementById('currentPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
 
-    try {
-        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-        const savedUser = localStorage.getItem('user');
-        if (!savedUser) {
-            console.error('User not found in local storage');
-            return;
-        }
-
-        // Parse die Benutzerdaten aus dem Local Storage
-        const { identifier, password } = JSON.parse(savedUser);
-
-        console.log('Sending password change request...');
-        console.log('Current Password:', currentPassword);
-        console.log('New Password:', newPassword);
-
-        // Senden der Passwortänderungsanforderung an den Server
-        const response = await fetch('/api/profile/change/passwort', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: identifier, // Verwende den Benutzernamen aus dem Local Storage
-                currentPassword: currentPassword, // Hier wird das aktuelle Passwort gesendet
-                newPassword: newPassword
-            })
-        });
-
-        console.log('Response received:', response);
-
-        if (response.ok) {
-            const savedUser = JSON.parse(localStorage.getItem('user'));
-            savedUser.password = newPassword;
-            localStorage.setItem('user', JSON.stringify(savedUser));
-            Toastify({
-                text: 'Password changed successfully',
-                duration: 3000,
-                close: true,
-                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-            }).showToast();
-            document.getElementById('changePasswordOverlay').classList.add('hidden');
-        } else {
-            console.error('Failed to change password:', response.statusText);
-            // Hier kannst du eine Fehlermeldung anzeigen
-            Toastify({
-                text: 'Failed to change password: ' + response.statusText,
-                duration: 3000,
-                close: true,
-                backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-            }).showToast();
-        }
-    } catch (error) {
-        console.error('Error changing password:', error);
-        // Hier kannst du eine Fehlermeldung anzeigen
-        Toastify({
-            text: 'Error changing password: ' + error,
-            duration: 3000,
-            close: true,
-            backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-        }).showToast();
+  try {
+    // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+    const savedUser = localStorage.getItem("user");
+    if (!savedUser) {
+      console.error("User not found in local storage");
+      return;
     }
+
+    // Parse die Benutzerdaten aus dem Local Storage
+    const { identifier, password } = JSON.parse(savedUser);
+
+    console.log("Sending password change request...");
+    console.log("Current Password:", currentPassword);
+    console.log("New Password:", newPassword);
+
+    // Senden der Passwortänderungsanforderung an den Server
+    const response = await fetch("/api/profile/change/passwort", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: identifier, // Verwende den Benutzernamen aus dem Local Storage
+        currentPassword: currentPassword, // Hier wird das aktuelle Passwort gesendet
+        newPassword: newPassword,
+      }),
+    });
+
+    console.log("Response received:", response);
+
+    if (response.ok) {
+      const savedUser = JSON.parse(localStorage.getItem("user"));
+      savedUser.password = newPassword;
+      localStorage.setItem("user", JSON.stringify(savedUser));
+      Toastify({
+        text: "Password changed successfully",
+        duration: 3000,
+        close: true,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+      }).showToast();
+      document.getElementById("changePasswordOverlay").classList.add("hidden");
+    } else {
+      console.error("Failed to change password:", response.statusText);
+      // Hier kannst du eine Fehlermeldung anzeigen
+      Toastify({
+        text: "Failed to change password: " + response.statusText,
+        duration: 3000,
+        close: true,
+        backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+      }).showToast();
+    }
+  } catch (error) {
+    console.error("Error changing password:", error);
+    // Hier kannst du eine Fehlermeldung anzeigen
+    Toastify({
+      text: "Error changing password: " + error,
+      duration: 3000,
+      close: true,
+      backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+    }).showToast();
+  }
 });
 
 // JavaScript, um das Benutzernamenänderungs-Overlay zu öffnen
-document.getElementById('openChangeUsernameOverlayBtn').addEventListener('click', function() {
-    document.getElementById('changeUsernameOverlay').classList.remove('hidden');
-});
+document
+  .getElementById("openChangeUsernameOverlayBtn")
+  .addEventListener("click", function () {
+    document.getElementById("changeUsernameOverlay").classList.remove("hidden");
+  });
 
 // JavaScript, um das Benutzernamenänderungs-Overlay zu schließen
-document.getElementById('closeUsernameOverlay').addEventListener('click', function() {
-    document.getElementById('changeUsernameOverlay').classList.add('hidden');
-});
+document
+  .getElementById("closeUsernameOverlay")
+  .addEventListener("click", function () {
+    document.getElementById("changeUsernameOverlay").classList.add("hidden");
+  });
 
-const changeUsernameForm = document.getElementById('changeUsernameForm');
-changeUsernameForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+const changeUsernameForm = document.getElementById("changeUsernameForm");
+changeUsernameForm.addEventListener("submit", async (event) => {
+  event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
 
-    const currentUsername = document.getElementById('currentUsername').value; // Aktuelles Passwort
-    const newUsername = document.getElementById('newUsername').value; // Neuer Benutzername
-    const confirmUsername = document.getElementById('confirmUsername').value; // Bestätigung des neuen Benutzernamens
+  const currentUsername = document.getElementById("currentUsername").value; // Aktuelles Passwort
+  const newUsername = document.getElementById("newUsername").value; // Neuer Benutzername
+  const confirmUsername = document.getElementById("confirmUsername").value; // Bestätigung des neuen Benutzernamens
 
-    try {
-        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-        const savedUser = localStorage.getItem('user');
-        if (!savedUser) {
-            console.error('User not found in local storage');
-            return;
-        }
-
-        // Parse die Benutzerdaten aus dem Local Storage
-        const { identifier } = JSON.parse(savedUser);
-
-        // Fülle das aktuelle Benutzernamefeld automatisch aus
-        document.getElementById('currentUsername').value = identifier;
-        console.log('Current Username:', identifier);
-
-        // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
-        if (!newUsername) {
-            console.error('New username cannot be empty');
-            return;
-        }
-
-        // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
-        if (newUsername !== confirmUsername) {
-            console.error('New username and confirm username do not match');
-            return;
-        }
-
-        console.log('Sending username change request...');
-        console.log('New Username:', newUsername);
-
-        // Senden der Benutzernamenänderungsanforderung an den Server
-        const response = await fetch('/api/profile/change/username', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: identifier, // Aktueller Benutzername
-                currentUsername: currentUsername, // Aktuelles Passwort
-                newUsername: newUsername // Neuer Benutzername
-            })
-        });
-
-        console.log('Response received:', response);
-
-        if (response.ok) {
-            const savedUser = JSON.parse(localStorage.getItem('user'));
-            savedUser.identifier = newUsername; // Aktualisieren Sie den Benutzernamen im Local Storage
-            localStorage.setItem('user', JSON.stringify(savedUser));
-            Toastify({
-                text: 'Username changed successfully',
-                duration: 3000,
-                close: true,
-                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-            }).showToast();
-            document.getElementById('changeUsernameOverlay').classList.add('hidden');
-        } else {
-            console.error('Failed to change username:', response.statusText);
-            // Hier kannst du eine Fehlermeldung anzeigen
-            Toastify({
-                text: 'Failed to change username: ' + response.statusText,
-                duration: 3000,
-                close: true,
-                backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-            }).showToast();
-        }
-    } catch (error) {
-        console.error('Error changing username:', error);
-        // Hier kannst du eine Fehlermeldung anzeigen
-        Toastify({
-            text: 'Error changing username: ' + error,
-            duration: 3000,
-            close: true,
-            backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-        }).showToast();
+  try {
+    // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+    const savedUser = localStorage.getItem("user");
+    if (!savedUser) {
+      console.error("User not found in local storage");
+      return;
     }
-});
 
+    // Parse die Benutzerdaten aus dem Local Storage
+    const { identifier } = JSON.parse(savedUser);
+
+    // Fülle das aktuelle Benutzernamefeld automatisch aus
+    document.getElementById("currentUsername").value = identifier;
+    console.log("Current Username:", identifier);
+
+    // Überprüfen, ob das neue Benutzernamenfeld nicht leer ist
+    if (!newUsername) {
+      console.error("New username cannot be empty");
+      return;
+    }
+
+    // Überprüfen, ob der neue Benutzername mit der Bestätigung übereinstimmt
+    if (newUsername !== confirmUsername) {
+      console.error("New username and confirm username do not match");
+      return;
+    }
+
+    console.log("Sending username change request...");
+    console.log("New Username:", newUsername);
+
+    // Senden der Benutzernamenänderungsanforderung an den Server
+    const response = await fetch("/api/profile/change/username", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: identifier, // Aktueller Benutzername
+        currentUsername: currentUsername, // Aktuelles Passwort
+        newUsername: newUsername, // Neuer Benutzername
+      }),
+    });
+
+    console.log("Response received:", response);
+
+    if (response.ok) {
+      const savedUser = JSON.parse(localStorage.getItem("user"));
+      savedUser.identifier = newUsername; // Aktualisieren Sie den Benutzernamen im Local Storage
+      localStorage.setItem("user", JSON.stringify(savedUser));
+      Toastify({
+        text: "Username changed successfully",
+        duration: 3000,
+        close: true,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+      }).showToast();
+      document.getElementById("changeUsernameOverlay").classList.add("hidden");
+    } else {
+      console.error("Failed to change username:", response.statusText);
+      // Hier kannst du eine Fehlermeldung anzeigen
+      Toastify({
+        text: "Failed to change username: " + response.statusText,
+        duration: 3000,
+        close: true,
+        backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+      }).showToast();
+    }
+  } catch (error) {
+    console.error("Error changing username:", error);
+    // Hier kannst du eine Fehlermeldung anzeigen
+    Toastify({
+      text: "Error changing username: " + error,
+      duration: 3000,
+      close: true,
+      backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+    }).showToast();
+  }
+});
 
 // JavaScript, um das E-Mail-Änderungs-Overlay zu öffnen
 // document.getElementById('openChangeEmailOverlayBtn').addEventListener('click', function() {
-    // document.getElementById('changeEmailOverlay').classList.remove('hidden');
+// document.getElementById('changeEmailOverlay').classList.remove('hidden');
 // });
-// 
+//
 // JavaScript, um das E-Mail-Änderungs-Overlay zu schließen
 // document.getElementById('closeEmailOverlay').addEventListener('click', function() {
-    // document.getElementById('changeEmailOverlay').classList.add('hidden');
+// document.getElementById('changeEmailOverlay').classList.add('hidden');
 // });
-// 
+//
 // const changeEmailForm = document.getElementById('changeEmailForm');
 // changeEmailForm.addEventListener('submit', async (event) => {
-    // event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
-// 
-    // const currentPassword = document.getElementById('currentPassword').value; // Aktuelles Passwort
-    // const newEmail = document.getElementById('newEmail').value; // Neue E-Mail-Adresse
-    // const confirmEmail = document.getElementById('confirmEmail').value; // Bestätigung der neuen E-Mail-Adresse
-// 
-    // try {
-        // Überprüfen, ob der Benutzer im Local Storage vorhanden ist
-        // const savedUser = localStorage.getItem('user');
-        // if (!savedUser) {
-            // console.error('User not found in local storage');
-            // return;
-        // }
-// 
-        // Parse die Benutzerdaten aus dem Local Storage
-        // const { identifier } = JSON.parse(savedUser);
-// 
-        // Überprüfen, ob das neue E-Mail-Feld nicht leer ist
-        // if (!newEmail) {
-            // console.error('New email cannot be empty');
-            // return;
-        // }
-// 
-        // Überprüfen, ob die neue E-Mail-Adresse mit der Bestätigung übereinstimmt
-        // if (newEmail !== confirmEmail) {
-            // console.error('New email and confirm email do not match');
-            // return;
-        // }
-// 
-        // console.log('Sending email change request...');
-        // console.log('New Email:', newEmail);
-// 
-        // Senden der E-Mail-Änderungsanforderung an den Server
-        // const response = await fetch('/api/profile/change/email', {
-            // method: 'POST',
-            // headers: {
-                // 'Content-Type': 'application/json'
-            // },
-            // body: JSON.stringify({
-                // username: identifier, // Aktueller Benutzername
-                // currentEmail: currentEmail, // Aktuelles Passwort
-                // newEmail: newEmail // Neue E-Mail-Adresse
-            // })
-        // });
-// 
-        // console.log('Response received:', response);
-// 
-        // if (response.ok) {
-            // Toastify({
-                // text: 'Email changed successfully',
-                // duration: 3000,
-                // close: true,
-                // backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-            // }).showToast();
-            // document.getElementById('changeEmailOverlay').classList.add('hidden');
-        // } else {
-            // console.error('Failed to change email:', response.statusText);
-            // Hier kannst du eine Fehlermeldung anzeigen
-            // Toastify({
-                // text: 'Failed to change email: ' + response.statusText,
-                // duration: 3000,
-                // close: true,
-                // backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-            // }).showToast();
-        // }
-    // } catch (error) {
-        // console.error('Error changing email:', error);
-        // Hier kannst du eine Fehlermeldung anzeigen
-        // Toastify({
-            // text: 'Error changing email: ' + error,
-            // duration: 3000,
-            // close: true,
-            // backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
-        // }).showToast();
-    // }
+// event.preventDefault(); // Verhindert das Standardverhalten des Formulars (z. B. Neuladen der Seite)
+//
+// const currentPassword = document.getElementById('currentPassword').value; // Aktuelles Passwort
+// const newEmail = document.getElementById('newEmail').value; // Neue E-Mail-Adresse
+// const confirmEmail = document.getElementById('confirmEmail').value; // Bestätigung der neuen E-Mail-Adresse
+//
+// try {
+// Überprüfen, ob der Benutzer im Local Storage vorhanden ist
+// const savedUser = localStorage.getItem('user');
+// if (!savedUser) {
+// console.error('User not found in local storage');
+// return;
+// }
+//
+// Parse die Benutzerdaten aus dem Local Storage
+// const { identifier } = JSON.parse(savedUser);
+//
+// Überprüfen, ob das neue E-Mail-Feld nicht leer ist
+// if (!newEmail) {
+// console.error('New email cannot be empty');
+// return;
+// }
+//
+// Überprüfen, ob die neue E-Mail-Adresse mit der Bestätigung übereinstimmt
+// if (newEmail !== confirmEmail) {
+// console.error('New email and confirm email do not match');
+// return;
+// }
+//
+// console.log('Sending email change request...');
+// console.log('New Email:', newEmail);
+//
+// Senden der E-Mail-Änderungsanforderung an den Server
+// const response = await fetch('/api/profile/change/email', {
+// method: 'POST',
+// headers: {
+// 'Content-Type': 'application/json'
+// },
+// body: JSON.stringify({
+// username: identifier, // Aktueller Benutzername
+// currentEmail: currentEmail, // Aktuelles Passwort
+// newEmail: newEmail // Neue E-Mail-Adresse
+// })
+// });
+//
+// console.log('Response received:', response);
+//
+// if (response.ok) {
+// Toastify({
+// text: 'Email changed successfully',
+// duration: 3000,
+// close: true,
+// backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+// }).showToast();
+// document.getElementById('changeEmailOverlay').classList.add('hidden');
+// } else {
+// console.error('Failed to change email:', response.statusText);
+// Hier kannst du eine Fehlermeldung anzeigen
+// Toastify({
+// text: 'Failed to change email: ' + response.statusText,
+// duration: 3000,
+// close: true,
+// backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+// }).showToast();
+// }
+// } catch (error) {
+// console.error('Error changing email:', error);
+// Hier kannst du eine Fehlermeldung anzeigen
+// Toastify({
+// text: 'Error changing email: ' + error,
+// duration: 3000,
+// close: true,
+// backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+// }).showToast();
+// }
 // });
 
 // Delete User Account
 
-document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+document
+  .getElementById("deleteAccountBtn")
+  .addEventListener("click", async () => {
     try {
-        // Bestätigungsdialog anzeigen
-        const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+      // Bestätigungsdialog anzeigen
+      const confirmed = confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      );
 
-        // Wenn der Benutzer die Aktion bestätigt hat
-        if (confirmed) {
-            // Benutzernamen aus dem lokalen Speicher abrufen
-            const { identifier: username } = JSON.parse(localStorage.getItem('user'));
+      // Wenn der Benutzer die Aktion bestätigt hat
+      if (confirmed) {
+        // Benutzernamen aus dem lokalen Speicher abrufen
+        const { identifier: username } = JSON.parse(
+          localStorage.getItem("user")
+        );
 
-            // Benutzer aus der Datenbank entfernen
-            const response = await fetch(`/api/profile/delete/${username}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+        // Benutzer aus der Datenbank entfernen
+        const response = await fetch(`/api/profile/delete/${username}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-            if (!response.ok) {
-                throw new Error('Failed to delete account');
-            }
-
-            // Löschen aller Posts des Benutzers
-            const deletePostsResponse = await fetch(`/api/${username}/posts`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!deletePostsResponse.ok) {
-                throw new Error('Failed to delete user posts');
-            }
-
-            localStorage.clear();
-
-            window.location.href = '/login';
+        if (!response.ok) {
+          throw new Error("Failed to delete account");
         }
+
+        // Löschen aller Posts des Benutzers
+        const deletePostsResponse = await fetch(`/api/${username}/posts`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!deletePostsResponse.ok) {
+          throw new Error("Failed to delete user posts");
+        }
+
+        localStorage.clear();
+
+        window.location.href = "/login";
+      }
     } catch (error) {
-        console.error('Error deleting account:', error);
-        // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
+      console.error("Error deleting account:", error);
+      // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
     }
-});
+  });
 
 // Funktion zum Umschalten zwischen Dark Mode und Light Mode
 function toggleMode() {
-    // Finde das Button-Element
-    const button = document.getElementById('mode-toggle');
+  // Finde das Button-Element
+  const button = document.getElementById("mode-toggle");
 
-    // Überprüfe, ob der aktuelle Modus Dark Mode ist
-    const isDarkMode = document.body.classList.contains('dark-mode');
+  // Überprüfe, ob der aktuelle Modus Dark Mode ist
+  const isDarkMode = document.body.classList.contains("dark-mode");
 
-    // Speichere den aktuellen Modus im localStorage
-    localStorage.setItem('mode', isDarkMode ? 'light' : 'dark');
+  // Speichere den aktuellen Modus im localStorage
+  localStorage.setItem("mode", isDarkMode ? "light" : "dark");
 
-    // Aktualisiere den Text des Buttons basierend auf dem aktuellen Modus
-    button.textContent = isDarkMode ? '🌑 Dark Mode' : '🌞 Light Mode';
+  // Aktualisiere den Text des Buttons basierend auf dem aktuellen Modus
+  button.textContent = isDarkMode ? "🌑 Dark Mode" : "🌞 Light Mode";
 
-    // Füge oder entferne die CSS-Klasse 'dark-mode' basierend auf dem aktuellen Modus
-    document.body.classList.toggle('dark-mode');
+  // Füge oder entferne die CSS-Klasse 'dark-mode' basierend auf dem aktuellen Modus
+  document.body.classList.toggle("dark-mode");
 }
 
 // Füge einen Event-Listener zum Klicken auf den Button hinzu, um den Modus zu wechseln
-document.getElementById('mode-toggle').addEventListener('click', toggleMode);
+document.getElementById("mode-toggle").addEventListener("click", toggleMode);
 
 // Überprüfe den gespeicherten Modus im localStorage und wende ihn an
-const savedMode = localStorage.getItem('mode');
-if (savedMode === 'dark') {
-    document.body.classList.add('dark-mode');
+const savedMode = localStorage.getItem("mode");
+if (savedMode === "dark") {
+  document.body.classList.add("dark-mode");
 }
-document.getElementById('mode-toggle').textContent = savedMode === 'dark' ? '🌞 Light Mode' : '🌑 Dark Mode';
+document.getElementById("mode-toggle").textContent =
+  savedMode === "dark" ? "🌞 Light Mode" : "🌑 Dark Mode";
 
 function redirectToPreferences() {
-    window.location.href = "/preferences";
+  window.location.href = "/preferences";
 }
 
 function redirectToHome() {
-    window.location.href = "/home";
+  window.location.href = "/home";
 }
 
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
-console.log('%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!', 'font-size: 20px; color: yellow;', 'font-size: 14px; color: white;');
+console.log(
+  "%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!",
+  "font-size: 20px; color: yellow;",
+  "font-size: 14px; color: white;"
+);
+console.log(
+  "%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!",
+  "font-size: 20px; color: yellow;",
+  "font-size: 14px; color: white;"
+);

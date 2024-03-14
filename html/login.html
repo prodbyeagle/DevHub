@@ -1,68 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>devolution. Login</title>
-    <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <link
+      type="image/png"
+      sizes="16x16"
+      rel="icon"
+      href="/assets/icon-white.png"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/login.css" />
     <style>
-        .gradient {
-            /* Füge hier deine CSS-Stile für den Gradienten ein */
-            background: linear-gradient(to left, #ff416c, #ff4b2b);
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
-            min-width: 100vw;
-            min-height: 100vh;
-            width: var(--size);
-            filter: blur(150px);
-            height: var(--size);
-            animation: moveGradient 10s linear infinite alternate infinite;
-            --size: 250px;
-            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
-            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        }
+      .gradient {
+        /* Füge hier deine CSS-Stile für den Gradienten ein */
+        background: linear-gradient(to left, #ff416c, #ff4b2b);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+        min-width: 100vw;
+        min-height: 100vh;
+        width: var(--size);
+        filter: blur(150px);
+        height: var(--size);
+        animation: moveGradient 10s linear infinite alternate infinite;
+        --size: 250px;
+        --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+        --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      }
 
-        @keyframes moveGradient {
+      @keyframes moveGradient {
         0% {
-            background-position: 0% 50%;
+          background-position: 0% 50%;
         }
         100% {
-            background-position: 100% 50%;
+          background-position: 100% 50%;
         }
-    }
+      }
     </style>
-</head>
-<body class="bg-gray-100 dark-mode">
-<div class="gradient"></div>
-<div class="container py-8 mx-auto">
-    <h1 class="justify-center mb-8 text-3xl font-bold text-center ">Login</h1>
-    <p class="mb-4 text-center">🤔 Dont Have an Account? <a href="/signup" class="text-blue-500 hover:underline">Signup</a></p>
-    <p id="loggedInStatus" class="mb-4 text-sm text-center"></p>
-    <div class="max-w-md mx-auto neumorphism-form">
+  </head>
+  <body class="bg-gray-100 dark-mode">
+    <div class="gradient"></div>
+    <div class="container py-8 mx-auto">
+      <h1 class="justify-center mb-8 text-3xl font-bold text-center">Login</h1>
+      <p class="mb-4 text-center">
+        🤔 Dont Have an Account?
+        <a href="/signup" class="text-blue-500 hover:underline">Signup</a>
+      </p>
+      <p id="loggedInStatus" class="mb-4 text-sm text-center"></p>
+      <div class="max-w-md mx-auto neumorphism-form">
         <form id="loginForm" class="space-y-4">
-            <div>
-                <label for="identifier" class="block text-sm font-medium">🪪 Username:</label>
-                <input type="text" id="identifier" name="identifier" required autocomplete="username"
-                       class="block w-full mt-1 neumorphism-input">
-            </div>
-            <div>
-                <label for="password" class="block text-sm font-medium">🔑 Password:</label>
-                <input type="password" id="password" name="password" required autocomplete="password"
-                       class="block w-full mt-1 neumorphism-input">
-            </div>
-            <button type="submit" class="w-full neumorphism-button">Login</button>
+          <div>
+            <label for="identifier" class="block text-sm font-medium"
+              >🪪 Username:</label
+            >
+            <input
+              type="text"
+              id="identifier"
+              name="identifier"
+              required
+              autocomplete="username"
+              class="block w-full mt-1 neumorphism-input"
+            />
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium"
+              >🔑 Password:</label
+            >
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="password"
+              class="block w-full mt-1 neumorphism-input"
+            />
+          </div>
+          <button type="submit" class="w-full neumorphism-button">Login</button>
         </form>
+      </div>
     </div>
-</div>
-<!-- <div class="fixed inset-x-0 flex items-center justify-center top-120">
+    <!-- <div class="fixed inset-x-0 flex items-center justify-center top-120">
     <a href="/auth/google" class="mr-3 neumorphism-button">
         <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/google-logo.png" alt="google-logo"/>
     </a>
@@ -70,6 +100,6 @@
         <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/github.png" alt="GitHub-Logo" class="mr-2"/>
     </a>
 </div> -->
-<script src="/js/login.js"></script>
-</body>
+    <script src="/js/login.js"></script>
+  </body>
 </html>

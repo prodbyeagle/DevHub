@@ -1,121 +1,131 @@
-        /* CSS für den animierten Gradienten-Hintergrund */
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+/* CSS für den animierten Gradienten-Hintergrund */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
-        .gradient {
-            --min-size: 200px;
-            --max-size: 400px;
-            --size: 250px;
-            --speed: 50s;
-            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-        
-            width: calc(var(--min-size) + (var(--max-size) - var(--min-size)) * var(--size));
-            height: calc(var(--min-size) + (var(--max-size) - var(--min-size)) * var(--size));
-            filter: blur(150px);
-            animation: rotate var(--speed) var(--easing) alternate infinite;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        }
-        
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+.gradient {
+  --min-size: 200px;
+  --max-size: 400px;
+  --size: 250px;
+  --speed: 50s;
+  --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
 
-        body {
-            font-family: 'Cascadia Code',  sans-serif;
-            background-color: #222;
-            position: absolute;
-            inset: 0;
-            display: flex;
-            place-content: center;
-            align-items: center;
-            overflow: hidden;
-            user-select: none;
-        }
+  width: calc(
+    var(--min-size) + (var(--max-size) - var(--min-size)) * var(--size)
+  );
+  height: calc(
+    var(--min-size) + (var(--max-size) - var(--min-size)) * var(--size)
+  );
+  filter: blur(150px);
+  animation: rotate var(--speed) var(--easing) alternate infinite;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
 
-        /* This is just to transition when you change the viewport size. */
-        * {
-            transition: all 0.25s ease-out;
-        }
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
-        .gradient {
-            /* Füge hier deine CSS-Stile für den Gradienten ein */
-            background: linear-gradient(to left, #ff416c, #ff4b2b);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
-        }
+body {
+  font-family: "Cascadia Code", sans-serif;
+  background-color: #222;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  place-content: center;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+}
 
-        .button-container {
-            display: flex;
-            justify-content: center;
-        }
+/* This is just to transition when you change the viewport size. */
+* {
+  transition: all 0.25s ease-out;
+}
 
-        .gradient {
-            /* Füge hier deine CSS-Stile für den Gradienten ein */
-            background: linear-gradient(to left, #ff416c, #ff4b2b);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
-        }
+.gradient {
+  /* Füge hier deine CSS-Stile für den Gradienten ein */
+  background: linear-gradient(to left, #ff416c, #ff4b2b);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+}
 
-        .dev-hub-text {
-            /* Füge hier deine CSS-Stile für den "devolution."-Text ein */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: white;
-            font-weight: bold;
-        }
+.button-container {
+  display: flex;
+  justify-content: center;
+}
 
-        .slogan {
-            /* Füge hier deine CSS-Stile für den Slogan ein */
-            position: absolute;
-            bottom: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            color: white;
-        }
+.gradient {
+  /* Füge hier deine CSS-Stile für den Gradienten ein */
+  background: linear-gradient(to left, #ff416c, #ff4b2b);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+}
 
-        .slogan h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
+.dev-hub-text {
+  /* Füge hier deine CSS-Stile für den "devolution."-Text ein */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: white;
+  font-weight: bold;
+}
 
-        .signin-button, .login-button {
-            /* Füge hier deine CSS-Stile für die Buttons ein */
-            padding: 0.5rem 1rem;
-            margin: 0 0.5rem;
-            background-color: #ff7e7e;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 1rem;
-        }
+.slogan {
+  /* Füge hier deine CSS-Stile für den Slogan ein */
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: white;
+}
 
-        .signin-button:hover,
-        .login-button:hover {
-            background-color: rgba(255, 255, 255, 0.192); /* Transparente Hintergrundfarbe */
-            box-shadow: 0 0 10px rgba(167, 167, 167, 0.3); /* Unschärfeeffekt */
-        }
+.slogan h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.signin-button,
+.login-button {
+  /* Füge hier deine CSS-Stile für die Buttons ein */
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  background-color: #ff7e7e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.signin-button:hover,
+.login-button:hover {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.192
+  ); /* Transparente Hintergrundfarbe */
+  box-shadow: 0 0 10px rgba(167, 167, 167, 0.3); /* Unschärfeeffekt */
+}

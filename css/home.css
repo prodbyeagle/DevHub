@@ -1,559 +1,579 @@
-        body {
-            font-family: 'Cascadia Code',  sans-serif;
-            background-color: #f0f0f0;
-            color: rgb(51, 51, 51);
-            transition: all 0.3s ease;
-        }
+body {
+  font-family: "Cascadia Code", sans-serif;
+  background-color: #f0f0f0;
+  color: rgb(51, 51, 51);
+  transition: all 0.3s ease;
+}
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 2rem;
-        }
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 2rem;
+}
 
-        .sidebar {
-            width: 200px;
-            margin-right: 2rem;
-            flex-shrink: 0;
-            background-color: #cecece8f;
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-            border-radius: 16px;
-            user-select: none;
-            position: sticky;
-            top: 43px;
-            transition: all 0.3s ease;
-        }
+.sidebar {
+  width: 200px;
+  margin-right: 2rem;
+  flex-shrink: 0;
+  background-color: #cecece8f;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  user-select: none;
+  position: sticky;
+  top: 43px;
+  transition: all 0.3s ease;
+}
 
-        .sidebar:hover {
-            transform: scale(1.03);
-            transition: all 0.3s ease;
-        }
+.sidebar:hover {
+  transform: scale(1.03);
+  transition: all 0.3s ease;
+}
 
-        .content {
-            flex-grow: 1;
-        }
+.content {
+  flex-grow: 1;
+}
 
-        /* CSS für das Zentrieren der Überschrift und Hinzufügen von Platz unten */
-        .sidebar h2 {
-            text-align: center; /* Überschrift zentrieren */
-            margin-top: 15px; /* Platz unten hinzufügen */
-        }
+/* CSS für das Zentrieren der Überschrift und Hinzufügen von Platz unten */
+.sidebar h2 {
+  text-align: center; /* Überschrift zentrieren */
+  margin-top: 15px; /* Platz unten hinzufügen */
+}
 
-        /* CSS für das Zentrieren der Navigationsfelder in der Sidebar */
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Horizontal zentrieren */
-            margin: 10px;
-        }
+/* CSS für das Zentrieren der Navigationsfelder in der Sidebar */
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Horizontal zentrieren */
+  margin: 10px;
+}
 
-        /* CSS für die Animation des Rahmens um Navigationselemente */
-        .sidebar a {
-            display: block;
-            padding: 0.5rem 0;
-            color: #555;
-            text-decoration: none;
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        
-        .sidebar a:hover {
-            color: #7c7c7cdb;
-        }
-        
-        .sidebar a::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0%;
-            height: 2px;
-            background-color: #2222228e;
-            transition: width 0.3s ease;
-        }
-        
-        .sidebar a:hover::before {
-            width: 100%;
-        }
+/* CSS für die Animation des Rahmens um Navigationselemente */
+.sidebar a {
+  display: block;
+  padding: 0.5rem 0;
+  color: #555;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s ease;
+}
 
-        .create-post-form textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-            color: #333;
-            resize: vertical;
-        }
+.sidebar a:hover {
+  color: #7c7c7cdb;
+}
 
-    /* Neumorphism styles for the posts */
-    .post {
-        background-color: #cecece8f;
-        border: 1px solid #ccc;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        color: #333;
-        border-radius: 16px;
-        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
-    }
+.sidebar a::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #2222228e;
+  transition: width 0.3s ease;
+}
 
-    .post:hover {
-        transform: scale(1.02); /* Vergrößern des Posts beim Hover */
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
-    }
+.sidebar a:hover::before {
+  width: 100%;
+}
 
-    /* Neumorphism styles for dark mode */
-    body.dark-mode .post {
-        background-color: #222;
-        border: 1px solid #333;
-        color: #eee;
-        box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-    }
+.create-post-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #333;
+  resize: vertical;
+}
 
-    body.dark-mode .post:hover {
-        box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
-    }
+/* Neumorphism styles for the posts */
+.post {
+  background-color: #cecece8f;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #333;
+  border-radius: 16px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
+}
 
-        .post h3 {
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
+.post:hover {
+  transform: scale(1.02); /* Vergrößern des Posts beim Hover */
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.1); /* Schatteneffekt beim Hover */
+}
 
-        .post p {
-            margin-bottom: 0.5rem;
-            color: #555;
-        }
+/* Neumorphism styles for dark mode */
+body.dark-mode .post {
+  background-color: #222;
+  border: 1px solid #333;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
 
-        /* CSS styles for the date */
-        .post .date {
-            font-size: 0.8rem;
-            color: #555;
-        }
+body.dark-mode .post:hover {
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* Schatteneffekt beim Hover */
+}
 
-        /* Neumorphism styles for Dark Mode */
-        body.dark-mode {
-            background-color: #222;
-            color: #eee;
-        }
+.post h3 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
 
-        body.dark-mode .sidebar {
-            background-color: #4d4d4d7c;
-            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-            position: sticky;
-            top: 43px;
-            transition: all 0.3s ease;
-        }
+.post p {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
 
-        body.dark-mode .sidebar a {
-            color: #aaa;
-        }
-        
-        body.dark-mode .sidebar:hover {
-            transform: scale(1.03);
-            transition: all 0.3s ease;
-        }
+/* CSS styles for the date */
+.post .date {
+  font-size: 0.8rem;
+  color: #555;
+}
 
-        body.dark-mode .create-post-form textarea {
-            background-color: #222;
-            color: #eee;
-        }
+/* Neumorphism styles for Dark Mode */
+body.dark-mode {
+  background-color: #222;
+  color: #eee;
+}
 
-        body.dark-mode .post {
-            background-color: #2727277c;
-            border: 1px solid #33333300;
-            color: #eee;
-            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-        }
+body.dark-mode .sidebar {
+  background-color: #4d4d4d7c;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 43px;
+  transition: all 0.3s ease;
+}
 
-        body.dark-mode .post h3 {
-            color: #eee;
-        }
+body.dark-mode .sidebar a {
+  color: #aaa;
+}
 
-        body.dark-mode .post p {
-            color: #aaa;
-        }
+body.dark-mode .sidebar:hover {
+  transform: scale(1.03);
+  transition: all 0.3s ease;
+}
 
-        body.dark-mode .post .date {
-            color: #aaa;
-        }
+body.dark-mode .create-post-form textarea {
+  background-color: #222;
+  color: #eee;
+}
 
-        /* Neumorphism styles for title and content */
-        .title-container {
-            padding: 1rem;
-            background-color: #cecece00;
-            color: #111111;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-            user-select: none;
-            transition: all 0.3s ease;
-        }
-        
-        .content-container {
-            padding: 1rem;
-            background-color: #cecece8f;
-            color: #111111;
-            border-radius: 16px;
-            /* box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5); */
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
+body.dark-mode .post {
+  background-color: #2727277c;
+  border: 1px solid #33333300;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
 
-        body.dark-mode .title-container {
-            padding: 1rem;
-            background-color: #00000000;
-            color: #eee;
-            margin-bottom: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode .content-container {
-            padding: 1rem;
-            background-color: #4d4d4d7c;
-            color: #eee;
-            border-radius: 16px;
-            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-            margin-bottom: 20px;
-            
-        }
+body.dark-mode .post h3 {
+  color: #eee;
+}
 
-        /* Neumorphism styles for the Send button */
-        #postForm button {
-            background-color: #333;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Übergangseffekte */
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5); /* Neumorphism-Effekt */
-        }
-    
-        #postForm button:hover {
-            background-color: #7c7c7cdb;
-            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3); /* verstärkter Schatten beim Hover */
-        }
-    
-        /* Neumorphism styles for dark mode */
-        body.dark-mode #postForm button {
-            background-color: #444;
-            color: #eee;
-            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-        }
-    
-        body.dark-mode #postForm button:hover {
-            background-color: #7c7c7cdb;
-            box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* verstärkter Schatten beim Hover */
-        }
-        
-        /* Dark Mode styles for the button */
-        body.dark-mode .create-post-form button {
-            background-color: #7c7c7cdb;
-            color: #eee;
-            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-        }
-        
-        body.dark-mode .create-post-form button:hover {
-            background-color: #333;
-        }
+body.dark-mode .post p {
+  color: #aaa;
+}
 
-        ::-webkit-scrollbar {
-        width: 12px;
-        background-color: transparent;
-        transition: all 0.3s ease;
-    }
-    
-    /* Scrollbalkengriff */
-    ::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-        border: 3px solid transparent;
-        background-clip: content-box;
-    
-    }
-    
-    /* Hover-Stil für den Scrollbalkengriff */
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(0, 0, 0, 0.3);
-        cursor: all-scroll    
-    }
-    
-    /* Track (nicht scrollbarer Bereich) */
-    ::-webkit-scrollbar-track {
-        background-color: transparent;
-    }
-    
-    /* Track-Farbe beim Hover */
-    ::-webkit-scrollbar-track:hover {
-        background-color: rgba(0, 0, 0, 0.1);
-    }
-    
-    /* Scrollbalkenpfeil-Buttons */
-    ::-webkit-scrollbar-button {
-        display: none; /* Ausblenden der Scrollbar-Pfeil-Buttons */
-    }
-    
-    /* Ecken der Scrollleiste */
-    ::-webkit-scrollbar-corner {
-        background-color: transparent;
-    }
+body.dark-mode .post .date {
+  color: #aaa;
+}
 
-        .scroll-to-top {
-            position: fixed;
-            bottom: 20px; /* Adjust as needed */
-            right: 20px; /* Adjust as needed */
-            z-index: 9999;
-            display: none; /* Hide by default */
-            width: 60px;
-            height: 60px;
-            background-color: #222;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-        }
+/* Neumorphism styles for title and content */
+.title-container {
+  padding: 1rem;
+  background-color: #cecece00;
+  color: #111111;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+  user-select: none;
+  transition: all 0.3s ease;
+}
 
-        .scroll-to-top:hover {
-            background-color: #7c7c7cdb;
-            box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
-        }
+.content-container {
+  padding: 1rem;
+  background-color: #cecece8f;
+  color: #111111;
+  border-radius: 16px;
+  /* box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5); */
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
 
-        body.dark-mode .scroll-to-top {
-            background-color: #222;
-            color: #eee;
-            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.05);
-        }
+body.dark-mode .title-container {
+  padding: 1rem;
+  background-color: #00000000;
+  color: #eee;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
 
-        body.dark-mode .scroll-to-top:hover {
-            background-color: #7c7c7cdb;
-        }
+body.dark-mode .content-container {
+  padding: 1rem;
+  background-color: #4d4d4d7c;
+  color: #eee;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+  margin-bottom: 20px;
+}
 
-                /* Neumorphism styles for the input fields */
-                .neumorphism-input {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
+/* Neumorphism styles for the Send button */
+#postForm button {
+  background-color: #333;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Übergangseffekte */
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5); /* Neumorphism-Effekt */
+}
 
-        body.dark-mode .neumorphism-input {
-            border-color: #555;
-            background-color: #333;
-            color: #eee;
-        }
+#postForm button:hover {
+  background-color: #7c7c7cdb;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.3); /* verstärkter Schatten beim Hover */
+}
 
-        /* Neumorphism styles for the submit button */
-        .neumorphism-button {
-            background-color: #33333350;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
+/* Neumorphism styles for dark mode */
+body.dark-mode #postForm button {
+  background-color: #444;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
 
-        .neumorphism-button:hover {
-            background-color: #aaaaaa44;
-        }
+body.dark-mode #postForm button:hover {
+  background-color: #7c7c7cdb;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.5); /* verstärkter Schatten beim Hover */
+}
 
-        body.dark-mode .neumorphism-button {
-            background-color: #67676788;
-            color: #eee;
-        }
+/* Dark Mode styles for the button */
+body.dark-mode .create-post-form button {
+  background-color: #7c7c7cdb;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
 
-        body.dark-mode .neumorphism-button:hover {
-            background-color: #7c7c7cdb;
-        }
-    
-        .search-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 999;
-    display: none; /* Suchoverlay standardmäßig ausgeblendet */
-    animation: fadeIn 0.3s ease; /* Fade-In-Animation hinzugefügt */
+body.dark-mode .create-post-form button:hover {
+  background-color: #333;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+/* Scrollbalkengriff */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Hover-Stil für den Scrollbalkengriff */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: all-scroll;
+}
+
+/* Track (nicht scrollbarer Bereich) */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Track-Farbe beim Hover */
+::-webkit-scrollbar-track:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbalkenpfeil-Buttons */
+::-webkit-scrollbar-button {
+  display: none; /* Ausblenden der Scrollbar-Pfeil-Buttons */
+}
+
+/* Ecken der Scrollleiste */
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px; /* Adjust as needed */
+  right: 20px; /* Adjust as needed */
+  z-index: 9999;
+  display: none; /* Hide by default */
+  width: 60px;
+  height: 60px;
+  background-color: #222;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+.scroll-to-top:hover {
+  background-color: #7c7c7cdb;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .scroll-to-top {
+  background-color: #222;
+  color: #eee;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .scroll-to-top:hover {
+  background-color: #7c7c7cdb;
+}
+
+/* Neumorphism styles for the input fields */
+.neumorphism-input {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+body.dark-mode .neumorphism-input {
+  border-color: #555;
+  background-color: #333;
+  color: #eee;
+}
+
+/* Neumorphism styles for the submit button */
+.neumorphism-button {
+  background-color: #33333350;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.neumorphism-button:hover {
+  background-color: #aaaaaa44;
+}
+
+body.dark-mode .neumorphism-button {
+  background-color: #67676788;
+  color: #eee;
+}
+
+body.dark-mode .neumorphism-button:hover {
+  background-color: #7c7c7cdb;
+}
+
+.search-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 999;
+  display: none; /* Suchoverlay standardmäßig ausgeblendet */
+  animation: fadeIn 0.3s ease; /* Fade-In-Animation hinzugefügt */
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .search-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar {
-    display: flex;
-    margin-bottom: 1rem;
+  display: flex;
+  margin-bottom: 1rem;
 }
 
 .search-input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-right: 0.5rem;
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 0.5rem;
 }
 
 /* Dark-Mode-Stile für das Textfeld */
 body.dark-mode .search-input {
-    background-color: #333; /* Hintergrundfarbe im Dark Mode */
-    color: #eee; /* Textfarbe im Dark Mode */
-    border-color: #555; /* Randfarbe im Dark Mode */
+  background-color: #333; /* Hintergrundfarbe im Dark Mode */
+  color: #eee; /* Textfarbe im Dark Mode */
+  border-color: #555; /* Randfarbe im Dark Mode */
 }
 
 .search-button,
 .close-button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .search-button:hover,
 .close-button:hover {
-    background-color: #b9153b;
+  background-color: #b9153b;
 }
 
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Hintergrund leicht verdunkeln */
-    z-index: 998; /* Unterhalb des Suchoverlays */
-    display: none; /* standardmäßig ausgeblendet */
-    animation: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Hintergrund leicht verdunkeln */
+  z-index: 998; /* Unterhalb des Suchoverlays */
+  display: none; /* standardmäßig ausgeblendet */
+  animation: all 0.3s ease;
 }
 
 .search-overlay.active {
-    display: block; /* Suchoverlay anzeigen, wenn die Klasse 'active' hinzugefügt wird */
+  display: block; /* Suchoverlay anzeigen, wenn die Klasse 'active' hinzugefügt wird */
 }
 
 .search-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 999;
-    display: none; /* Suchoverlay standardmäßig ausgeblendet */
-    animation: fadeIn 0.3s ease; /* Fade-In-Animation */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 999;
+  display: none; /* Suchoverlay standardmäßig ausgeblendet */
+  animation: fadeIn 0.3s ease; /* Fade-In-Animation */
 }
 
 /* Fade-In-Animation für das Suchoverlay */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .search-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Dark-Mode-Stile für den Suchcontainer */
 body.dark-mode .search-container {
-    background-color: #333; /* Hintergrundfarbe im Dark Mode */
-    color: #eee; /* Textfarbe im Dark Mode */
+  background-color: #333; /* Hintergrundfarbe im Dark Mode */
+  color: #eee; /* Textfarbe im Dark Mode */
 }
 
 .search-overlay.fade-out {
-    animation: fadeOut 0.3s ease; /* Fade-Out-Animation */
+  animation: fadeOut 0.3s ease; /* Fade-Out-Animation */
 }
 
 /* Dark-Mode-Stile für das Suchoverlay */
 body.dark-mode .search-overlay {
-    background: #333; /* Hintergrundfarbe im Dark Mode */
-    color: #eee; /* Textfarbe im Dark Mode */
+  background: #333; /* Hintergrundfarbe im Dark Mode */
+  color: #eee; /* Textfarbe im Dark Mode */
 }
 
 /* Dark-Mode-Stile für die Schaltflächen */
 body.dark-mode .search-button,
 body.dark-mode .close-button {
-    background-color: #555; /* Hintergrundfarbe im Dark Mode */
-    color: #eee; /* Textfarbe im Dark Mode */
+  background-color: #555; /* Hintergrundfarbe im Dark Mode */
+  color: #eee; /* Textfarbe im Dark Mode */
 }
 
 /* Dark-Mode-Stile für das Schließ-Symbol */
 body.dark-mode .close-button:hover {
-    background-color: #ff4444; /* Schaltflächenfarbe im Dark Mode */
+  background-color: #ff4444; /* Schaltflächenfarbe im Dark Mode */
 }
 
 /* Dark-Mode-Stile für das Schließ-Symbol */
 body.dark-mode .search-button:hover {
-    background-color: #1ce358; /* Schaltflächenfarbe im Dark Mode */
+  background-color: #1ce358; /* Schaltflächenfarbe im Dark Mode */
 }
 
 /* Stil für die Suchergebnisse */
 .search-results-item {
-    padding: 5px; /* Fügen Sie hier nach Bedarf Abstand hinzu */
-    transition: color 0.2s ease; /* Übergangseffekt für Farbänderungen */
+  padding: 5px; /* Fügen Sie hier nach Bedarf Abstand hinzu */
+  transition: color 0.2s ease; /* Übergangseffekt für Farbänderungen */
 }
 
 /* Stil für den Hover-Effekt */
 .search-results-item:hover {
-    color: #ff285a; /* Hellere Farbe bei Hover */
+  color: #ff285a; /* Hellere Farbe bei Hover */
 }
 
 .pop {
-    animation: pop 0.3s ease;
+  animation: pop 0.3s ease;
 }
 
 @keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .overlay-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
 }
 .hidden {
-    display: none;
+  display: none;
+}
+
+.username:hover {
+  color: #6464ff;
+  transition: color 0.2s ease-in-out;
 }
