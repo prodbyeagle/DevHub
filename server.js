@@ -915,7 +915,6 @@ app.post('/posts/:username/:postId/like', async (req, res) => {
         { _id: new ObjectId(postId) },
         { $set: { likes: post.likes, liked: post.liked } }
       );
-      console.log(`Post liked by ${username}`);
     }
 
     res.json({ message: 'Post liked successfully' });
@@ -949,7 +948,6 @@ app.post('/posts/:username/:postId/unlike', async (req, res) => {
         { _id: new ObjectId(postId) },
         { $set: { likes: post.likes, liked: post.liked } }
       );
-      console.log(`Post unliked by ${username}`);
     }
     res.json({ message: 'Post unliked successfully' });
   } catch (error) {
@@ -962,10 +960,14 @@ app.post('/posts/:username/:postId/unlike', async (req, res) => {
 app.get('/posts/:postId/likes', async (req, res) => {
   try {
     const { postId } = req.params;
-    const post = await Post.findById(postId);
+    const postsCollection = db.collection("posts");
+
+    const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
+
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
+
     res.json({ likes: post.likes });
   } catch (error) {
     console.error('Error getting likes:', error);
@@ -1220,7 +1222,6 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
     for (let i = 0; i < badges.length; i++) {
       if (badges[i].name === badgeName) {
         skippedBadgeName = badgeName; // Speichern Sie den Namen des übersprungenen Badges
-        console.log(`Badge "${badgeName}" übersprungen`);
         continue; // Überspringen Sie das ausgewählte Badge
       }
     
@@ -1255,8 +1256,6 @@ app.get("/api/badges/active", async (req, res) => {
 
 app.post("/api/blogs", async (req, res) => {
   const { title, content, author, date, reactions, image } = req.body;
-
-  
   try {
     const newPost = { title, content, author, date, reactions, image }; 
     const result = await blogCollection.insertOne(newPost);
@@ -1280,9 +1279,7 @@ app.get("/api/blogs", async (req, res) => {
 
 app.get("/api/blogs/:postId/reactions", async (req, res) => {
   const { postId } = req.params;
-
   try {
-
     const blogPost = await blogCollection.findOne({
       _id: new ObjectId(postId),
     });

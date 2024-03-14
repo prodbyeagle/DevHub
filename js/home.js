@@ -797,115 +797,86 @@ async function toggleLike(postId) {
   if (!likesButton) return;
 
   try {
-    const isLiked = likesButton.classList.contains("liked");
+      const isLiked = likesButton.classList.contains("liked");
+      const userData = JSON.parse(localStorage.getItem('user'));
+      if (!userData) {
+          console.error('Benutzerdaten nicht im Local Storage gefunden.');
+          return;
+      }
+      const username = userData.identifier;
 
-    if (isLiked) {
-      await removeLike(postId);
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
-      likesButton.classList.remove("liked");
-    } else {
-      await saveLike(postId);
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-      likesButton.classList.add("liked");
-    }
+      if (isLiked) {
+          await removeLike(username, postId);
+          likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+          likesButton.classList.remove("liked");
+      } else {
+          await saveLike(username, postId);
+          likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+          likesButton.classList.add("liked");
+      }
 
-    // Füge die Pop-Animation-Klasse hinzu
-    likesButton.classList.add("pop");
+      // Füge die Pop-Animation-Klasse hinzu
+      likesButton.classList.add("pop");
 
-    // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
-    setTimeout(() => {
-      likesButton.classList.remove("pop");
-    }, 300);
+      // Entferne die Pop-Animation-Klasse nach einer Verzögerung von 300ms
+      setTimeout(() => {
+          likesButton.classList.remove("pop");
+      }, 300);
+
+      // Aktualisiere die Likes-Anzeige
+      updateLikes(postId);
   } catch (error) {
-    console.error("Fehler:", error);
+      console.error("Fehler:", error);
   }
 }
 
-// Fügen Sie den Event-Listener für den Like-Button hinzu
-document.addEventListener("click", function (event) {
-  if (event.target.classList.contains("like-button")) {
-    const postId = event.target.dataset.postId;
-    if (postId) {
-      toggleLike(postId);
-    }
-  }
-});
-
-async function saveLike(postId) {
-  const userData = JSON.parse(localStorage.getItem('user'));
-  if (!userData) {
-      console.error('User data not found in localStorage.');
-      return;
-  }
-
-  const username = userData.identifier;
-
+// Überprüfe, ob der Benutzer den Beitrag bereits geliked hat
+async function checkIfLiked(username, postId) {
   try {
-    const response = await fetch(`/posts/${username}/${postId}/like`, {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      throw new Error("Fehler beim Speichern des Likes");
-    }
-
-    const data = await response.json();
-    data.message; // Erfolgsmeldung vom Server
+      const response = await fetch(`/posts/${username}/${postId}/check-like`);
+      const data = await response.json();
+      return data.liked;
   } catch (error) {
-    console.error("Fehler:", error);
+      console.error('Fehler beim Überprüfen des Likes:', error);
+      return false;
   }
 }
 
-async function removeLike(postId) {
-  const userData = JSON.parse(localStorage.getItem('user'));
-  if (!userData) {
-      console.error('User data not found in localStorage.');
-      return;
-  }
-
-  const username = userData.identifier;
-
+// Funktion zum Speichern eines Likes
+async function saveLike(username, postId) {
   try {
-    const response = await fetch(`/posts/${username}/${postId}/unlike`, {
-      method: "POST",
-    });
+      const response = await fetch(`/posts/${username}/${postId}/like`, {
+          method: "POST",
+      });
 
-    if (!response.ok) {
-      throw new Error("Fehler beim Entfernen des Likes");
-    }
+      if (!response.ok) {
+          throw new Error("Fehler beim Speichern des Likes");
+      }
 
-    const data = await response.json();
-    data.message; // Erfolgsmeldung vom Server
+      const data = await response.json();
+      data.message; // Erfolgsmeldung vom Server
   } catch (error) {
-    console.error("Fehler:", error);
+      console.error("Fehler:", error);
   }
 }
 
-// Funktion zum Überprüfen, ob der Benutzer den Beitrag bereits mag
-document.addEventListener('DOMContentLoaded', function() {
-  async function checkIfLiked(postId, username) {
+// Funktion zum Entfernen eines Likes
+async function removeLike(username, postId) {
   try {
-    const response = await fetch(`/posts/${username}/${postId}/check-like`);
-    const data = await response.json();
-    return data.liked;
-  } catch (error) {
-    console.error('Error checking if liked:', error);
-    return false;
-  }
-}
+      const response = await fetch(`/posts/${username}/${postId}/unlike`, {
+          method: "POST",
+      });
 
-async function displayLikeStatus(postId, username) {
-  console.log(postId, username)
-  const likesButton = document.getElementById(`likesButton_${postId}`);
-  if (!likesButton) return;
-  const isLiked = await checkIfLiked(postId, username);
-  if (isLiked) {
-    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-  } else {
-    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+      if (!response.ok) {
+          throw new Error("Fehler beim Entfernen des Likes");
+      }
+
+      const data = await response.json();
+      data.message; // Erfolgsmeldung vom Server
+  } catch (error) {
+      console.error("Fehler:", error);
   }
 }
-});
 
 async function updateLikes(postId) {
   try {
@@ -920,7 +891,6 @@ async function updateLikes(postId) {
     console.error('Error updating likes:', error);
   }
 }
-
 
 // IEFHIEFH
 
