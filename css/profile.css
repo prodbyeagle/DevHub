@@ -556,3 +556,70 @@ body.dark-mode #full-post-content {
   ); /* Dunkler Hintergrund im Dark-Mode */
   color: whitesmoke; /* Standard-Schriftfarbe */
 }
+
+/* Dropdown-Menü-Stil */
+.dropdown-menu {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px 0;
+  animation: fade-in 0.3s ease-in-out;
+  border: 1px solid #666; /* Strich zwischen den Optionen */
+  margin-top: 8px; /* Abstand vom Badge */
+}
+
+/* Stil für Dark Mode des Dropdown-Menüs */
+body.dark-mode .dropdown-menu {
+  background-color: #333;
+  color: white;
+}
+
+/* Stil für die Optionen im Dropdown-Menü */
+.dropdown-menu div {
+  padding: 8px 20px; /* Innenabstand der Optionen */
+  cursor: pointer;
+  border-bottom: 1px solid #ccc; /* Strich zwischen den Optionen */
+}
+
+/* Stil für die Optionen im Dropdown-Menü beim Hover */
+.dropdown-menu div:hover {
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ccc; /* Strich zwischen den Optionen */
+}
+
+/* Stil für Dark Mode des Dropdown-Menüs */
+body.dark-mode .dropdown-menu {
+  background-color: #333;
+  color: white;
+  border: 1px solid #666; /* Strich zwischen den Optionen */
+}
+
+/* Stil für die Optionen im Dropdown-Menü im Dark Mode */
+body.dark-mode .dropdown-menu div {
+  border-bottom: 1px solid #666; /* Strich zwischen den Optionen */
+}
+
+.dropdown-menu div:first-child {
+  border-top: 1px solid #666; /* Strich über dem ersten Element */
+}
+
+body.dark-mode .dropdown-menu div:first-child {
+  border-bottom: 1px solid #666; /* Strich zwischen den Optionen */
+}
+
+/* Stil für die Optionen im Dropdown-Menü beim Hover im Dark Mode */
+body.dark-mode .dropdown-menu div:hover {
+  background-color: #444;
+  border-bottom: 1px solid #999; /* Strich zwischen den Optionen */
+}
+
+/* Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

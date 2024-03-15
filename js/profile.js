@@ -27,255 +27,6 @@ function showNormalContent() {
   document.body.classList.add("dark-mode");
 }
 
-async function fetchUserPosts(username) {
-  try {
-    const response = await fetch(`/api/${username}/posts`);
-    const postsData = await response.json();
-    if (postsData.length === 0) {
-      renderNoPostsMessage();
-    } else {
-      renderPosts(postsData);
-    }
-  } catch (error) {
-    console.error("Error fetching user posts:", error);
-  }
-}
-
-function renderNoPostsMessage() {
-  const postsContainer = document.getElementById("user-posts");
-  postsContainer.innerHTML = ""; // Clear previous posts
-
-  const messageElement = document.createElement("p");
-  messageElement.textContent =
-    "😭 No Posts! ...you can make an posts on your /home page";
-  postsContainer.appendChild(messageElement);
-}
-
-function renderPosts(posts) {
-  const postsContainer = document.getElementById("user-posts");
-  postsContainer.innerHTML = ""; // Clear previous posts
-
-  posts.forEach((post) => {
-    const postElement = document.createElement("div");
-    postElement.classList.add(
-      "post",
-      "p-4",
-      "rounded",
-      "shadow",
-      "mb-4",
-      "relative"
-    );
-
-    const usernameElement = document.createElement("h3");
-    usernameElement.textContent = `@${post.username} (${post.date})`;
-
-    const contentElement = document.createElement("p");
-    contentElement.textContent = post.content; // Den gesamten Post-Text einfügen
-    contentElement.setAttribute("id", "content_" + post._id);
-    contentElement.style.overflowWrap = "break-word"; // CSS-Eigenschaft für das Umbruchverhalten
-
-    const codeSnippetElement = document.createElement("pre");
-    codeSnippetElement.textContent = post.codesnippet; // Den gesamten Code-Schnipsel einfügen
-    codeSnippetElement.classList.add(
-      "bg-gray-800",
-      "text-white",
-      "p-4",
-      "rounded",
-      "text-xs"
-    );
-    codeSnippetElement.style.maxWidth = "100%";
-    codeSnippetElement.setAttribute("id", "codesnippet_" + post._id);
-    codeSnippetElement.style.overflowWrap = "break-word"; // CSS-Eigenschaft für das Umbruchverhalten
-    codeSnippetElement.style.textOverflow = "clip";
-
-    if (post.codesnippet.length > 100) {
-      const formattedCodeSnippet = post.codesnippet.substring(0, 100) + "..."; // Nur die ersten 100 Zeichen des Codeausschnitts anzeigen
-      codeSnippetElement.style.overflowWrap = "break-word"; // CSS-Eigenschaft für das Umbruchverhalten
-      codeSnippetElement.textContent = formattedCodeSnippet;
-      codeSnippetElement.style.textOverflow = "clip";
-    }
-    const threeDotMenu = document.createElement("div");
-    threeDotMenu.classList.add("absolute", "top-0", "right-0");
-
-    const threeDotButton = document.createElement("button");
-    threeDotButton.classList.add("neumorphism-button", "text-red-600");
-
-    const menuIcon = document.createElement("img");
-    menuIcon.setAttribute(
-      "src",
-      "https://img.icons8.com/ios-filled/24/000000/menu--v6.png"
-    );
-    menuIcon.setAttribute("alt", "menu-icon");
-
-    threeDotButton.appendChild(menuIcon);
-
-    threeDotButton.setAttribute("id", "ham-burger-menu-btn");
-    threeDotButton.setAttribute(
-      "onclick",
-      `togglePostMenu('${post._id}', event)`
-    );
-    threeDotMenu.setAttribute("id", "ham-burger-menu-" + post._id);
-
-    const threeDotMenuContent = document.createElement("div");
-    threeDotMenuContent.classList.add(
-      "hidden",
-      "origin-top-left",
-      "absolute",
-      "left-0",
-      "mt-2",
-      "rounded-md",
-      "shadow-lg",
-      "bg-white",
-      "ring-1",
-      "ring-black",
-      "ring-opacity-5",
-      "flex",
-      "flex-col",
-      "text-sm"
-    );
-    threeDotMenuContent.setAttribute(
-      "id",
-      "ham-burger-menu-content-" + post._id
-    );
-
-    const deleteButton = document.createElement("button");
-    deleteButton.classList.add(
-      "neumorphism-button",
-      "text-red-600",
-      "py-2",
-      "px-4",
-      "hover:bg-gray-100",
-      "hover:text-gray-900"
-    );
-    deleteButton.dataset.postId = post._id;
-    deleteButton.addEventListener("click", function () {
-      const postId = this.dataset.postId;
-      deletePost(postId);
-    });
-    const deleteIcon = document.createElement("img");
-    deleteIcon.setAttribute(
-      "src",
-      "https://img.icons8.com/sf-regular-filled/24/000000/delete-forever.png"
-    );
-    deleteIcon.setAttribute("alt", "delete-icon");
-    deleteButton.insertBefore(deleteIcon, deleteButton.firstChild);
-
-    const pinButton = document.createElement("button");
-    pinButton.classList.add(
-      "neumorphism-button",
-      "text-red-600",
-      "py-2",
-      "px-4",
-      "hover:bg-gray-100",
-      "hover:text-gray-900"
-    );
-    pinButton.dataset.postId = post._id;
-    pinButton.setAttribute("onclick", `pinPost('${post._id}')`);
-    const pinIcon = document.createElement("img");
-    pinIcon.setAttribute(
-      "src",
-      "https://img.icons8.com/sf-regular-filled/24/000000/pin3.png"
-    );
-    pinIcon.setAttribute("alt", "pin-icon");
-    pinButton.insertBefore(pinIcon, pinButton.firstChild);
-
-    const editButton = document.createElement("button");
-    editButton.classList.add(
-      "neumorphism-button",
-      "text-red-600",
-      "py-2",
-      "px-4",
-      "hover:bg-gray-100",
-      "hover:text-gray-900"
-    );
-    editButton.dataset.postId = post._id;
-    editButton.setAttribute("onclick", `showEditForm('${post._id}')`);
-    const editIcon = document.createElement("img");
-    editIcon.setAttribute(
-      "src",
-      "https://img.icons8.com/sf-regular-filled/24/000000/pencil-tip.png"
-    );
-    editIcon.setAttribute("alt", "edit-icon");
-    editButton.insertBefore(editIcon, editButton.firstChild);
-
-    threeDotMenuContent.appendChild(deleteButton);
-    threeDotMenuContent.appendChild(pinButton);
-    threeDotMenuContent.appendChild(editButton);
-
-    threeDotMenu.appendChild(threeDotButton);
-    threeDotMenu.appendChild(threeDotMenuContent);
-
-    postElement.addEventListener("click", function () {
-      const overlayContent = document.getElementById("full-post-content");
-      overlayContent.innerHTML = ""; // Löschen des vorherigen Inhalts
-
-      // Erstellen von HTML-Elementen für den Post-Inhalt
-      const usernameHeader = document.createElement("h3");
-      usernameHeader.textContent = `@${post.username} (${post.date})`;
-
-      const contentParagraph = document.createElement("p");
-      contentParagraph.textContent = post.content;
-
-      const codeSnippetPre = document.createElement("pre");
-      codeSnippetPre.classList.add(
-        "bg-gray-800",
-        "text-white",
-        "p-4",
-        "rounded",
-        "text-xs"
-      );
-      codeSnippetPre.textContent = post.codesnippet;
-
-      // Hinzufügen der HTML-Elemente zum Overlay-Inhalt
-      overlayContent.appendChild(usernameHeader);
-      overlayContent.appendChild(contentParagraph);
-      overlayContent.appendChild(codeSnippetPre);
-
-      // Anzeigen des Overlays
-      const postOverlay = document.getElementById("post-overlay");
-      postOverlay.classList.remove("hidden");
-
-      // Scrollen der Seite deaktivieren
-      document.body.style.overflow = "hidden";
-
-      // Event-Listener hinzufügen, um das Overlay zu schließen, wenn darauf geklickt wird
-      postOverlay.addEventListener("click", function (event) {
-        if (event.target === postOverlay) {
-          postOverlay.classList.add("hidden");
-          // Scrollen der Seite wieder aktivieren
-          document.body.style.overflow = "auto";
-        }
-      });
-    });
-
-    postElement.appendChild(usernameElement);
-    postElement.appendChild(contentElement);
-    postElement.appendChild(codeSnippetElement);
-    postElement.appendChild(threeDotMenu);
-    postsContainer.appendChild(postElement);
-  });
-}
-applyHoverEffectToPosts();
-
-function applyHoverEffect(postElement) {
-  postElement.addEventListener("mouseenter", function () {
-    this.style.transform = "scale(1.03)";
-    this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
-  });
-  postElement.addEventListener("mouseleave", function () {
-    this.style.transform = "scale(1)";
-    this.style.boxShadow =
-      "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
-  });
-}
-
-function applyHoverEffectToPosts() {
-  const posts = document.querySelectorAll(".post");
-  posts.forEach((post) => {
-    addHoverEffect(post);
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   const userData = JSON.parse(localStorage.getItem("user"));
   if (userData) {
@@ -300,6 +51,232 @@ function loadModePreference() {
   console.log("Mode Loaded:", mode);
 }
 loadModePreference();
+
+async function fetchUserPosts(username) {
+  try {
+    const response = await fetch(`/api/${username}/posts`);
+    const postsData = await response.json();
+    if (postsData.length === 0) {
+      renderNoPostsMessage();
+    } else {
+      renderPosts(postsData);
+    }
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+  }
+}
+
+function renderNoPostsMessage() {
+  const postsContainer = document.getElementById("user-posts");
+  postsContainer.innerHTML = ""; // Clear previous posts
+
+  const messageElement = document.createElement("p");
+  messageElement.textContent =
+    "😭 No Posts! ...you can make an posts on your /home page";
+  postsContainer.appendChild(messageElement);
+}
+
+let activeContextMenu = null;
+
+function renderPosts(posts) {
+  const postsContainer = document.getElementById("user-posts");
+  postsContainer.innerHTML = ""; // Clear previous posts
+
+  posts.forEach((post) => {
+    const postElement = document.createElement("div");
+    postElement.classList.add(
+      "post",
+      "p-4",
+      "rounded",
+      "shadow",
+      "mb-4",
+      "relative"
+    );
+
+    const usernameElement = document.createElement("h3");
+    usernameElement.textContent = `${post.date}`;
+
+    const contentElement = document.createElement("p");
+    const truncatedContent =
+      post.content.length > 25
+        ? post.content.substring(0, 25) + "..."
+        : post.content;
+    contentElement.textContent = truncatedContent;
+    contentElement.style.maxWidth = "150px";
+    contentElement.style.maxHeight = "150px";
+    contentElement.style.overflowWrap = "break-word";
+    contentElement.setAttribute("id", "content_" + post._id);
+
+    const codeSnippetContainer = document.createElement("div"); // Wrapping container for code snippet
+    codeSnippetContainer.classList.add("overflow-auto"); // Apply overflow-auto class for scrolling
+
+    const truncatedCodeSnippet =
+      post.codesnippet.length > 25
+        ? post.codesnippet.substring(0, 25) + "..."
+        : post.codesnippet;
+    const codeSnippetElement = document.createElement("pre");
+    codeSnippetElement.textContent = truncatedCodeSnippet;
+    codeSnippetElement.style.overflowWrap = "break-word";
+    codeSnippetElement.classList.add(
+      "bg-gray-800",
+      "text-white",
+      "p-4",
+      "rounded",
+      "text-xs",
+      "break-words" // Apply break-words class for word wrapping
+    );
+
+        postElement.addEventListener("click", function () {
+          const overlayContent = document.getElementById("full-post-content");
+          overlayContent.innerHTML = ""; // Clear previous content
+
+          // Create HTML elements for post content
+          const usernameHeader = document.createElement("h3");
+          usernameHeader.textContent = `@${post.username} (${post.date})`;
+
+          const contentParagraph = document.createElement("p");
+          contentParagraph.textContent = post.content;
+
+          const codeSnippetPre = document.createElement("pre");
+          codeSnippetPre.classList.add(
+            "bg-gray-800",
+            "text-white",
+            "p-4",
+            "rounded",
+            "text-xs",
+            "break-words" // Apply break-words class for word wrapping
+          );
+          codeSnippetPre.textContent = post.codesnippet;
+
+          // Add HTML elements to overlay content
+          overlayContent.appendChild(usernameHeader);
+          overlayContent.appendChild(contentParagraph);
+          overlayContent.appendChild(codeSnippetPre);
+
+          // Apply CSS to the overlay content to set overflow-y and word-wrap
+          overlayContent.style.overflowY = "auto";
+          overlayContent.style.wordWrap = "break-word";
+
+          // Show the overlay
+          const postOverlay = document.getElementById("post-overlay");
+          postOverlay.classList.remove("hidden");
+
+          // Disable scrolling of the page
+          document.body.style.overflow = "hidden";
+
+          // Add event listener to close the overlay when clicked outside
+          postOverlay.addEventListener("click", function (event) {
+            if (event.target === postOverlay) {
+              postOverlay.classList.add("hidden");
+              // Re-enable scrolling of the page
+              document.body.style.overflow = "auto";
+            }
+          });
+        });
+
+    const contextMenu = createContextMenu(post._id);
+
+    postElement.addEventListener("contextmenu", function (event) {
+      event.preventDefault(); // Prevent the default right-click menu
+      showContextMenu(contextMenu, event.clientX, event.clientY);
+      return false;
+    });
+
+    postElement.appendChild(usernameElement);
+    postElement.appendChild(contentElement);
+    codeSnippetContainer.appendChild(codeSnippetElement);
+    postElement.appendChild(codeSnippetContainer);
+    postsContainer.appendChild(postElement);
+  });
+}
+
+function createContextMenu(postId) {
+  const contextMenu = document.createElement("div");
+  contextMenu.classList.add(
+    "dropdown-menu", // Add the class for dropdown menu styling
+    "hidden",
+    "absolute",
+    "z-10",
+    "bg-white",
+    "border",
+    "border-gray-200",
+    "shadow",
+    "rounded",
+    "py-1"
+  );
+  contextMenu.setAttribute("id", "context-menu-" + postId);
+
+  // Add menu items
+  const editMenuItem = createMenuItem("✒️ Edit Post", "showEditForm", postId);
+  const pinMenuItem = createMenuItem("📌 Pin Post", "pinPost", postId);
+  const deleteMenuItem = createMenuItem("🚯 Delete Post", "deletePost", postId);
+
+  contextMenu.appendChild(editMenuItem);
+  contextMenu.appendChild(pinMenuItem);
+  contextMenu.appendChild(deleteMenuItem);
+
+  // Add event listener to close context menu when clicking outside
+  document.addEventListener("click", function (event) {
+    if (!contextMenu.contains(event.target)) {
+      hideContextMenu(contextMenu);
+    }
+  });
+
+  document.body.appendChild(contextMenu);
+
+  return contextMenu;
+}
+
+function showContextMenu(contextMenu, x, y) {
+  // Close any active context menu
+  if (activeContextMenu !== null) {
+    hideContextMenu(activeContextMenu);
+  }
+
+  // Set new context menu position and display it
+  contextMenu.style.left = x + "px";
+  contextMenu.style.top = y + "px";
+  contextMenu.classList.remove("hidden");
+  activeContextMenu = contextMenu;
+}
+
+function hideContextMenu(contextMenu) {
+  contextMenu.classList.add("hidden");
+  activeContextMenu = null;
+}
+
+function createMenuItem(text, functionName, postId) {
+  const menuItem = document.createElement("div");
+  menuItem.textContent = text;
+  menuItem.classList.add("px-4", "py-2", "hover:bg-gray-100", "cursor-pointer");
+  menuItem.addEventListener("click", function () {
+    // Call the corresponding function with postId
+    window[functionName](postId);
+    hideContextMenu(activeContextMenu); // Close context menu after clicking on a menu item
+  });
+  return menuItem;
+}
+
+applyHoverEffectToPosts();
+
+function applyHoverEffect(postElement) {
+  postElement.addEventListener("mouseenter", function () {
+    this.style.transform = "scale(1.03)";
+    this.style.boxShadow = "0 0 16px rgba(0, 0, 0, 0.1)";
+  });
+  postElement.addEventListener("mouseleave", function () {
+    this.style.transform = "scale(1)";
+    this.style.boxShadow =
+      "4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5)";
+  });
+}
+
+function applyHoverEffectToPosts() {
+  const posts = document.querySelectorAll(".post");
+  posts.forEach((post) => {
+    addHoverEffect(post);
+  });
+}
 
 window.onload = async function () {
   try {
@@ -363,7 +340,7 @@ window.onload = async function () {
     if (activeBadge && activeBadge.image) {
       const badgeImageElement = document.createElement("img");
       badgeImageElement.src = activeBadge.image;
-      badgeImageElement.classList.add("badge-image"); // Sie können auch eine CSS-Klasse hinzufügen, um das Badge zu stylen
+      badgeImageElement.classList.add("badge-image");
       badgeImageElement.width = 15;
       badgeImageElement.height = 15;
       badgeImageElement.style.marginLeft = "10px";
@@ -492,7 +469,6 @@ function scrollFunction() {
   const scrollPosition =
     document.documentElement.scrollTop || document.body.scrollTop;
 
-  // Adjust the threshold value (50) to your desired scroll position before showing the button
   if (scrollPosition > 1200) {
     scrollToTopButton.style.display = "block";
   } else {
@@ -587,24 +563,24 @@ async function compressImage(file) {
 
 async function uploadImage(imageFile) {
   try {
-    // Benutzerdaten aus dem Local Storage abrufen
+    // Retrieve user data from local storage
     const userDataString = localStorage.getItem("user");
     if (!userDataString) {
-      throw new Error("Benutzerdaten nicht im Local Storage gefunden.");
+      throw new Error("User data not found in local storage.");
     }
     const userData = JSON.parse(userDataString);
     if (!userData || !userData.identifier) {
-      throw new Error("Ungültige Benutzerdaten im Local Storage.");
+      throw new Error("Invalid user data in local storage.");
     }
     const username = userData.identifier;
 
-    // Konvertieren des Bilds in einen Base64-codierten String
+    // Convert the image to a base64 encoded string
     const reader = new FileReader();
     reader.readAsDataURL(imageFile);
     reader.onload = async function () {
       const base64Image = reader.result;
 
-      // Erstellen des JSON-Datenobjekts
+      // Create the JSON data object
       const jsonData = {
         username: username,
         newPB: base64Image,
@@ -619,60 +595,60 @@ async function uploadImage(imageFile) {
       });
 
       if (!response.ok) {
-        throw new Error("Fehler beim Aktualisieren des Profilbildes.");
+        throw new Error("Error updating profile picture.");
       }
 
       Toastify({
-        text: "Profilbild erfolgreich aktualisiert.",
+        text: "Profile picture updated successfully.",
         duration: 3000,
         close: true,
-        gravity: "top", // Optionen: 'top', 'bottom', 'center'
-        position: "right", // Optionen: 'left', 'right', 'center'
+        gravity: "top", // Options: 'top', 'bottom', 'center'
+        position: "right", // Options: 'left', 'right', 'center'
         backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
       }).showToast();
 
-      // Bild im Profil aktualisieren
+      // Update the profile picture
       document.getElementById("profile-picture").src = base64Image;
     };
   } catch (error) {
     Toastify({
-      text: "Fehler beim Aktualisieren des Profilbildes: " + error.message,
+      text: "Error updating profile picture: " + error.message,
       duration: 3000,
       close: true,
-      gravity: "top", // Optionen: 'top', 'bottom', 'center'
-      position: "right", // Optionen: 'left', 'right', 'center'
+      gravity: "top", // Options: 'top', 'bottom', 'center'
+      position: "right", // Options: 'left', 'right', 'center'
       backgroundColor: "linear-gradient(to right, #e74c3c, #e67e22)",
     }).showToast();
   }
 }
 
-// Funktion zum Abrufen und Anzeigen der Anzahl der Follower für einen bestimmten Benutzer
+// Function to fetch and display the number of followers for a specific user
 async function fetchAndDisplayFollowerCount(username) {
   try {
-    // URL-decodierten Benutzernamen erstellen
+    // Create URL-decoded username
     const decodedUsername = decodeURIComponent(username);
 
-    // API-Antwort mit den Benutzerdaten abrufen
+    // Fetch API response with user data
     const response = await fetch(`/api/profile/${decodedUsername}`);
 
     const data = await response.json();
 
-    // Überprüfen, ob die API-Antwort gültige Daten enthält
+    // Check if the API response contains valid data
     if (!data || !data.follower) {
-      console.error("Ungültige API-Antwort:", data);
+      console.error("Invalid API response:", data);
       return;
     }
 
-    // Anzahl der Follower des Benutzers abrufen und anzeigen
-    let followerCount = data.follower || 0; // Falls kein Follower vorhanden ist, Standardwert 0 verwenden
+    // Retrieve and display the user's follower count
+    let followerCount = data.follower || 0; // Use default value of 0 if no followers exist
     if (followerCount < 0) {
-      followerCount = 0; // Sicherstellen, dass die Anzahl nicht negativ ist
+      followerCount = 0; // Ensure the count is not negative
     }
 
     const followerCountElement = document.getElementById("follower-count");
     followerCountElement.textContent = followerCount;
   } catch (error) {
-    console.error("Fehler beim Abrufen der Anzahl der Follower:", error);
+    console.error("Error fetching follower count:", error);
   }
 }
 
@@ -931,16 +907,6 @@ function editPost(postId, content, codesnippet) {
       console.error("Error editing post:", error);
     });
 }
-
-function truncateText(text, maxLength) {
-  if (text.length > maxLength) {
-    return text.substring(0, maxLength) + "...";
-  } else {
-    return text;
-  }
-}
-
-//TODO POSTS ANZEIGE VERBESSERN (on click ganzen posts
 
 // Funktion zum Anzeigen der Badge-Info beim Überfahren des Bildes
 function showBadgeInfo(name, description) {
