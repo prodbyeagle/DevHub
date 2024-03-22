@@ -15,7 +15,7 @@ body.dark-mode {
 
 /* Neumorphism styles for the form */
 .neumorphism-form {
-  background-color: #f0f0f0;
+  background-color: #f0f0f079;
   border-radius: 16px;
   padding: 2rem;
   box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
@@ -31,7 +31,7 @@ body.dark-mode .neumorphism-form {
 
 /* Neumorphism styles for the input fields */
 .neumorphism-input {
-  border: 1px solid #ccc;
+  border: 1px solid #f0f0f079;
   border-radius: 8px;
   padding: 0.5rem;
   margin-top: 0.5rem;
@@ -128,47 +128,40 @@ body.dark-mode .switch-label {
 
 .content-container {
   padding: 1rem;
-  background-color: #f0f0f0;
+  background-color: #00000098;
   color: #333;
   border-radius: 16px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
     -4px -4px 8px rgba(255, 255, 255, 0.5);
-  margin-bottom: 20px;
   transition: all 0.3s ease;
 }
 
 body.dark-mode .content-container {
   padding: 1rem;
-  background-color: #222;
+  background-color: #00000098;
   color: #eee;
   border-radius: 16px;
   box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
     -8px -8px 16px rgba(255, 255, 255, 0.05);
-  margin-bottom: 20px;
-}
-
-/* Neumorphism styles for the posts */
-.post {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  color: #333;
-  border-radius: 16px;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
-    -4px -4px 8px rgba(255, 255, 255, 0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hinzugefügt für Hover-Effekt */
-  text-overflow: clip;
 }
 
 .post-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(200px, 1fr)
-  ); /* Hier können Sie die Größe der Spalten anpassen */
+  grid-template-columns: auto;
   gap: 20px; /* Hier können Sie den Abstand zwischen den Posts anpassen */
   text-overflow: clip;
+}
+
+@media (min-width: 768px) {
+  .post-grid {
+    grid-template-columns: repeat(2, auto); /* Zwei Spalten ab einer Bildschirmbreite von 768px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .post-grid {
+    grid-template-columns: repeat(3, auto); /* Drei Spalten ab einer Bildschirmbreite von 1024px */
+  }
 }
 
 .post {
@@ -178,7 +171,6 @@ body.dark-mode .content-container {
   background-color: #f0f0f0;
   border: 1px solid #ccc;
   padding: 1rem;
-  margin-bottom: 1rem;
   color: #333;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
     -4px -4px 8px rgba(255, 255, 255, 0.5);

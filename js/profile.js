@@ -71,10 +71,11 @@ function renderNoPostsMessage() {
   postsContainer.innerHTML = ""; // Clear previous posts
 
   const messageElement = document.createElement("p");
-  messageElement.textContent =
-    "😭 No Posts! ...you can make an posts on your /home page";
+  messageElement.innerHTML =
+    "😭 No Posts! ...you can make posts on your <a href='/home' target='_blank' rel='noopener noreferrer'>Home</a> page";
   postsContainer.appendChild(messageElement);
 }
+
 
 let activeContextMenu = null;
 
