@@ -22,71 +22,74 @@ document.addEventListener("DOMContentLoaded", () => {
     assignBadgeOverlay.style.display = "none";
   });
 
-  document
-    .getElementById("badge-form")
-    .addEventListener("submit", async (event) => {
-      event.preventDefault();
+document
+  .getElementById("badge-form")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      // Badge-Daten aus dem Formular abrufen
-      const name = document.getElementById("badge-name").value;
-      const imageFile = document.getElementById("badge-image").files[0];
-      const description = document.getElementById("badge-description").value;
+    // Badge-Daten aus dem Formular abrufen
+    let name = document.getElementById("badge-name").value.trimEnd();
+    const imageFile = document.getElementById("badge-image").files[0];
+    const description = document.getElementById("badge-description").value;
 
-      try {
-        // Überprüfe, ob ein Badge mit demselben Namen bereits existiert
-        const existingBadgesResponse = await fetch("/api/admin/badges");
-        const existingBadges = await existingBadgesResponse.json();
-        const badgeExists = existingBadges.some((badge) => badge.name === name);
-        if (badgeExists) {
-          throw new Error("Ein Badge mit diesem Namen existiert bereits.");
-        }
+    // Leerzeichen am Ende des Namens entfernen
+    name = name.replace(/[^a-zA-Z0-9]/g, "");
 
-        // Konvertiere das Bild in Base64
-        const imageBase64 = await convertImageToBase64(imageFile, 0.9, 50, 50);
-
-        // Erstellen des JSON-Datenobjekts
-        const badgeData = {
-          name: name,
-          image: imageBase64,
-          description: description,
-          active: false,
-        };
-
-        // Senden der Badge-Daten an den Server
-        const response = await fetch("/api/admin/badges", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(badgeData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Fehler beim Hinzufügen des Badges");
-        }
-        const data = await response.json();
-        console.log("Response:", data);
-        addBadgeOverlay.style.display = "none"; // Overlay schließen
-        location.reload();
-      } catch (error) {
-        console.error("Fehler beim Hinzufügen des Badges:", error);
-        // Fehlermeldung im Overlay anzeigen
-        const errorMessage = document.getElementById("error-message");
-        errorMessage.innerHTML = `<img width="13" height="13" src="https://img.icons8.com/material-rounded/13/FA5252/high-priority.png" alt="high-priority"/> ${error.message}`;
-        errorMessage.style.display = "block";
-
-        // Wenn bereits ein Timeout aktiv ist, löschen Sie es
-        if (errorMessage.timeoutId) {
-          clearTimeout(errorMessage.timeoutId);
-        }
-
-        // Fehlermeldung nach 5 Sekunden ausblenden
-        errorMessage.timeoutId = setTimeout(() => {
-          errorMessage.innerHTML = "";
-          errorMessage.style.display = "none";
-        }, 5000);
+    try {
+      // Überprüfe, ob ein Badge mit demselben Namen bereits existiert
+      const existingBadgesResponse = await fetch("/api/admin/badges");
+      const existingBadges = await existingBadgesResponse.json();
+      const badgeExists = existingBadges.some((badge) => badge.name === name);
+      if (badgeExists) {
+        throw new Error("Ein Badge mit diesem Namen existiert bereits.");
       }
-    });
+
+      // Konvertiere das Bild in Base64
+      const imageBase64 = await convertImageToBase64(imageFile, 0.9, 50, 50);
+
+      // Erstellen des JSON-Datenobjekts
+      const badgeData = {
+        name: name,
+        image: imageBase64,
+        description: description,
+        active: false,
+      };
+
+      // Senden der Badge-Daten an den Server
+      const response = await fetch("/api/admin/badges", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(badgeData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Hinzufügen des Badges");
+      }
+      const data = await response.json();
+      console.log("Response:", data);
+      addBadgeOverlay.style.display = "none"; // Overlay schließen
+      location.reload();
+    } catch (error) {
+      console.error("Fehler beim Hinzufügen des Badges:", error);
+      // Fehlermeldung im Overlay anzeigen
+      const errorMessage = document.getElementById("error-message");
+      errorMessage.innerHTML = `<img width="13" height="13" src="https://img.icons8.com/material-rounded/13/FA5252/high-priority.png" alt="high-priority"/> ${error.message}`;
+      errorMessage.style.display = "block";
+
+      // Wenn bereits ein Timeout aktiv ist, löschen Sie es
+      if (errorMessage.timeoutId) {
+        clearTimeout(errorMessage.timeoutId);
+      }
+
+      // Fehlermeldung nach 5 Sekunden ausblenden
+      errorMessage.timeoutId = setTimeout(() => {
+        errorMessage.innerHTML = "";
+        errorMessage.style.display = "none";
+      }, 5000);
+    }
+  });
 });
 
 async function fetchUserData() {
@@ -134,7 +137,7 @@ function convertImageToBase64(file, quality, maxWidth, maxHeight) {
         canvas.height = height;
         ctx.drawImage(img, 0, 0, width, height);
 
-        const base64String = canvas.toDataURL("image/jpeg", quality);
+        const base64String = canvas.toDataURL("image/png", quality);
         resolve(base64String);
       };
       img.onerror = reject;
@@ -259,7 +262,7 @@ async function loadBadges() {
         });
 
         const showUsersOption = document.createElement("div");
-        showUsersOption.textContent = "👥 Show All Badge Users";
+        showUsersOption.textContent = "👥 Show All Users";
         showUsersOption.addEventListener("click", () => {
           fetchAndDisplayBadgeUsers(badge.name);
           openOverlay(showUsersOptionContent);
@@ -341,7 +344,14 @@ document
       location.reload();
     } catch (error) {
       console.error("Fehler beim Zuweisen des Badges zum Benutzer:", error);
-      alert("Fehler beim Zuweisen des Badges zum Benutzer.");
+      Toastify({
+        text: "Fehler beim Zuweisen des Badges zum Benutzer",
+        duration: 3000,
+        close: true,
+        style: {
+          background: "linear-gradient(to right, #ff416c, #ff4b2b)",
+        },
+      }).showToast();
     }
   });
 
@@ -526,10 +536,12 @@ function showEditBadgeOverlay(badge) {
 // Funktion zum Bearbeiten des Badge-Formulars und Senden der Änderungen an den Server
 async function handleEditFormSubmit(event, badgeName) {
   event.preventDefault(); // Verhindere das Standardverhalten des Formulars (z.B. das Neuladen der Seite)
-  // Badge-Daten aus dem Formular abrufen
-  const name = document.getElementById("edit-badge-name").value;
+  
+  // Badge-Daten aus dem Formular abrufen und Leerzeichen entfernen
+  const name = document.getElementById("edit-badge-name").value.trimEnd();
   const description = document.getElementById("edit-badge-description").value;
   const imageFile = document.getElementById("edit-badge-image").files[0]; // Neues Bild aus dem Formular abrufen
+  
   try {
     let formData = {};
     if (name) formData.name = name;
@@ -541,6 +553,7 @@ async function handleEditFormSubmit(event, badgeName) {
     if (Object.keys(formData).length === 0) {
       throw new Error("Keine Änderungen vorgenommen");
     }
+    
     // Sende die aktualisierten Badge-Daten an den Server
     const updateResponse = await fetch(`/api/admin/badges/${badgeName}`, {
       method: "PUT",
@@ -549,9 +562,11 @@ async function handleEditFormSubmit(event, badgeName) {
       },
       body: JSON.stringify(formData),
     });
+    
     if (!updateResponse.ok) {
       throw new Error("Fehler beim Aktualisieren des Badges");
     }
+    
     console.log("Badge erfolgreich aktualisiert");
     location.reload();
   } catch (error) {

@@ -1,20 +1,19 @@
-
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const session = require('express-session');
-const crypto = require('crypto');
-require('dotenv').config();
-const { ObjectId } = require('mongodb');
+const express = require("express");
+const path = require("path");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const session = require("express-session");
+const crypto = require("crypto");
+require("dotenv").config();
+const { ObjectId } = require("mongodb");
 const objectId = new ObjectId();
-const socketIo = require('socket.io');
-const http = require('http');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const cookieParser = require('cookie-parser');
-const fs = require('fs');
+const socketIo = require("socket.io");
+const http = require("http");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,12 +22,12 @@ const io = socketIo(server);
 
 const sessionSecret = require("crypto").randomBytes(64).toString("hex");
 
-
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "html")));
 app.use("/js", express.static(path.join(__dirname, "js")));
 app.use("/css", express.static(path.join(__dirname, "css")));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -83,36 +82,33 @@ function formatDateForDisplay(date) {
 }
 
 app.get("/u/:username", async (req, res) => {
-  const username = req.params.username; 
+  const username = req.params.username;
 
   try {
-    
     const user = await usersCollection.findOne({ username });
 
     if (!user) {
-      
       return res.status(404).sendFile(path.join(__dirname, "html", "404.html"));
     }
 
-    
     res.sendFile(path.join(__dirname, "public", "profile.html"));
   } catch (error) {
     console.error("Fehler beim Laden des Benutzerprofils:", error);
-    
+
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
 app.get("/api/profile/:username", async (req, res) => {
-  let encodedUsername = req.params.username; 
-  let username = decodeURIComponent(encodedUsername); 
+  let encodedUsername = req.params.username;
+  let username = decodeURIComponent(encodedUsername);
 
   try {
     const user = await usersCollection.findOne({ username });
     if (!user) {
       return res.status(404).json({ error: "Benutzer nicht gefunden" });
     }
-    res.json(user); 
+    res.json(user);
   } catch (error) {
     console.error("Fehler beim Abrufen der Benutzerdaten:", error);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
@@ -123,12 +119,14 @@ app.post("/profile/:username/pin-post/:postId", (req, res) => {
   const { username, postId } = req.params;
 
   postsCollection.updateOne(
-    { _id: new ObjectId(postId) }, 
+    { _id: new ObjectId(postId) },
     { $set: { pinned: true } },
     (err, result) => {
       if (err) {
         console.error("Failed to pin post:", err);
-        return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
+        return res
+          .status(500)
+          .sendFile(path.join(__dirname, "html", "500.html"));
       }
       res.status(200).send("Post pinned successfully.");
     }
@@ -141,7 +139,7 @@ app.put("/api/profile/:username/ban", async (req, res) => {
   try {
     const user = await usersCollection.findOneAndUpdate(
       { username },
-      { $set: { banned: true } }, 
+      { $set: { banned: true } },
       { returnOriginal: false }
     );
     if (!user) {
@@ -162,7 +160,7 @@ app.put("/api/profile/:username/unban", async (req, res) => {
   try {
     const user = await usersCollection.findOneAndUpdate(
       { username },
-      { $set: { banned: false } }, 
+      { $set: { banned: false } },
       { returnOriginal: false }
     );
     if (!user) {
@@ -183,7 +181,7 @@ app.put("/api/profile/:username/true", async (req, res) => {
   try {
     const user = await usersCollection.findOneAndUpdate(
       { username },
-      { $set: { admin: true } }, 
+      { $set: { admin: true } },
       { returnOriginal: false }
     );
     if (!user) {
@@ -204,7 +202,7 @@ app.put("/api/profile/:username/false", async (req, res) => {
   try {
     const user = await usersCollection.findOneAndUpdate(
       { username },
-      { $set: { admin: false } }, 
+      { $set: { admin: false } },
       { returnOriginal: false }
     );
     if (!user) {
@@ -219,24 +217,22 @@ app.put("/api/profile/:username/false", async (req, res) => {
   }
 });
 
-
 app.get("/api/:username/posts", async (req, res) => {
   const { username } = req.params;
 
   try {
     const posts = await db.collection("posts").find({ username }).toArray();
 
-    
     const postsWithFormattedData = await Promise.all(
       posts.map(async (post) => {
         const user = await db
           .collection("users")
           .findOne({ username: post.username });
-        const imageUrl = user ? user.pb : null; 
+        const imageUrl = user ? user.pb : null;
         return {
           ...post,
           date: formatDateForDisplay(post.date),
-          imageUrl, 
+          imageUrl,
         };
       })
     );
@@ -254,12 +250,14 @@ app.post("/profile/:username/pin-post/:postId", (req, res) => {
   const postsCollection = db.collection("posts");
 
   postsCollection.updateOne(
-    { _id: ObjectId(postId) }, 
+    { _id: ObjectId(postId) },
     { $set: { pinned: true } },
     (err, result) => {
       if (err) {
         console.error("Failed to pin post:", err);
-        return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
+        return res
+          .status(500)
+          .sendFile(path.join(__dirname, "html", "500.html"));
         return;
       }
       res.status(200).send("Post pinned successfully.");
@@ -294,18 +292,19 @@ app.put("/edit-post/:postId", (req, res) => {
 
   postsCollection.updateOne(
     { _id: new ObjectId(postId) },
-    { $set: { content: content, codesnippet: codesnippet, date: date } }, 
+    { $set: { content: content, codesnippet: codesnippet, date: date } },
     (err, result) => {
       if (err) {
         console.error("Failed to edit post:", err);
-        return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
+        return res
+          .status(500)
+          .sendFile(path.join(__dirname, "html", "500.html"));
         return;
       }
       res.status(200).send("Post edited successfully.");
     }
   );
 });
-
 
 app.delete("/api/:username/posts", async (req, res) => {
   const { username } = req.params;
@@ -320,13 +319,12 @@ app.delete("/api/:username/posts", async (req, res) => {
   }
 });
 
-
 app.get("/api/posts", async (req, res) => {
-  const page = parseInt(req.query.page) || 1; 
-  const limit = parseInt(req.query.limit) || 10; 
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
 
   try {
-    const skip = (page - 1) * limit; 
+    const skip = (page - 1) * limit;
 
     const postsCount = await db.collection("posts").countDocuments();
     const totalPages = Math.ceil(postsCount / limit);
@@ -338,13 +336,12 @@ app.get("/api/posts", async (req, res) => {
       .limit(limit)
       .toArray();
 
-    
     const postsWithFormattedData = await Promise.all(
       posts.map(async (post) => {
         const user = await db
           .collection("users")
           .findOne({ username: post.username });
-        const imageUrl = user ? user.pb : null; 
+        const imageUrl = user ? user.pb : null;
         return {
           ...post,
           date: formatDateForDisplay(post.date),
@@ -365,8 +362,8 @@ app.get("/api/posts", async (req, res) => {
 });
 
 app.post("/api/posts", async (req, res) => {
-  const { content, identifier, codesnippet } = req.body; 
-  const date = new Date(); 
+  const { content, identifier, codesnippet } = req.body;
+  const date = new Date();
 
   try {
     const result = await db.collection("posts").insertOne({
@@ -383,7 +380,7 @@ app.post("/api/posts", async (req, res) => {
       _id: result.insertedId,
       content,
       username: identifier,
-      date: formatDateForDisplay(date), 
+      date: formatDateForDisplay(date),
       codesnippet,
       likes: 0,
       replies: 0,
@@ -396,14 +393,14 @@ app.post("/api/posts", async (req, res) => {
   }
 });
 
-app.get('/api/posts/all', async (req, res) => {
+app.get("/api/posts/all", async (req, res) => {
   try {
     const postsCollection = db.collection("posts");
     const allPosts = await postsCollection.find({}).toArray();
     res.json(allPosts);
   } catch (error) {
-    console.error('Fehler beim Abrufen aller Posts:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Fehler beim Abrufen aller Posts:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -452,13 +449,13 @@ app.get('/api/posts/all', async (req, res) => {
 //   try {
 //     // Lese den aktuellen Inhalt der .env-Datei
 //     let envContent = fs.readFileSync(envFilePath, 'utf8');
-    
+
 //     // Ersetze den aktuellen Token-Wert mit dem neuen Token
 //     envContent = envContent.replace(/SERVER_TOKEN=(.*)/, `SERVER_TOKEN=${token}`);
 
 //     // Schreibe den aktualisierten Inhalt zurück in die .env-Datei
 //     fs.writeFileSync(envFilePath, envContent, 'utf8');
-    
+
 //     console.log('Server-Token in der .env-Datei aktualisiert');
 //   } catch (error) {
 //     console.error('Fehler beim Aktualisieren des Server-Tokens in der .env-Datei:', error);
@@ -490,7 +487,9 @@ app.get('/api/posts/all', async (req, res) => {
 
 // Funktion zum Erstellen eines JWT-Tokens
 function createToken(username) {
-  const token = jwt.sign({ username: username }, process.env.SECRET, { expiresIn: '12h' });
+  const token = jwt.sign({ username: username }, process.env.SECRET, {
+    expiresIn: "12h",
+  });
   return token;
 }
 
@@ -506,8 +505,10 @@ function verifyToken(req, res, next) {
     if (err) {
       // Fehler beim Verifizieren des Tokens
       console.error("Fehler beim Verifizieren des Tokens:", err.message);
-      res.clearCookie('token'); // Löschen des Tokens im Cookie
-      console.log("Ungültiger oder abgelaufener Token. Weiterleitung zum Login.");
+      res.clearCookie("token"); // Löschen des Tokens im Cookie
+      console.log(
+        "Ungültiger oder abgelaufener Token. Weiterleitung zum Login."
+      );
       return res.redirect("/login"); // Weiterleitung zum Login
     }
     req.username = decoded.username; // Extrahieren des Benutzernamens aus dem Token
@@ -519,9 +520,10 @@ app.post("/login", async (req, res) => {
   const { identifier, password } = req.body;
 
   try {
-
     // Fetch user from database
-    const user = await usersCollection.findOne({ $or: [{ username: identifier }, { email: identifier }] });
+    const user = await usersCollection.findOne({
+      $or: [{ username: identifier }, { email: identifier }],
+    });
 
     // Check if user exists
     if (!user) {
@@ -530,33 +532,41 @@ app.post("/login", async (req, res) => {
     }
 
     if (password !== user.password) {
-      console.log(`Incorrect password for user with identifier ${identifier} ${user.password}`);
+      console.log(
+        `Incorrect password for user with identifier ${identifier} ${user.password}`
+      );
       return res.status(401).send("Invalid email or password");
     }
 
     // Generate JWT token
     const token = createToken(user.username);
-    res.cookie('devolution_token', token, { httpOnly: true });
+    res.cookie("devolution_token", token, { httpOnly: true });
 
     // Return token and user details
-    res.json({ token: token, user: { username: user.username, email: user.email } });
+    res.json({
+      token: token,
+      user: { username: user.username, email: user.email },
+    });
   } catch (error) {
     console.error("Fehler während des Logins:", error);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
+// GOOGLE
+
 app.post("/signup", async (req, res) => {
   const { email, password, username, pb } = req.body;
 
   try {
     const existingUserByUsername = await usersCollection.findOne({ username });
-  
+
     if (existingUserByUsername) {
-      return res.status(400).send(`${existingUserByUsername.username} Username already taken`);
+      return res
+        .status(400)
+        .send(`${existingUserByUsername.username} Username already taken`);
     }
 
-    
     await usersCollection.insertOne({
       email,
       password,
@@ -583,25 +593,21 @@ app.post("/api/update", async (req, res) => {
   const { username, preferences } = req.body;
 
   try {
-    
     const existingUser = await usersCollection.findOne({ username });
     if (!existingUser) {
       return res.status(400).send("Benutzer nicht gefunden");
     }
 
-    
     const updatedUser = await usersCollection.findOneAndUpdate(
       { username: username },
-      { $set: { preferences: preferences.split(",") } }, 
+      { $set: { preferences: preferences.split(",") } },
       { returnOriginal: false }
     );
 
-    res
-      .status(200)
-      .json({
-        message: "Benutzervorlieben erfolgreich aktualisiert",
-        user: updatedUser.value,
-      });
+    res.status(200).json({
+      message: "Benutzervorlieben erfolgreich aktualisiert",
+      user: updatedUser.value,
+    });
   } catch (err) {
     console.error("Fehler beim Aktualisieren der Benutzervorlieben:", err);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
@@ -620,11 +626,10 @@ app.post("/admin", async (req, res) => {
     }
 
     if (existingUser.admin === true) {
-      
-      const userData = await collection.find().toArray(); 
+      const userData = await collection.find().toArray();
       return res.status(200).json(userData);
     } else {
-      return res.status(200).json({ message: false }); 
+      return res.status(200).json({ message: false });
     }
   } catch (err) {
     console.error("Fehler beim Überprüfen des Benutzers:", err);
@@ -643,7 +648,6 @@ app.delete("/admin/delete-posts", async (req, res) => {
   }
 });
 
-
 app.get("/api/username", async (req, res) => {
   try {
     const collection = db.collection("users");
@@ -659,34 +663,29 @@ app.get("/api/username", async (req, res) => {
       badges: user.badges,
     }));
 
-    
     res.json({ users: userData });
   } catch (error) {
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
-
 app.post("/api/update/bio", async (req, res) => {
   try {
     const { username, newBio } = req.body;
     const collection = db.collection("users");
 
-    
     const user = await collection.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    
     await collection.updateOne({ username }, { $set: { bio: newBio } });
     return res.status(200).json({ message: "Bio updated successfully" });
   } catch (error) {
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
-
 
 app.post("/api/update/pb", async (req, res) => {
   try {
@@ -698,7 +697,6 @@ app.post("/api/update/pb", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    
     await collection.updateOne({ username }, { $set: { pb: newPB } });
 
     return res.status(200).json({ message: "PB updated successfully" });
@@ -707,37 +705,31 @@ app.post("/api/update/pb", async (req, res) => {
   }
 });
 
-
 app.post("/api/update/follower", async (req, res) => {
   try {
     const { followerUsername, followedUsername } = req.body;
 
-    
     if (followerUsername === followedUsername) {
       return res.status(400).json({ error: "Cannot follow yourself" });
     }
 
     const collection = db.collection("users");
 
-    
     const user = await collection.findOne({ username: followedUsername });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    
     const isAlreadyFollowing = user.followers.includes(followerUsername);
 
     if (isAlreadyFollowing) {
-      
       await collection.updateOne(
         { username: followedUsername },
         { $pull: { followers: followerUsername }, $inc: { follower: -1 } }
       );
       return res.status(201).json({ message: "User unfollowed successfully" });
     } else {
-      
       await collection.updateOne(
         { username: followedUsername },
         { $push: { followers: followerUsername }, $inc: { follower: 1 } }
@@ -755,19 +747,16 @@ app.post("/api/profile/change/passwort", async (req, res) => {
     const { username, currentPassword, newPassword } = req.body;
     const collection = db.collection("users");
 
-    
     const user = await collection.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    
     if (user.password !== currentPassword) {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    
     await collection.updateOne(
       { username },
       { $set: { password: newPassword } }
@@ -785,19 +774,16 @@ app.post("/api/profile/change/email", async (req, res) => {
     const { username, currentEmail, newEmail } = req.body;
     const collection = db.collection("users");
 
-    
     const user = await collection.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    
     if (user.email !== currentEmail) {
       return res.status(400).json({ error: "Current Email is incorrect" });
     }
 
-    
     await collection.updateOne({ username }, { $set: { email: newEmail } });
 
     return res.status(200).json({ message: "Email changed successfully" });
@@ -817,7 +803,6 @@ app.post("/api/profile/change/username", async (req, res) => {
     console.log("Current Username:", currentUsername);
     console.log("New Username:", newUsername);
 
-    
     const user = await collection.findOne({ username });
 
     if (!user) {
@@ -825,13 +810,11 @@ app.post("/api/profile/change/username", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    
     if (user.username !== currentUsername) {
       console.log("Current username is incorrect");
       return res.status(400).json({ error: "Current Username is incorrect" });
     }
 
-    
     await collection.updateOne(
       { username },
       { $set: { username: newUsername } }
@@ -847,7 +830,6 @@ app.post("/api/profile/change/username", async (req, res) => {
 
 app.delete("/api/profile/delete/:username", async (req, res) => {
   try {
-    
     const username = req.params.username;
     if (!username) {
       console.error("Error deleting account: Username not provided");
@@ -856,7 +838,6 @@ app.delete("/api/profile/delete/:username", async (req, res) => {
 
     console.log(`Deleting account for username: ${username}`);
 
-    
     const deletionResult = await usersCollection.deleteOne({ username });
 
     if (deletionResult.deletedCount === 0) {
@@ -874,7 +855,6 @@ app.delete("/api/profile/delete/:username", async (req, res) => {
 
 app.delete("/api/posts/delete/:postId", async (req, res) => {
   try {
-    
     const postId = req.params.postId;
     if (!postId) {
       console.error("Error deleting post: Post ID not provided");
@@ -883,7 +863,6 @@ app.delete("/api/posts/delete/:postId", async (req, res) => {
 
     console.log(`Deleting post with ID: ${postId}`);
 
-    
     const deletionResult = await postsCollection.deleteOne({
       _id: new ObjectId(postId),
     });
@@ -902,19 +881,19 @@ app.delete("/api/posts/delete/:postId", async (req, res) => {
 });
 
 // Route zum Liken eines Posts
-app.post('/posts/:username/:postId/like', async (req, res) => {
+app.post("/posts/:username/:postId/like", async (req, res) => {
   const postsCollection = db.collection("posts");
   const { postId, username } = req.params;
 
   try {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
     if (!post) {
-      console.error('Post not found');
-      return res.status(404).json({ message: 'Post not found' });
+      console.error("Post not found");
+      return res.status(404).json({ message: "Post not found" });
     }
 
     // Überprüfen, ob das Feld 'liked' definiert ist und ein Array ist
-    if (!post.hasOwnProperty('liked') || !Array.isArray(post.liked)) {
+    if (!post.hasOwnProperty("liked") || !Array.isArray(post.liked)) {
       post.liked = [];
     }
 
@@ -927,22 +906,22 @@ app.post('/posts/:username/:postId/like', async (req, res) => {
       );
     }
 
-    res.json({ message: 'Post liked successfully' });
+    res.json({ message: "Post liked successfully" });
   } catch (error) {
-    console.error('Error liking post:', error);
+    console.error("Error liking post:", error);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
-app.post('/posts/:username/:postId/unlike', async (req, res) => {
+app.post("/posts/:username/:postId/unlike", async (req, res) => {
   const postsCollection = db.collection("posts");
   const { postId, username } = req.params;
 
   try {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
     if (!post) {
-      console.error('Post not found');
-      return res.status(404).json({ message: 'Post not found' });
+      console.error("Post not found");
+      return res.status(404).json({ message: "Post not found" });
     }
 
     if (!Array.isArray(post.liked)) {
@@ -959,15 +938,14 @@ app.post('/posts/:username/:postId/unlike', async (req, res) => {
         { $set: { likes: post.likes, liked: post.liked } }
       );
     }
-    res.json({ message: 'Post unliked successfully' });
+    res.json({ message: "Post unliked successfully" });
   } catch (error) {
-    console.error('Error unliking post:', error);
+    console.error("Error unliking post:", error);
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
-  
 });
 
-app.get('/posts/:postId/likes', async (req, res) => {
+app.get("/posts/:postId/likes", async (req, res) => {
   try {
     const { postId } = req.params;
     const postsCollection = db.collection("posts");
@@ -975,30 +953,30 @@ app.get('/posts/:postId/likes', async (req, res) => {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
 
     if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
 
     res.json({ likes: post.likes });
   } catch (error) {
-    console.error('Error getting likes:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error getting likes:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-app.get('/posts/:username/:postId/check-like', async (req, res) => {
+app.get("/posts/:username/:postId/check-like", async (req, res) => {
   const { postId, username } = req.params;
-  
+
   try {
     const post = await postsCollection.findOne({ _id: new ObjectId(postId) });
     if (!post) {
-      console.error('Post not found');
-      return res.status(404).json({ message: 'Post not found' });
+      console.error("Post not found");
+      return res.status(404).json({ message: "Post not found" });
     }
 
     // Überprüfen, ob das liked-Feld vorhanden und ein Array ist
     if (!Array.isArray(post.liked)) {
-      console.error('Liked field is not an array');
-      return res.status(500).json({ message: 'Internal server error' });
+      console.error("Liked field is not an array");
+      return res.status(500).json({ message: "Internal server error" });
     }
 
     if (post.liked.includes(username)) {
@@ -1007,8 +985,8 @@ app.get('/posts/:username/:postId/check-like', async (req, res) => {
       res.json({ liked: false });
     }
   } catch (error) {
-    console.error('Error checking if liked:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error("Error checking if liked:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -1043,18 +1021,15 @@ app.get("/api/admin/badges", async (req, res) => {
   }
 });
 
-
 app.get("/api/:username/badges", async (req, res) => {
   const username = req.params.username;
 
   try {
-    
     const user = await db.collection("users").findOne({ username: username });
     if (!user) {
       return res.status(404).json({ error: "Benutzer nicht gefunden" });
     }
 
-    
     const userBadges = user.badges;
     res.json({ badges: userBadges });
   } catch (error) {
@@ -1063,12 +1038,10 @@ app.get("/api/:username/badges", async (req, res) => {
   }
 });
 
-
 app.post("/api/admin/badges", async (req, res) => {
   try {
     const { name, image, description, active } = req.body;
 
-    
     if (!name || !image || !description) {
       return res.status(400).json({ error: "Alle Felder sind erforderlich" });
     }
@@ -1077,8 +1050,7 @@ app.post("/api/admin/badges", async (req, res) => {
     await badgesCollection.insertOne({ name, image, description, active });
 
     res.json({
-      message:
-        "Badge erfolgreich hinzugefügt",
+      message: "Badge erfolgreich hinzugefügt",
     });
   } catch (error) {
     console.error("Fehler beim Hinzufügen des Badges:", error);
@@ -1090,13 +1062,17 @@ app.post("/api/admin/assign-badge", async (req, res) => {
   const { badgeName, badgeImage, badgeDescription, username } = req.body;
   try {
     // Überprüfen, ob der Benutzer existiert
-    const userExists = await db.collection("users").findOne({ username: username });
+    const userExists = await db
+      .collection("users")
+      .findOne({ username: username });
     if (!userExists) {
       throw new Error("Benutzer nicht gefunden");
     }
 
     // Überprüfen, ob der Benutzer bereits das Badge hat
-    const hasBadge = userExists.badges.some(badge => badge.name === badgeName);
+    const hasBadge = userExists.badges.some(
+      (badge) => badge.name === badgeName
+    );
     if (hasBadge) {
       return res.status(400).json({ error: "Benutzer hat das Badge bereits" });
     }
@@ -1129,14 +1105,11 @@ app.delete("/api/admin/badges/:name", async (req, res) => {
   const badgesCollection = db.collection("badges");
 
   try {
-    
     const badge = await badgesCollection.findOne({ name: badgeName });
 
-    
     if (badge) {
       await badgesCollection.deleteOne({ name: badgeName });
 
-      
       const usersCollection = db.collection("users");
       const usersWithBadge = await usersCollection
         .find({ "badges.name": badgeName })
@@ -1167,12 +1140,10 @@ app.put("/api/admin/badges/:name", async (req, res) => {
 
   try {
     const badgesCollection = db.collection("badges");
-    
+
     const badge = await badgesCollection.findOne({ name: badgeName });
 
-    
     if (badge) {
-      
       let updateFields = {};
       if (name) updateFields.name = name;
       if (image) updateFields.image = image;
@@ -1199,7 +1170,10 @@ app.put("/api/:username/badges/:name/activate", async (req, res) => {
   const { active } = req.body;
 
   try {
-    const badge = await usersCollection.findOne({ username: username, "badges.name": name });
+    const badge = await usersCollection.findOne({
+      username: username,
+      "badges.name": name,
+    });
 
     if (badge) {
       // Aktualisieren Sie das aktive Badge des Benutzers entsprechend
@@ -1208,9 +1182,10 @@ app.put("/api/:username/badges/:name/activate", async (req, res) => {
         { $set: { "badges.$.active": active } }
       );
 
-      
       res.status(200).json({
-        message: `Badge "${name}" erfolgreich ${active ? "aktiviert" : "deaktiviert"}`,
+        message: `Badge "${name}" erfolgreich ${
+          active ? "aktiviert" : "deaktiviert"
+        }`,
       });
     } else {
       console.log(`Badge ${name} nicht gefunden`);
@@ -1218,7 +1193,10 @@ app.put("/api/:username/badges/:name/activate", async (req, res) => {
       res.status(404).json({ error: `Badge "${name}" nicht gefunden` });
     }
   } catch (error) {
-    console.error("Fehler beim Aktivieren oder Deaktivieren des Badges:", error);
+    console.error(
+      "Fehler beim Aktivieren oder Deaktivieren des Badges:",
+      error
+    );
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
@@ -1228,7 +1206,6 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
   let skippedBadgeName = null; // Variable zum Speichern des Namens des übersprungenen Badges
 
   try {
-
     // Holen Sie sich den Benutzer und seine Badges
     const user = await usersCollection.findOne({ username: username });
     const badges = user.badges;
@@ -1239,7 +1216,7 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
         skippedBadgeName = badgeName; // Speichern Sie den Namen des übersprungenen Badges
         continue; // Überspringen Sie das ausgewählte Badge
       }
-    
+
       if (badges[i].active === true) {
         await usersCollection.updateOne(
           { username: username, "badges.name": badges[i].name },
@@ -1248,18 +1225,23 @@ app.put("/api/:username/badges/deactivate-all/:badgeName", async (req, res) => {
       }
     }
 
-    res.status(200).json({ message: `Alle Badges außer dem ausgewählten Badge erfolgreich deaktiviert. Übersprungenes Badge: ${skippedBadgeName}` });
+    res
+      .status(200)
+      .json({
+        message: `Alle Badges außer dem ausgewählten Badge erfolgreich deaktiviert. Übersprungenes Badge: ${skippedBadgeName}`,
+      });
   } catch (error) {
-    console.error("Fehler beim Deaktivieren aller Badges außer dem ausgewählten Badge:", error);
+    console.error(
+      "Fehler beim Deaktivieren aller Badges außer dem ausgewählten Badge:",
+      error
+    );
     return res.status(500).sendFile(path.join(__dirname, "html", "500.html"));
   }
 });
 
 app.get("/api/badges/active", async (req, res) => {
   try {
-    const activeBadges = await usersCollection
-      .find({ active: true })
-      .toArray();
+    const activeBadges = await usersCollection.find({ active: true }).toArray();
     res.json(activeBadges);
   } catch (error) {
     console.error("Fehler beim Abrufen der aktiven Badges:", error);
@@ -1272,7 +1254,7 @@ app.get("/api/badges/active", async (req, res) => {
 app.post("/api/blogs", async (req, res) => {
   const { title, content, author, date, reactions, image } = req.body;
   try {
-    const newPost = { title, content, author, date, reactions, image }; 
+    const newPost = { title, content, author, date, reactions, image };
     const result = await blogCollection.insertOne(newPost);
     console.log(`Blog-Beitrag mit ID ${result.insertedId} hinzugefügt`);
     res.status(201).json(newPost);
@@ -1310,10 +1292,9 @@ app.get("/api/blogs/:postId/reactions", async (req, res) => {
   }
 });
 
-
 app.post("/api/blogs/:postId/reactions", async (req, res) => {
   const { postId } = req.params;
-  const { reaction, userIdentifier } = req.body; 
+  const { reaction, userIdentifier } = req.body;
 
   try {
     const result = await blogCollection.updateOne(
@@ -1334,16 +1315,14 @@ app.post("/api/blogs/:postId/reactions", async (req, res) => {
   }
 });
 
-
 app.post("/api/blogs/:postId/reactions/remove", async (req, res) => {
   const { reaction, userIdentifier } = req.body;
   const { postId } = req.params;
 
   try {
-    
     const result = await blogCollection.updateOne(
-      { _id: new ObjectId(postId) }, 
-      { $pull: { reactions: { emoji: reaction, username: userIdentifier } } } 
+      { _id: new ObjectId(postId) },
+      { $pull: { reactions: { emoji: reaction, username: userIdentifier } } }
     );
 
     if (result.modifiedCount === 1) {
@@ -1378,10 +1357,9 @@ app.post("/api/blogs/:postId/reactions", async (req, res) => {
   }
 });
 
-
 app.delete("/api/blogs/:postId/reactions/:emoji", async (req, res) => {
   const { postId, emoji } = req.params;
-  const userIdentifier = req.body.userIdentifier; 
+  const userIdentifier = req.body.userIdentifier;
 
   try {
     const result = await blogCollection.updateOne(
@@ -1413,16 +1391,16 @@ app.get("/api/blogs/:postId", async (req, res) => {
 
 // Just the Sites
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'html', 'landing.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "landing.html"));
 });
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'html', 'login.html'));
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "login.html"));
 });
 
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'html', 'signup.html'));
+app.get("/signup", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "signup.html"));
 });
 
 const pages = [
@@ -1480,9 +1458,8 @@ app.use(sendErrorPage(500, "500.html"));
 app.use(sendErrorPage(503, "503.html"));
 
 app.listen(PORT, () => {
-    run().catch((error) =>
-      console.error("Fehler beim Starten des Servers:", error)
-    );
-    console.log("Link: http://localhost:" + PORT + "/home");
-  });
-  
+  run().catch((error) =>
+    console.error("Fehler beim Starten des Servers:", error)
+  );
+  console.log("Link: http://localhost:" + PORT + "/home");
+});

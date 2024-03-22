@@ -67,6 +67,7 @@ async function fetchAndDisplayPosts() {
           profileImg.style.height = "30px";
           profileImg.style.borderRadius = "50%";
           profileImg.style.marginRight = "5px";
+          profileImg.style.translate = "-5% 15%";
           profileImg.style.float = "left";
           const usernameParagraph = document.createElement("p");
           usernameParagraph.textContent = `Author: ${post.username}`;

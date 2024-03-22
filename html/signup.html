@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>devolution. Signup</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link rel="stylesheet" href="/css/signup.css">
     <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
     <style>
@@ -71,13 +73,37 @@
     </div>
 </div>
 <div class="fixed inset-x-0 flex items-center justify-center top-120">
-    <a href="/auth/google" class="mr-3 neumorphism-button">
+    <a href="#" onclick="showGoogleToast()" class="mr-3 neumorphism-button">
         <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/google-logo.png" alt="google-logo"/>
     </a>
-    <!-- <a href="/auth/github" class="neumorphism-button">
+    <a href="#" onclick="showGithubToast()" class="neumorphism-button">
         <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/github.png" alt="GitHub-Logo" class="mr-2"/>
-    </a> -->
+    </a>
 </div>
 <script src="/js/signup.js"></script>
+<script>
+function showGoogleToast() {
+  Toastify({
+    text: "Google Sign does not Work!",
+    style: {
+      background: "#EA4335", // Google-Logo-Farben
+    },
+    className: "rounded", // Abgerundete Ecken hinzufügen
+    duration: 1000,
+  }).showToast();
+}
+
+function showGithubToast() {
+  Toastify({
+    text: "Github Sign does not Work!",
+    style: {
+      background: "#333", // GitHub-Logo-Farbe
+    },
+    className: "rounded", // Abgerundete Ecken hinzufügen
+    duration: 1000,
+  }).showToast();
+}
+
+</script>
 </body>
 </html>

@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById("signoutLink").style.display = "none";
   }
 
-  // Weitere Funktionen aufrufen
+  window.addEventListener("scroll", lazyLoadHandler); // Füge ein Scroll-Event hinzu, um beim Scrollen weitere Posts zu laden
+
+  getPosts();
   getPosts();
   fetchAdminUserData();
 });
@@ -175,10 +177,57 @@ closeButton.addEventListener("click", () => {
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 
-// Event-Listener für das Klicken auf den Suchbutton
-searchButton.addEventListener("click", async function () {
-  search();
-});
+let easterEgg3Enabled = localStorage.getItem("eg3") === "true";
+let clickCount3 = 0;
+let maxClicks3 = Math.floor(Math.random() * 50) + 1;
+
+// Definition der handleClick-Funktion für Easter Egg 3
+function handleClick3() {
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput && searchInput.value.trim() === "") {
+    clickCount3++;
+    console.log("Click count:", clickCount3);
+
+    if (clickCount3 === maxClicks3 && easterEgg3Enabled) {
+      Toastify({
+        text: "😖 i want to go home!",
+        duration: 5000,
+        close: true,
+        gravity: "top", // Optionen: 'top', 'bottom', 'center'
+        position: "right", // Optionen: 'left', 'right', 'center'
+        style: {
+          background: "linear-gradient(to right, #ff416c, #ff4b2b)",
+        },
+      }).showToast();
+      easterEgg3Enabled = false;
+      localStorage.setItem("eg3", "false"); // Speichern des deaktivierten Easter Egg 3-Status im localStorage
+    }
+  } else {
+    console.log("Search input is not empty, cannot trigger Easter Egg.");
+  }
+}
+
+if (searchButton) {
+  console.log(searchButton);
+
+  // Event-Listener für das Klicken auf den Suchbutton
+  searchButton.addEventListener("click", async function () {
+    const searchInput = document.getElementById("searchInput");
+    const inputValue = searchInput.value.trim();
+
+    if (inputValue === "") {
+      clickCount3++;
+
+      if (easterEgg3Enabled) {
+        handleClick3();
+      }
+    } else {
+      console.log("Search input is not empty, cannot trigger Easter Egg.");
+    }
+  });
+} else {
+  console.error("Element with ID 'searchButton' not found");
+}
 
 // Event-Listener für das Drücken der Enter-Taste im Eingabefeld
 searchInput.addEventListener("keypress", async function (e) {
@@ -261,9 +310,10 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
+let easterEggEnabled = localStorage.getItem("eg1") !== "true";
+
 // Zählen der Klicks und Anzeigen des "Easter Egg"
 let clickCount = 0;
-let easterEggEnabled = true;
 let maxClicks = Math.floor(Math.random() * 50) + 1;
 
 async function createPost(event) {
@@ -273,17 +323,17 @@ async function createPost(event) {
   function handleClick() {
     clickCount++;
 
-    if (clickCount === maxClicks) {
+    if (clickCount === maxClicks && easterEggEnabled) {
       Toastify({
-        text: "💀",
+        text: "💀 hello...",
         style: {
           background: "linear-gradient(to right, #D7D7D7, #969696)",
         },
         className: "rounded", // Abgerundete Ecken hinzufügen
         duration: 10000,
       }).showToast();
-      //TODO: Maybe ein Badge vergeben?
       easterEggEnabled = false;
+      localStorage.setItem("eg1", "true"); // Speichern des aktivierten Easter Egg-Status im localStorage
     }
   }
 
@@ -291,9 +341,7 @@ async function createPost(event) {
   const postDescription = document.getElementById("postDescription").value;
 
   if (!postContent.trim()) {
-    if (easterEggEnabled) {
-      handleClick();
-    }
+    handleClick();
     return;
   }
 
@@ -406,16 +454,22 @@ async function getPosts() {
 
       const usernameElement = document.createElement("h3");
       if (post.imageUrl) {
+        const profileLinkElement = document.createElement("a");
+        profileLinkElement.href = `/u/${post.username}`;
+
         const profileImageElement = document.createElement("img");
         profileImageElement.src = post.imageUrl;
         profileImageElement.alt = `user_pic`;
+        profileImageElement.title = "@" + post.username;
         profileImageElement.classList.add("profile-image");
         profileImageElement.style.width = "25px";
         profileImageElement.style.height = "25px";
         profileImageElement.style.borderRadius = "50%";
         profileImageElement.style.float = "left";
         profileImageElement.style.marginRight = "5px";
-        postElement.appendChild(profileImageElement);
+
+        profileLinkElement.appendChild(profileImageElement);
+        postElement.appendChild(profileLinkElement);
       }
 
       // Erstellen eines anklickbaren Benutzernamen-Elements, das zum Profil des Benutzers führt
@@ -423,7 +477,6 @@ async function getPosts() {
       const usernameText = `@${username} `;
       const dateText = `(${dateElement.textContent})`;
       usernameLinkElement.innerHTML = usernameText + dateText;
-      usernameLinkElement.href = `/u/${username}`; // Hier die URL zum Profil des Benutzers einfügen
       usernameLinkElement.style.textDecoration = "none";
       usernameLinkElement.classList.add("username"); // Fügen Sie die CSS-Klasse hinzu
       usernameElement.appendChild(usernameLinkElement);
@@ -460,7 +513,28 @@ async function getPosts() {
       }`;
 
       const likesButton = document.createElement("button");
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+      likesButton.innerHTML = `<i class="far fa-regular fa-heart" style="color: #FA5252;"></i>`;
+
+      const likedUsers = post.liked || [];
+      likesButton.setAttribute("onclick", `toggleLike('${post._id}')`);
+      likesButton.setAttribute("id", `likesButton_${post._id}`);
+
+      try {
+        // Code zum Laden der Posts
+        const allPostsResponse = await fetch("/api/posts/all");
+        if (!allPostsResponse.ok) {
+          throw new Error("Failed to fetch all posts");
+        }
+        const allPosts = await allPostsResponse.json();
+
+        for (const post of allPosts) {
+          const postId = post._id; // Definiere postId innerhalb des forEach-Blocks
+          const likedUsers = post.liked || [];
+          displayLikeStatus(postId, username, likedUsers);
+        }
+      } catch (error) {
+        console.error("Fehler beim Abrufen aller Posts:", error);
+      }
 
       // Badges abrufen und anzeigen
       try {
@@ -483,6 +557,7 @@ async function getPosts() {
               const badgeIcon = document.createElement("img");
               badgeIcon.src = lastActiveBadge.image;
               badgeIcon.alt = "badge-icon";
+              badgeIcon.title = lastActiveBadge.description;
               badgeIcon.width = 15;
               badgeIcon.height = 15;
               badgeIcon.style.borderRadius = "25%";
@@ -503,29 +578,17 @@ async function getPosts() {
         );
       }
 
-      let isLiked = localStorage.getItem(`liked_${post._id}`);
-
-      if (isLiked) {
-        likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
-      }
-
-      likesButton.setAttribute("onclick", `toggleLike('${post._id}')`);
-      likesButton.setAttribute("id", `likesButton_` + post._id);
-
-      // Favoriten-Button
       const favoriteButton = document.createElement("button");
-      favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="favorite-icon"/>`;
-      // Hier müssten Sie die Funktionalität für den Favoriten-Button hinzufügen
-
+      favoriteButton.innerHTML = `<i class="far fa-bookmark" style="color: #FFD43B;"></i>`;
       let isFavorite = localStorage.getItem(`favorite_${post._id}`);
       if (isFavorite) {
-        favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="add-to-favorites"/>`;
+        favoriteButton.innerHTML = `<i class="fas fa-bookmark" style="color: #FFD43B;"></i>`;
       }
 
       favoriteButton.addEventListener("click", function () {
         if (isFavorite) {
           // Wenn der Beitrag bereits als Favorit markiert ist, entfernen Sie ihn aus den Favoriten
-          favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-outlined/24/bookmark.png" alt="add-to-favorites"/>`;
+          favoriteButton.innerHTML = `<i class="fa-regular fa-bookmark" style="color: #FFD43B;"></i>`;
           localStorage.removeItem(`favorite_${post._id}`);
           isFavorite = false;
           favoriteButton.classList.add("pop");
@@ -537,7 +600,7 @@ async function getPosts() {
           }).showToast();
         } else {
           // Andernfalls markieren Sie ihn als Favorit
-          favoriteButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/material-rounded/24/FAB005/bookmark.png" alt="add-to-favorites"/>`;
+          favoriteButton.innerHTML = `<i class="fa-sharp fa-solid fa-bookmark" style="color: #FFD43B;"></i>`;
           localStorage.setItem(`favorite_${post._id}`, true);
           isFavorite = true;
           favoriteButton.classList.add("pop");
@@ -597,17 +660,13 @@ function lazyLoadHandler() {
   }
 }
 
-// Initialisierung der Posts beim Laden der Seite
-window.addEventListener("DOMContentLoaded", () => {
-  getPosts(); // Rufe die ersten Posts beim Laden der Seite ab
-  window.addEventListener("scroll", lazyLoadHandler); // Füge ein Scroll-Event hinzu, um beim Scrollen weitere Posts zu laden
-});
-
 document.getElementById("signoutBtn").addEventListener("click", () => {
   // Benutzer aus dem localStorage entfernen
   localStorage.removeItem("user");
   localStorage.removeItem("mode");
   document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie =
+    "devolution_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   window.location.href = "/login";
 });
 
@@ -633,7 +692,6 @@ function formatCode(text) {
   return text.replace(/\n/g);
 }
 
-// Beispielaufruf
 var postContent = document.getElementById("postContent").value;
 var formattedPostContent = formatCode(postContent);
 
@@ -657,43 +715,6 @@ function loadModePreference() {
     document.body.classList.remove("light-mode");
     document.body.classList.add("dark-mode");
   }
-
-  // console.log('Y');
-  // console.log('YO');
-  // console.log('YOO');
-  // console.log('YOOO');
-  // console.log('YOOO.');
-  // console.log('YOOO. ');
-  // console.log('YOOO. I');
-  // console.log('YOOO. I.');
-  // console.log('YOOO. I. ');
-  // console.log('YOOO. I. S');
-  // console.log('YOOO. I. SE');
-  // console.log('YOOO. I. SEE');
-  // console.log('YOOO. I. SEE.');
-  // console.log('YOOO. I. SEE. ');
-  // console.log('YOOO. I. SEE. Y');
-  // console.log('YOOO. I. SEE. YO');
-  // console.log('YOOO. I. SEE. YOU');
-  // console.log('YOOO. I. SEE. YOU.');
-  // console.log('YOOO. I. SEE. YOU.');
-  // console.log('YOOO. I. SEE. YOU');
-  // console.log('YOOO. I. SEE. YO');
-  // console.log('YOOO. I. SEE. Y')
-  // console.log('YOOO. I. SEE. ');
-  // console.log('YOOO. I. SEE.');
-  // console.log('YOOO. I. SEE');
-  // console.log('YOOO. I. SE');
-  // console.log('YOOO. I. S');
-  // console.log('YOOO. I. ');
-  // console.log('YOOO. I.');
-  // console.log('YOOO. I');
-  // console.log('YOOO. ');
-  // console.log('YOOO.');
-  // console.log('YOOO');
-  // console.log('YOO');
-  // console.log('YO');
-  // console.log('Y');
 }
 
 loadModePreference();
@@ -833,11 +854,11 @@ async function toggleLike(postId) {
 
     if (isLiked) {
       await removeLike(username, postId);
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
+      likesButton.innerHTML = `<i class="far fa-regular fa-heart" style="color: #FA5252;"></i>`;
       likesButton.classList.remove("liked");
     } else {
       await saveLike(username, postId);
-      likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+      likesButton.innerHTML = `<i class="fas fa-heart" style="color: #FA5252;"></i>`;
       likesButton.classList.add("liked");
     }
 
@@ -906,136 +927,20 @@ async function updateLikes(postId) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const currentUsername = JSON.parse(localStorage.getItem("user"));
-
-  fetch("/api/posts/all")
-    .then((response) => response.json())
-    .then((allPosts) => {
-      // Iteriere durch alle erhaltenen Posts
-      allPosts.forEach((post) => {
-        const postId = post._id; // Definiere postId innerhalb des forEach-Blocks
-        displayLikeStatus(postId, currentUsername);
-      });
-    })
-    .catch((error) => {
-      console.error("Fehler beim Abrufen aller Posts:", error);
-    });
-});
-
-async function displayLikeStatus(postId, currentUsername) {
+async function displayLikeStatus(postId, username, likedUsers) {
   const likesButton = document.getElementById(`likesButton_${postId}`);
   if (!likesButton) return;
 
-  const isLiked = await checkIfLiked(postId, currentUsername);
+  const isLiked = likedUsers.includes(username);
 
   if (isLiked) {
-    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios-filled/50/FA5252/like--v1.png" alt="like--v1"/>`;
+    likesButton.innerHTML = `<i class="fa-solid fa-heart" style="color: #FA5252;"></i>`;
   } else {
-    likesButton.innerHTML = `<img width="25" height="25" src="https://img.icons8.com/ios/50/like--v1.png" alt="like--v1"/>`;
-  }
-}
-
-async function checkIfLiked(postId, currentUsername) {
-  try {
-    const response = await fetch(
-      `/posts/${currentUsername}/${postId}/check-like`
-    );
-    const data = await response.json();
-    return data.liked;
-  } catch (error) {
-    console.error("Fehler beim Überprüfen des Likes:", error);
-    return false;
+    likesButton.innerHTML = `<i class="fa-regular fa-heart" style="color: #FA5252;"></i>`;
   }
 }
 
 // IEFHIEFH
-
-// Event-Listener für den Button "Generate Posts" hinzufügen
-document
-  .getElementById("generatePostsBtn")
-  .addEventListener("click", createGenPosts);
-
-// Funktion zum Generieren einer zufälligen Anzahl von Beiträgen
-async function createGenPosts(event) {
-  event.preventDefault(); // Verhindert das Standardformularverhalten
-
-  const numberOfPosts = parseInt(
-    prompt("How many posts do you want to create? (1 - 500)")
-  );
-
-  // Überprüfen, ob die eingegebene Anzahl gültig ist
-  if (isNaN(numberOfPosts) || numberOfPosts < 1 || numberOfPosts > 500) {
-    alert("Please enter a valid number between 1 and 500.");
-    return;
-  }
-
-  try {
-    // Schleife zum Erstellen der angegebenen Anzahl von Beiträgen
-    for (let i = 0; i < numberOfPosts; i++) {
-      // Generiere einen zufälligen Inhalt und eine zufällige Beschreibung für den Beitrag
-      const postContent = generateRandomContent();
-      const postDescription = generateRandomDescription();
-      const userData = localStorage.getItem("user");
-      const username = userData.identifier;
-
-      // POST-Anfrage zum Erstellen des Beitrags
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          codesnippet: postContent,
-          username: username,
-          content: postDescription,
-          likes: 0,
-          replies: [],
-          pinned: false,
-        }),
-      });
-
-      // Überprüfen, ob die POST-Anfrage erfolgreich war
-      if (!response.ok) {
-        throw new Error("Failed to create post");
-      }
-
-      `Post ${i + 1} created successfully.`;
-    }
-
-    alert(`${numberOfPosts} posts created successfully.`);
-    window.location.reload();
-  } catch (error) {
-    console.error("Error creating posts:", error);
-    alert("An error occurred while creating posts.");
-  }
-}
-
-// Funktion zum Generieren eines zufälligen Inhalts für den Beitrag
-function generateRandomContent() {
-  const contentOptions = [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  ];
-  const randomIndex = Math.floor(Math.random() * contentOptions.length);
-  return contentOptions[randomIndex];
-}
-
-// Funktion zum Generieren einer zufälligen Beschreibung für den Beitrag
-function generateRandomDescription() {
-  const descriptionOptions = [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  ];
-  const randomIndex = Math.floor(Math.random() * descriptionOptions.length);
-  return descriptionOptions[randomIndex];
-}
 
 async function fetchAllUserBadges() {
   try {

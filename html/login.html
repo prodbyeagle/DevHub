@@ -92,14 +92,38 @@
         </form>
       </div>
     </div>
-    <div class="fixed inset-x-0 flex items-center justify-center top-120">
-    <a href="/auth/google" class="mr-3 neumorphism-button">
-        <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/google-logo.png" alt="google-logo"/>
+<div class="fixed inset-x-0 flex items-center justify-center top-120">
+    <a href="#" onclick="showGoogleToast()" class="mr-3 neumorphism-button">
+        <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/google-logo.png" alt="google-logo"/>
     </a>
-    <!-- <a href="/auth/github" class="neumorphism-button">
-        <img width="32" height="32" src="https://img.icons8.com/3d-fluency/32/github.png" alt="GitHub-Logo" class="mr-2"/>
-    </a> -->
+    <a href="#" onclick="showGithubToast()" class="neumorphism-button">
+        <img width="48" height="48" src="https://img.icons8.com/3d-fluency/48/github.png" alt="GitHub-Logo" class="mr-2"/>
+    </a>
 </div>
-    <script src="/js/login.js"></script>
+<script src="/js/login.js"></script>
+<script>
+function showGoogleToast() {
+  Toastify({
+    text: "Google Sign does not Work!",
+    style: {
+      background: "#EA4335", // Google-Logo-Farben
+    },
+    className: "rounded", // Abgerundete Ecken hinzufügen
+    duration: 1000,
+  }).showToast();
+}
+
+function showGithubToast() {
+  Toastify({
+    text: "Github Sign does not Work!",
+    style: {
+      background: "#333", // GitHub-Logo-Farbe
+    },
+    className: "rounded", // Abgerundete Ecken hinzufügen
+    duration: 1000,
+  }).showToast();
+}
+
+</script>
   </body>
 </html>

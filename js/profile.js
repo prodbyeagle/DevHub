@@ -76,7 +76,6 @@ function renderNoPostsMessage() {
   postsContainer.appendChild(messageElement);
 }
 
-
 let activeContextMenu = null;
 
 function renderPosts(posts) {
@@ -127,53 +126,53 @@ function renderPosts(posts) {
       "break-words" // Apply break-words class for word wrapping
     );
 
-        postElement.addEventListener("click", function () {
-          const overlayContent = document.getElementById("full-post-content");
-          overlayContent.innerHTML = ""; // Clear previous content
+    postElement.addEventListener("click", function () {
+      const overlayContent = document.getElementById("full-post-content");
+      overlayContent.innerHTML = ""; // Clear previous content
 
-          // Create HTML elements for post content
-          const usernameHeader = document.createElement("h3");
-          usernameHeader.textContent = `@${post.username} (${post.date})`;
+      // Create HTML elements for post content
+      const usernameHeader = document.createElement("h3");
+      usernameHeader.textContent = `@${post.username} (${post.date})`;
 
-          const contentParagraph = document.createElement("p");
-          contentParagraph.textContent = post.content;
+      const contentParagraph = document.createElement("p");
+      contentParagraph.textContent = post.content;
 
-          const codeSnippetPre = document.createElement("pre");
-          codeSnippetPre.classList.add(
-            "bg-gray-800",
-            "text-white",
-            "p-4",
-            "rounded",
-            "text-xs",
-            "break-words" // Apply break-words class for word wrapping
-          );
-          codeSnippetPre.textContent = post.codesnippet;
+      const codeSnippetPre = document.createElement("pre");
+      codeSnippetPre.classList.add(
+        "bg-gray-800",
+        "text-white",
+        "p-4",
+        "rounded",
+        "text-xs",
+        "break-words" // Apply break-words class for word wrapping
+      );
+      codeSnippetPre.textContent = post.codesnippet;
 
-          // Add HTML elements to overlay content
-          overlayContent.appendChild(usernameHeader);
-          overlayContent.appendChild(contentParagraph);
-          overlayContent.appendChild(codeSnippetPre);
+      // Add HTML elements to overlay content
+      overlayContent.appendChild(usernameHeader);
+      overlayContent.appendChild(contentParagraph);
+      overlayContent.appendChild(codeSnippetPre);
 
-          // Apply CSS to the overlay content to set overflow-y and word-wrap
-          overlayContent.style.overflowY = "auto";
-          overlayContent.style.wordWrap = "break-word";
+      // Apply CSS to the overlay content to set overflow-y and word-wrap
+      overlayContent.style.overflowY = "auto";
+      overlayContent.style.wordWrap = "break-word";
 
-          // Show the overlay
-          const postOverlay = document.getElementById("post-overlay");
-          postOverlay.classList.remove("hidden");
+      // Show the overlay
+      const postOverlay = document.getElementById("post-overlay");
+      postOverlay.classList.remove("hidden");
 
-          // Disable scrolling of the page
-          document.body.style.overflow = "hidden";
+      // Disable scrolling of the page
+      document.body.style.overflow = "hidden";
 
-          // Add event listener to close the overlay when clicked outside
-          postOverlay.addEventListener("click", function (event) {
-            if (event.target === postOverlay) {
-              postOverlay.classList.add("hidden");
-              // Re-enable scrolling of the page
-              document.body.style.overflow = "auto";
-            }
-          });
-        });
+      // Add event listener to close the overlay when clicked outside
+      postOverlay.addEventListener("click", function (event) {
+        if (event.target === postOverlay) {
+          postOverlay.classList.add("hidden");
+          // Re-enable scrolling of the page
+          document.body.style.overflow = "auto";
+        }
+      });
+    });
 
     const contextMenu = createContextMenu(post._id);
 
@@ -341,10 +340,12 @@ window.onload = async function () {
     if (activeBadge && activeBadge.image) {
       const badgeImageElement = document.createElement("img");
       badgeImageElement.src = activeBadge.image;
+      badgeImageElement.title = activeBadge.description;
       badgeImageElement.classList.add("badge-image");
-      badgeImageElement.width = 15;
-      badgeImageElement.height = 15;
+      badgeImageElement.width = 20;
+      badgeImageElement.height = 20;
       badgeImageElement.style.marginLeft = "10px";
+      badgeImageElement.style.translate = "-5% 15%";
       badgeImageElement.style.borderRadius = "25%";
       profileUsernameElement.appendChild(badgeImageElement);
     }
@@ -487,7 +488,7 @@ document
       if (!file) return;
 
       // Überprüfen, ob die Dateigröße größer als 1 MB ist
-      if (file.size > 1024 * 1024) {
+      if (file.size > 300 * 300) {
         // Wenn die Dateigröße größer als 1 MB ist, komprimiere das Bild
         const compressedFile = await compressImage(file);
         if (!compressedFile) return;
@@ -512,7 +513,7 @@ async function compressImage(file) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        let maxSize = 100; // Maximale Breite und Höhe für das Bild
+        let maxSize = 300; // Maximale Breite und Höhe für das Bild
 
         // Überprüfen, ob das Bild größer als maxSize x maxSize ist
         if (img.width > maxSize || img.height > maxSize) {
@@ -544,14 +545,14 @@ async function compressImage(file) {
           canvas.toBlob(
             (blob) => {
               const compressedFile = new File([blob], file.name, {
-                type: "image/jpeg",
+                type: "image/png",
                 lastModified: Date.now(),
               });
               resolve(compressedFile);
             },
-            "image/jpeg",
+            "image/png",
             0.7
-          ); // 0.7 ist die Bildqualität (0.0 - 1.0), ändern Sie dies nach Bedarf
+          );
         } else {
           // Bild ist bereits kleiner als die maximale Größe, daher keine Komprimierung erforderlich
           resolve(file);
@@ -623,7 +624,6 @@ async function uploadImage(imageFile) {
   }
 }
 
-// Function to fetch and display the number of followers for a specific user
 async function fetchAndDisplayFollowerCount(username) {
   try {
     // Create URL-decoded username
@@ -631,23 +631,33 @@ async function fetchAndDisplayFollowerCount(username) {
 
     // Fetch API response with user data
     const response = await fetch(`/api/profile/${decodedUsername}`);
-
     const data = await response.json();
 
     // Check if the API response contains valid data
-    if (!data || !data.follower) {
+    if (
+      !data ||
+      typeof data.follower !== "number" ||
+      !Array.isArray(data.followers)
+    ) {
       console.error("Invalid API response:", data);
       return;
     }
 
     // Retrieve and display the user's follower count
-    let followerCount = data.follower || 0; // Use default value of 0 if no followers exist
-    if (followerCount < 0) {
-      followerCount = 0; // Ensure the count is not negative
+    let followerCount = 0;
+
+    if (data.followers.includes(decodedUsername)) {
+      // If the current user is in the "followers" array, increment follower count
+      followerCount = data.follower + 1;
+    } else {
+      followerCount = data.follower;
     }
 
+    // Ensure the follower count is not negative
+    followerCount = Math.max(followerCount, 0);
+
     const followerCountElement = document.getElementById("follower-count");
-    followerCountElement.textContent = followerCount;
+    followerCountElement.textContent = followerCount.toString();
   } catch (error) {
     console.error("Error fetching follower count:", error);
   }
@@ -1058,11 +1068,14 @@ async function changeActiveBadge(badgeName) {
 
     Toastify({
       text: `${badgeName} was Activated!`,
-      duration: 3000,
+      duration: 1000,
       close: true,
-      gravity: "top", // Optionen: 'top', 'bottom', 'center'
-      position: "right", // Optionen: 'left', 'right', 'center'
+      gravity: "top",
+      position: "right",
       backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+      callback: function () {
+        location.reload();
+      },
     }).showToast();
 
     loadBadges();
@@ -1073,12 +1086,80 @@ async function changeActiveBadge(badgeName) {
   }
 }
 
-console.log(
+// Überprüfen, ob alle vorherigen Easter Eggs aktiviert sind
+let allPreviousEggsActivated =
+  localStorage.getItem("eg1") === "true" &&
+  localStorage.getItem("eg2") === "true" &&
+  localStorage.getItem("eg3") === "true" &&
+  localStorage.getItem("eg4") === "true";
+
+// Überprüfen, ob das Easter Egg 5 im localStorage gespeichert ist und es entsprechend aktivieren oder deaktivieren
+let easterEgg5Enabled = localStorage.getItem("eg5") === "true";
+if (easterEgg5Enabled === null) {
+  easterEgg5Enabled = false; // Standardmäßig deaktivieren, wenn nicht im localStorage vorhanden
+}
+
+let clickCount5 = 0;
+let maxClicks5 = Math.floor(Math.random() * 50) + 1;
+
+// Event-Listener für Klicks auf den "Favorites" Button
+document.getElementById("favorites").addEventListener("click", function () {
+  // Überprüfen, ob das Easter Egg bereits ausgelöst wurde und alle vorherigen Easter Eggs aktiviert sind
+  if (!localStorage.getItem("eg5") && allPreviousEggsActivated) {
+    // Anzeigen des Toasts und Aktivieren des Easter Eggs
+    handleClick5();
+    localStorage.setItem("eg5", true);
+  }
+});
+
+// Definition der handleClick-Funktion für Easter Egg 5
+function handleClick5() {
+  clickCount5++;
+  console.log("Click count:", clickCount5);
+
+  if (clickCount5 === maxClicks5 && easterEgg5Enabled) {
+    Toastify({
+      text: "🤩 home..",
+      duration: 5000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      backgroundColor: "linear-gradient(to right, #D7D7D7, #969696)",
+    }).showToast();
+
+    setTimeout(function () {
+      Toastify({
+        text: "😭 thank you so much...",
+        duration: 5000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        backgroundColor: "linear-gradient(to right, #D7D7D7, #969696)",
+      }).showToast();
+    }, 5000); // Countdown für das zweite Toastify-Element
+
+    easterEgg5Enabled = false;
+    localStorage.setItem("eg5", "false"); // Speichern des deaktivierten Easter Egg 5-Status im localStorage
+  }
+}
+
+const favoritesRadioButton = document.getElementById("favorites");
+if (favoritesRadioButton) {
+  favoritesRadioButton.addEventListener("click", function () {
+    if (easterEgg5Enabled) {
+      handleClick5();
+    }
+  });
+} else {
+  console.error("Element with ID 'favorites' not found");
+}
+
+console.warn(
   "%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!",
   "font-size: 20px; color: yellow;",
   "font-size: 14px; color: white;"
 );
-console.log(
+console.warn(
   "%cWARNING! %cBe cautious!\nIf someone instructs you to paste something in here, it could be a scammer or hacker attempting to exploit your system. The Devolution Team would never ask for an Password!",
   "font-size: 20px; color: yellow;",
   "font-size: 14px; color: white;"

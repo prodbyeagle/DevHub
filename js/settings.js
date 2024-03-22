@@ -103,12 +103,18 @@ document
     }
   });
 
-// JavaScript für das Anzeigen/Verbergen der E-Mail
+// Überprüfen, ob das Easter Egg im localStorage gespeichert ist und es entsprechend aktivieren oder deaktivieren
+let easterEgg2Enabled = localStorage.getItem("eg2") !== "true"; // Hier wurde das Prädikat umgekehrt, um zu überprüfen, ob das Easter Egg 2 aktiviert ist oder nicht
+let clickCount2 = 0;
+let maxClicks2 = Math.floor(Math.random() * 50) + 1;
+
+// Event-Listener für das Triggering des Easter Egg 2
 document
   .getElementById("toggleEmailVisibility")
   .addEventListener("click", function () {
     const emailField = document.getElementById("email");
     const realEmail = emailField.getAttribute("data-real-email");
+    handleClick2();
 
     // Überprüfe, ob das E-Mail-Feld bereits sichtbar ist
     if (emailField.textContent === realEmail) {
@@ -117,6 +123,29 @@ document
     } else {
       // Zeige die echte E-Mail an
       emailField.textContent = realEmail;
+    }
+
+    // Definition der handleClick-Funktion für Easter Egg 2
+    function handleClick2() {
+      clickCount2++;
+
+      if (clickCount2 === maxClicks2 && easterEgg2Enabled) {
+        Toastify({
+          text: "😖 can u help me?.",
+          style: {
+            background: "linear-gradient(to right, #D7D7D7, #969696)",
+          },
+          className: "rounded", // Abgerundete Ecken hinzufügen
+          duration: 10000,
+        }).showToast();
+        easterEgg2Enabled = false;
+        localStorage.setItem("eg2", "true"); // Speichern des aktivierten Easter Egg 2-Status im localStorage
+      }
+    }
+
+    // Trigger das Easter Egg 2, wenn aktiviert
+    if (easterEgg2Enabled) {
+      handleClick2();
     }
   });
 
@@ -214,7 +243,9 @@ changePasswordForm.addEventListener("submit", async (event) => {
         text: "Password changed successfully",
         duration: 3000,
         close: true,
-        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
       }).showToast();
       document.getElementById("changePasswordOverlay").classList.add("hidden");
     } else {
@@ -224,7 +255,9 @@ changePasswordForm.addEventListener("submit", async (event) => {
         text: "Failed to change password: " + response.statusText,
         duration: 3000,
         close: true,
-        backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+        style: {
+          background: "linear-gradient(to right, #ff416c, #ff4b2b)",
+        },
       }).showToast();
     }
   } catch (error) {
@@ -234,7 +267,9 @@ changePasswordForm.addEventListener("submit", async (event) => {
       text: "Error changing password: " + error,
       duration: 3000,
       close: true,
-      backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+      style: {
+        background: "linear-gradient(to right, #ff416c, #ff4b2b)",
+      },
     }).showToast();
   }
 });
@@ -314,7 +349,9 @@ changeUsernameForm.addEventListener("submit", async (event) => {
         text: "Username changed successfully",
         duration: 3000,
         close: true,
-        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
       }).showToast();
       document.getElementById("changeUsernameOverlay").classList.add("hidden");
     } else {
@@ -324,7 +361,9 @@ changeUsernameForm.addEventListener("submit", async (event) => {
         text: "Failed to change username: " + response.statusText,
         duration: 3000,
         close: true,
-        backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+        style: {
+          background: "linear-gradient(to right, #ff416c, #ff4b2b)",
+        },
       }).showToast();
     }
   } catch (error) {
@@ -334,7 +373,9 @@ changeUsernameForm.addEventListener("submit", async (event) => {
       text: "Error changing username: " + error,
       duration: 3000,
       close: true,
-      backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
+      style: {
+        background: "linear-gradient(to right, #ff416c, #ff4b2b)",
+      },
     }).showToast();
   }
 });
@@ -436,7 +477,7 @@ document
     try {
       // Bestätigungsdialog anzeigen
       const confirmed = confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
+        "Are you sure you want to delete your account? This action cannot be undone. You are going to be logged put"
       );
 
       // Wenn der Benutzer die Aktion bestätigt hat
