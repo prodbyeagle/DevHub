@@ -344,6 +344,7 @@ window.onload = async function () {
       badgeImageElement.classList.add("badge-image");
       badgeImageElement.width = 20;
       badgeImageElement.height = 20;
+      badgeImageElement.style.cursor = "help";
       badgeImageElement.style.marginLeft = "10px";
       badgeImageElement.style.translate = "-5% 15%";
       badgeImageElement.style.borderRadius = "25%";
@@ -669,34 +670,34 @@ function deletePost(postId) {
       throw new Error("Post ID is undefined");
     }
 
-    // Zeige eine Bestätigungsdialog an
-    const confirmed = confirm(
-      "This will delete your post permanently! Are you sure you want this?"
-    );
+    // Zeige das Modal an
+    my_modal_3.showModal();
 
-    // Wenn der Benutzer die Aktion bestätigt hat
-    if (confirmed) {
-      // Senden der Anfrage zum Löschen des Posts
-      fetch(`/api/posts/delete/${postId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to delete post");
-          }
-          // Post erfolgreich gelöscht
-          console.log(`Post with ID ${postId} successfully deleted`);
-          // Seite neu laden
-          window.location.reload();
+    // Füge einen Event-Listener zum Bestätigen des Löschvorgangs hinzu
+    document
+      .getElementById("confirmDeleteBtn")
+      .addEventListener("click", function () {
+        // Senden der Anfrage zum Löschen des Posts
+        fetch(`/api/posts/delete/${postId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         })
-        .catch((error) => {
-          console.error("Error deleting post:", error);
-          // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
-        });
-    }
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to delete post");
+            }
+            // Post erfolgreich gelöscht
+            console.log(`Post with ID ${postId} successfully deleted`);
+            // Seite neu laden
+            window.location.reload();
+          })
+          .catch((error) => {
+            console.error("Error deleting post:", error);
+            // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen
+          });
+      });
   } catch (error) {
     console.error("Error deleting post:", error);
     // Hier könntest du eine Benachrichtigung anzeigen oder eine andere Fehlerbehandlung durchführen

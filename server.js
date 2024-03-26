@@ -1403,6 +1403,10 @@ app.get("/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "html", "signup.html"));
 });
 
+app.get("/wiki", (req, res) => {
+  res.redirect("https://youtu.be/dQw4w9WgXcQ?si=CdhFErEl5dFB0Kj");
+});
+
 const pages = [
   "home",
   "explore",

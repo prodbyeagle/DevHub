@@ -12,7 +12,7 @@ body {
 /* Neumorphism styles for Dark Mode */
 body.dark-mode {
   background-color: #222;
-  color: #eee;
+  color: #ebebeb;
   transition: all 0.3s ease;
 }
 
@@ -39,7 +39,7 @@ body.dark-mode {
 .language-button {
   background-color: #007bff;
   color: #fff;
-  padding: 0.5rem 1rem;
+  padding: 1rem 1rem;
   border: 1px solid; /* 1px-Rand hinzufügen */
   border-radius: 8px;
   cursor: pointer;
@@ -88,18 +88,18 @@ body.dark-mode .language-button.selected:hover {
 }
 
 body.dark-mode .language-button {
-  background-color: #222;
+  background-color: #22222231;
   color: #eee;
   box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
     -8px -8px 16px rgba(255, 255, 255, 0.05);
 }
 
 body.dark-mode .language-button:hover {
-  background-color: #333;
+  background-color: #3333338f;
 }
 
 body.dark-mode .preferences-form {
-  background-color: #222;
+  background-color: #22222244;
   box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.5),
     -8px -8px 16px rgba(255, 255, 255, 0.05);
 }

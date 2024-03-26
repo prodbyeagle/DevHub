@@ -1,6 +1,6 @@
 body {
   font-family: "Cascadia Code", sans-serif;
-  background-color: #f0f0f0;
+  background-color: #b6b6b6;
   color: rgb(51, 51, 51);
   transition: all 0.3s ease;
 }
@@ -199,7 +199,7 @@ body.dark-mode .post .date {
 
 .content-container {
   padding: 1rem;
-  background-color: #cecece8f;
+  background-color: #4d4d4d7c;
   color: #111111;
   border-radius: 16px;
   /* box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5); */
@@ -209,7 +209,7 @@ body.dark-mode .post .date {
 
 body.dark-mode .title-container {
   padding: 1rem;
-  background-color: #00000000;
+  background-color: #8b8b8b00;
   color: #eee;
   margin-bottom: 20px;
   text-align: center;

@@ -114,6 +114,24 @@ function showNormalContent() {
 
 async function showWelcomeMessage() {
   try {
+    const token = document.cookie
+      .split(";")
+      .find((cookie) => cookie.trim().startsWith("token="));
+
+    if (token) {
+      const jwtToken = token.split("=")[1].trim();
+      try {
+        const decodedToken = JSON.parse(atob(jwtToken.split(".")[1]));
+        const username = decodedToken.username;
+        await checkUserBanStatus(username);
+        localStorage.setItem("user", JSON.stringify({ identifier: username }));
+      } catch (error) {
+        console.error("Error decoding JWT token:", error);
+      }
+    } else {
+      console.error("JWT token not found in cookie");
+    }
+
     const savedUser = localStorage.getItem("user"); // Benutzerdaten aus dem Speicher abrufen
     if (savedUser) {
       const { identifier } = JSON.parse(savedUser);
@@ -137,7 +155,7 @@ async function showWelcomeMessage() {
           console.error("User with specified email not found");
         }
       } else {
-        // Der Identifier ist kein eine E-Mail-Adresse, daher direkt verwenden
+        // Der Identifier ist keine E-Mail-Adresse, daher direkt verwenden
         document.getElementById("username").textContent = identifier;
       }
     } else {
@@ -208,8 +226,6 @@ function handleClick3() {
 }
 
 if (searchButton) {
-  console.log(searchButton);
-
   // Event-Listener für das Klicken auf den Suchbutton
   searchButton.addEventListener("click", async function () {
     const searchInput = document.getElementById("searchInput");
@@ -515,7 +531,6 @@ async function getPosts() {
       const likesButton = document.createElement("button");
       likesButton.innerHTML = `<i class="far fa-regular fa-heart" style="color: #FA5252;"></i>`;
 
-      const likedUsers = post.liked || [];
       likesButton.setAttribute("onclick", `toggleLike('${post._id}')`);
       likesButton.setAttribute("id", `likesButton_${post._id}`);
 
@@ -558,6 +573,7 @@ async function getPosts() {
               badgeIcon.src = lastActiveBadge.image;
               badgeIcon.alt = "badge-icon";
               badgeIcon.title = lastActiveBadge.description;
+              badgeIcon.style.cursor = "help";
               badgeIcon.width = 15;
               badgeIcon.height = 15;
               badgeIcon.style.borderRadius = "25%";
@@ -579,7 +595,7 @@ async function getPosts() {
       }
 
       const favoriteButton = document.createElement("button");
-      favoriteButton.innerHTML = `<i class="far fa-bookmark" style="color: #FFD43B;"></i>`;
+      favoriteButton.innerHTML = `<i class="far fa-bookmark" style="color: #FFD43B; margin-left: 5px;"></i>`;
       let isFavorite = localStorage.getItem(`favorite_${post._id}`);
       if (isFavorite) {
         favoriteButton.innerHTML = `<i class="fas fa-bookmark" style="color: #FFD43B;"></i>`;
@@ -588,26 +604,28 @@ async function getPosts() {
       favoriteButton.addEventListener("click", function () {
         if (isFavorite) {
           // Wenn der Beitrag bereits als Favorit markiert ist, entfernen Sie ihn aus den Favoriten
-          favoriteButton.innerHTML = `<i class="fa-regular fa-bookmark" style="color: #FFD43B;"></i>`;
+          favoriteButton.innerHTML = `<i class="fa-regular fa-bookmark" style="color: #FFD43B; margin-left: 5px;"></i>`;
           localStorage.removeItem(`favorite_${post._id}`);
           isFavorite = false;
           favoriteButton.classList.add("pop");
           Toastify({
-            text: "Deleted Post from Favorites!",
-            duration: 3000,
-            close: true,
-            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            text: `Removed ${post.username}'s Post to Favorites!`,
+            gravity: "bottom", // `top` or `bottom`
+            position: "left", // `left`, `center` or `right`
+            duration: 1000,
+            backgroundColor: "linear-gradient(to right, #FF6962, #FF7974)",
           }).showToast();
         } else {
           // Andernfalls markieren Sie ihn als Favorit
-          favoriteButton.innerHTML = `<i class="fa-sharp fa-solid fa-bookmark" style="color: #FFD43B;"></i>`;
+          favoriteButton.innerHTML = `<i class="fa-sharp fa-solid fa-bookmark" style="color: #FFD43B; margin-left: 5px;"></i>`;
           localStorage.setItem(`favorite_${post._id}`, true);
           isFavorite = true;
           favoriteButton.classList.add("pop");
           Toastify({
-            text: "Added Post to Favorites!",
-            duration: 3000,
-            close: true,
+            text: `Added ${post.username}'s Post to Favorites!`,
+            duration: 1000,
+            gravity: "bottom", // `top` or `bottom`
+            position: "left", // `left`, `center` or `right`
             backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
           }).showToast();
         }

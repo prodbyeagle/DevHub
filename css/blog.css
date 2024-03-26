@@ -38,7 +38,7 @@ main {
 
 /* Dunkler Modus für Blog-Beiträge */
 body.dark-mode .blog-post {
-  background-color: #8a8a8a8f;
+  background-color: #4646468f;
   color: #ddd;
 }
 
@@ -235,7 +235,7 @@ body.dark-mode .emoji:hover {
 
 body.dark-mode .emoji.reacted,
 .emoji.reacted {
-  background-color: #00ff001f;
+  background-color: #00ff0057;
 }
 
 .action-buttons {

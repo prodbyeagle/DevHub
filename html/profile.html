@@ -41,7 +41,7 @@
     <title>devolution. Profile</title>
 </head>
 <div class="gradient"></div>
-<body class="bg-gray-100 dark-mode">
+<body class="overflow-scroll bg-gray-100 dark-mode">
     <div class="container py-8 mx-auto profile-container">
         <div class="profile-card" id="profile-card">
             <div class="profile-picture">
@@ -141,9 +141,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
-
+</body>
     <script src="/js/profile.js"></script>
-
     <script>
     function closeBioOverlay() {
         document.getElementById('bio-overlay').classList.add('hidden');
@@ -179,9 +178,5 @@
         }
     });
 });
-
-
-    </script>
-
-</body>
+</script>
 </html>

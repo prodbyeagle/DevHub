@@ -99,11 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       const profile = await response.json();
       const profilePicture = profile.pb; // Retrieve the profile picture URL
-      console.log(
-        "Profile picture URL for user",
-        username + ":",
-        profilePicture
-      ); // Log the profile picture URL
       return profilePicture; // Return the profile picture URL
     } catch (error) {
       console.error("Error fetching profile picture:", error);
@@ -133,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const username = usernameData.identifier;
       const badgeResponse = await fetch(`/api/${username}/badges`);
       const badgeData = await badgeResponse.json();
-      const profilePicture = await fetchProfilePicture(username); // Fetch profile picture
 
       // Überprüfen, ob die Antwort erfolgreich war
       if (badgeResponse.ok) {
@@ -159,20 +153,21 @@ document.addEventListener("DOMContentLoaded", function () {
     for (const post of blogPosts.reverse()) {
       const postId = post._id;
       const postElement = document.createElement("article");
+      const profilePicture = await fetchProfilePicture(post.author); // Fetch profile picture
       postElement.classList.add("blog-post");
 
-      const profilePictureHTML = profilePicture
-        ? `<img src="${profilePicture}" alt="profile-picture" width="15" height="15" style="border-radius: 50%;">`
-        : "";
-      const authorInfo = `${profilePictureHTML} ${post.author}`;
+    const profilePictureHTML = profilePicture
+      ? `<a href="/u/${post.author}"><img src="${profilePicture}" alt="profile-picture" width="25" height="25" style="border-radius: 50%; transform: translate(-0px, 7px);"></a>`
+      : "";
+    const authorInfo = `${profilePictureHTML} ${post.author}`;
 
       postElement.innerHTML = `
             <h2>${post.title}</h2>
             <p>${makeLinksClickable(post.content)}</p>
             <div class="post-image-container"></div>
-            <p style="display: inline-block;">Author: ${authorInfo} ${
+            <p style="display: inline-block;">by: ${authorInfo} ${
         lastActiveBadge
-          ? `<img src="${lastActiveBadge.image}" alt="badge-icon" width="15" height="15" style="border-radius: 25%;">`
+          ? `<img src="${lastActiveBadge.image}" alt="badge-icon" width="15" height="15" style="border-radius: 25%; transform: translate(-5px, 2px); cursor: help;" title="${lastActiveBadge.description}">`
           : ""
       }</p>
             <p class="post-date" data-date-time="${post.date}">${formatDateTime(

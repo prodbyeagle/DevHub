@@ -1,250 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>devolution. Preferences</title>
-    <link type="image/png" sizes="16x16" rel="icon" href="/assets/icon-white.png">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"/> 
-    <link rel="stylesheet" href="/css/preferences.css">
+    <link
+      type="image/png"
+      sizes="16x16"
+      rel="icon"
+      href="/assets/icon-white.png"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+    />
+    <link rel="stylesheet" href="/css/preferences.css" />
     <style>
-        .gradient {
-            /* Füge hier deine CSS-Stile für den Gradienten ein */
-            background: linear-gradient(to left, #ff416c, #ff4b2b);
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
-            min-width: 100vw;
-            min-height: 100vh;
-            width: var(--size);
-            filter: blur(150px);
-            height: var(--size);
-            animation: moveGradient 10s linear infinite alternate infinite;
-            --size: 250px;
-            --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
-            --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        }
-
-        @keyframes moveGradient {
-        0% {
-            background-position: 0% 50%;
-        }
-        100% {
-            background-position: 100% 50%;
-        }
-    }
+      .gradient {
+        /* Füge hier deine CSS-Stile für den Gradienten ein */
+        background: linear-gradient(to left, #91ca7a, #a5e768);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1; /* Damit der Gradienten im Hintergrund liegt */
+        min-width: 100vw;
+        min-height: 100vh;
+        width: var(--size);
+        filter: blur(150px);
+        height: var(--size);
+        --size: 250px;
+        --speed: 100s; /* Ändere die Geschwindigkeit der Animation nach Bedarf */
+        --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      }
     </style>
-</head>
-<div class="gradient"></div>
-<body class="bg-gray-100 dark-mode">
-<div class="container flex items-center justify-center h-screen">
-    <div class="max-w-lg">
-        <h1 class="mb-4 text-3xl font-bold text-center">Welcome to devolution.!</h1>
+  </head>
+  <div class="gradient"></div>
+  <body class="bg-gray-100 dark-mode">
+    <div class="container flex items-center justify-center h-screen">
+      <div class="max-w-lg">
+        <h1 class="mb-4 text-3xl font-bold text-center">
+          Welcome to devolution.
+        </h1>
         <div class="preferences-form">
-            <form id="preferencesForm" class="space-y-4">
-                <div>
-                    <label for="codingLanguages" class="label">Which Coding Languages are you Interested in?</label>
-                    <div class="flex flex-wrap justify-center">
-                        <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="javascript">
-                            <i class="devicon-javascript-plain"></i>
-                            <span>JS</span>
-                        </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="python">
-                                <i class="devicon-python-plain"></i>
-                                <span>Python</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="java">
-                                <i class="devicon-java-plain"></i>
-                                <span>Java</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="c">
-                                <i class="devicon-c-plain"></i>
-                                <span>C</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="cplusplus">
-                                <i class="devicon-cplusplus-plain"></i>
-                                <span>C++</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="ruby">
-                                <i class="devicon-ruby-plain"></i>
-                                <span>Ruby</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="go">
-                                <i class="devicon-go-plain"></i>
-                                <span>Go</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="swift">
-                                <i class="devicon-swift-plain"></i>
-                                <span>Swift</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="typescript">
-                                <i class="devicon-typescript-plain"></i>
-                                <span>TS</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="kotlin">
-                                <i class="devicon-kotlin-plain"></i>
-                                <span>Kotlin</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="r">
-                                <i class="devicon-r-plain"></i>
-                                <span>R</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="php">
-                                <i class="devicon-php-plain"></i>
-                                <span>PHP</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="html">
-                                <i class="devicon-html5-plain"></i>
-                                <span>HTML</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="css">
-                                <i class="devicon-css3-plain"></i>
-                                <span>CSS</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="sql">
-                                <i class="devicon-mysql-plain"></i>
-                                <span>SQL</span>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="perl">
-                                <i class="devicon-perl-plain"></i>
-                                <span>Perl</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="shell">
-                                <i class="devicon-bash-plain"></i>
-                                <span>Shell</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="scala">
-                                <i class="devicon-scala-plain"></i>
-                                <span>Scala</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="dart">
-                                <i class="devicon-dart-plain"></i>
-                                <span>Dart</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="lua">
-                                <i class="devicon-lua-plain"></i>
-                                <span>Lua</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="rust">
-                                <i class="devicon-rust-plain"></i>
-                                <span>Rust</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="elixir">
-                                <i class="devicon-elixir-plain"></i>
-                                <span>Elixir</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="haskell">
-                                <i class="devicon-haskell-plain"></i>
-                                <span>Haskell</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="coffeescript">
-                                <i class="devicon-coffeescript-plain"></i>
-                                <span>CS</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="objective-c">
-                                <i class="devicon-objectivec-plain"></i>
-                                <span>Ob. C</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="clojure">
-                                <i class="devicon-clojure-plain"></i>
-                                <span>Clojure</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="groovy">
-                                <i class="devicon-groovy-plain"></i>
-                                <span>Groovy</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="ocaml">
-                                <i class="devicon-ocaml-plain"></i>
-                                <span>OCaml</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="powershell">
-                                <i class="devicon-powershell-plain"></i>
-                                <span>PS</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="fsharp">
-                                <i class="devicon-fsharp-plain"></i>
-                                <span>F#</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="julia">
-                                <i class="devicon-julia-plain"></i>
-                                <span>Julia</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="erlang">
-                                <i class="devicon-erlang-plain"></i>
-                                <span>Erlang</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="prolog">
-                                <i class="devicon-prolog-plain"></i>
-                                <span>Prolog</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="assembly">
-                                <i class="devicon-assembly-plain"></i>
-                                <span>Assembly</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="fortran">
-                                <i class="devicon-fortran-plain"></i>
-                                <span>Fortran</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="lisp">
-                                <i class="devicon-lisp-plain"></i>
-                                <span>Lisp</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="pascal">
-                                <i class="devicon-pascal-plain"></i>
-                                <span>Pascal</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="smalltalk">
-                                <i class="devicon-smalltalk-plain"></i>
-                                <span>Smalltalk</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="vhdl">
-                                <i class="devicon-vhdl-plain"></i>
-                                <span>VHDL</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="verilog">
-                                <i class="devicon-verilog-plain"></i>
-                                <span>Verilog</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="cobol">
-                                <i class="devicon-cobol-plain"></i>
-                                <span>COBOL</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="ada">
-                                <i class="devicon-ada-plain"></i>
-                                <span>Ada</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="abap">
-                                <i class="devicon-abap-plain"></i>
-                                <span>ABAP</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="racket">
-                                <i class="devicon-racket-plain"></i>
-                                <span>Racket</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="sas">
-                                <i class="devicon-sas-plain"></i>
-                                <span>SAS</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="scheme">
-                                <i class="devicon-scheme-plain"></i>
-                                <span>Scheme</span>
-                            </button>
-                            <button type="button" class="flex flex-col items-center mx-2 mb-2 rounded-md language-button" data-language="vbnet">
-                                <i class="devicon-vbnet-plain"></i>
-                                <span>VB.NET</span>
-                            </button>
-                        </div>
-                        <input type="hidden" id="codingLanguages" name="codingLanguages">
-                    </div>
-                    <button type="submit" class="submit-button">Speichern</button>
-                </form>
+          <form id="preferencesForm" class="space-y-4">
+            <div>
+              <label
+                for="codingLanguages"
+                style="flex: auto; margin: 10px"
+                class="label"
+                >Which Coding Languages are you Interested in?</label
+              >
+              <div class="flex flex-wrap justify-center">
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-3 mb-2 rounded-md language-button"
+                  data-language="javascript"
+                  title="JavaScript"
+                >
+                  <i
+                    class="devicon-javascript-plain colored"
+                    style="font-size: 160%"
+                  ></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="python"
+                  title="Python"
+                >
+                  <i class="devicon-python-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="java"
+                  title="Java"
+                >
+                  <i class="devicon-java-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="c"
+                  title="C"
+                >
+                  <i class="devicon-c-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="cplusplus"
+                  title="C++"
+                >
+                  <i class="devicon-cplusplus-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="ruby"
+                  title="Ruby"
+                >
+                  <i class="devicon-ruby-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="go"
+                  title="Go"
+                >
+                  <i class="devicon-go-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="swift"
+                  title="Swift"
+                >
+                  <i class="devicon-swift-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="typescript"
+                  title="TypeScript"
+                >
+                  <i class="devicon-typescript-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="kotlin"
+                  title="Kotlin"
+                >
+                  <i class="devicon-kotlin-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="php"
+                  title="PHP"
+                >
+                  <i class="devicon-php-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="html"
+                  title="HTML"
+                >
+                  <i class="devicon-html5-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="css"
+                  title="CSS"
+                >
+                  <i class="devicon-css3-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="perl"
+                  title="Perl"
+                >
+                  <i class="devicon-perl-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="shell"
+                  title="Shell"
+                >
+                  <i class="devicon-bash-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="scala"
+                  title="Scala"
+                >
+                  <i class="devicon-scala-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="dart"
+                  title="Dart"
+                >
+                  <i class="devicon-dart-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="lua"
+                  title="Lua"
+                >
+                  <i class="devicon-lua-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="rust"
+                  title="Rust"
+                >
+                  <i class="devicon-rust-plain colored"></i>
+                  <span></span>
+                </button>
+                <button
+                  type="button"
+                  class="flex flex-col items-center mx-2 mb-2 rounded-md language-button"
+                  style="font-size: 160%"
+                  data-language="elixir"
+                  title="Elixir"
+                >
+                  <i class="devicon-elixir-plain colored"></i>
+                  <span></span>
+                </button>
+              </div>
+              <input
+                type="hidden"
+                id="codingLanguages"
+                name="codingLanguages"
+              />
             </div>
+            <button type="submit" class="submit-button">✓ Save</button>
+          </form>
         </div>
+      </div>
     </div>
     <script src="/js/preferences.js"></script>
-</body>
+  </body>
 </html>
