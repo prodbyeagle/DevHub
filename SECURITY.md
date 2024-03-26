@@ -10,7 +10,7 @@ The following versions of Devolution are actively supported:
 | beta    | :white_check_mark: |
 | canary    | :white_check_mark: |
 | alpha   | ⚠️                 |
-| < rc    | ❌                 |
+| release-candidate    | ❌|
 
 ## Security Guidelines
 
